@@ -70,7 +70,7 @@ mqtt_state - 设备在线状态
 .. code-block::
 
     hmset
-    key = mqtt:state${clientid} 
+    key = mqtt:state:${clientid} 
     value = {state:int, online_at:timestamp, offline_at:timestamp}
 
     hset
