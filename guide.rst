@@ -11,6 +11,38 @@ EMQPLUS企业版改进了分布节点间的通信机制，分离Erlang自身的�
 
 .. image:: _static/images/scalable_rpc.png
 
+Scalable RPC配置::
+
+    ## TCP server port.
+    rpc.tcp_server_port = 5369
+
+    ## Default TCP port for outgoing connections
+    rpc.tcp_client_port = 5369
+
+    ## Client connect timeout
+    rpc.connect_timeout = 5000
+
+    ## Client and Server send timeout
+    rpc.send_timeout = 5000
+
+    ## Authentication timeout
+    rpc.authentication_timeout = 5000
+
+    ## Default receive timeout for call() functions
+    rpc.call_receive_timeout = 15000
+
+    ## Socket keepalive configuration
+    rpc.socket_keepalive_idle = 5
+
+    ## Seconds between probes
+    rpc.socket_keepalive_interval = 5
+
+    ## Probes lost to close the connection
+    rpc.socket_keepalive_count = 2
+
+
+
+
 .. _fastlane:
 
 ------------
@@ -20,6 +52,13 @@ Fastlane订阅
 EMQPLUS企业版专为增加Fastlane订阅功能，大幅提高消息路由效率，非常适合数据采集类的物联网应用:
 
 .. image:: _static/images/fastlane.png
+
+Fastlane订阅使用方式: 主题加 *$fastlane/* 前缀。
+
+Fastlane订阅限制:
+
+1. CleanSession = true
+2. Qos = 0
 
 .. _backends:
 
