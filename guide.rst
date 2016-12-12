@@ -23,9 +23,9 @@ EMQPLUS企业版专为增加Fastlane订阅功能，大幅提高消息路由效�
 
 .. _backends:
 
-------------------------
-Redis存储(Redis Backend)
-------------------------
+-------------
+Redis消息存储
+-------------
 
 配置Redis存储插件
 -----------------
@@ -184,11 +184,8 @@ SUB/UNSUB 事件
 MySQL消息存储
 -------------
 
-MySQL消息存储
--------------
-
 配置MySQL消息存储
-----------------
+-----------------
 
 etc/plugins/emq_backend_mysql.conf:
 
@@ -261,7 +258,7 @@ etc/plugins/emq_backend_mysql.conf:
 +------------------------+----------------------------------+
 
 MySQL数据库
-----------
+-----------
 
 .. code-block:: sql
 
@@ -277,7 +274,7 @@ MySQL数据库
 .. NOTE:: 数据库名称可自定义
 
 MySQL 用户状态表(State Table)
----------------------------------
+-----------------------------
 
 .. code-block:: sql
 
@@ -296,7 +293,7 @@ MySQL 用户状态表(State Table)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 MySQL 用户订阅主题表(Subscription Table)
--------------------------------------------
+----------------------------------------
 
 .. code-block:: sql
 
@@ -313,7 +310,7 @@ MySQL 用户订阅主题表(Subscription Table)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 MySQL 发布消息表(Message Table)
------------------------------------
+-------------------------------
 
 .. code-block:: sql
     
@@ -331,8 +328,8 @@ MySQL 发布消息表(Message Table)
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-MySQL 保留消息表(Retain Message Table)
-------------------------------------------
+MySQL 保留消息表(Retained Message Table)
+----------------------------------------
 
 .. code-block:: sql
     
@@ -350,8 +347,8 @@ MySQL 保留消息表(Retain Message Table)
       UNIQUE KEY `mqtt_retain_key` (`topic`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-MySQL 接收消息ack表(Message Acked Table)
---------------------------------------------
+MySQL 接收消息ACK表(Message Acked Table)
+-----------------------------------------
 
 .. code-block:: sql
     
@@ -391,9 +388,9 @@ MySQL 接收消息ack表(Message Acked Table)
 
 .. _postgre_backend:
 
-----------------------------
-Postgre消息存储(Postgre Backend)
-----------------------------
+---------------
+Postgre消息存储
+---------------
 
 配置PostgreSQL消息存储
 ---------------------
@@ -473,7 +470,7 @@ etc/plugins/emq_backend_pgsql.conf:
 +------------------------+----------------------------------+
 
 PostgreSQL数据库
----------------
+----------------
 
 .. code-block:: bash
 
@@ -694,7 +691,7 @@ MongoDB 用户状态集合(State Collection)
     }
 
 MongoDB 用户订阅主题集合(Subscription Collection)
----------------------------------
+--------------------------------------------------
 
 .. code-block:: javascript
 
@@ -705,7 +702,7 @@ MongoDB 用户订阅主题集合(Subscription Collection)
     }
 
 MongoDB 发布消息集合(Message Collection)
----------------------------------
+-----------------------------------------
 
 .. code-block:: javascript
 
@@ -721,7 +718,7 @@ MongoDB 发布消息集合(Message Collection)
     }
 
 MongoDB 保留消息集合(Retain Message Collection)
----------------------------------
+------------------------------------------------
 
 .. code-block:: javascript
 
