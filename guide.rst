@@ -1,11 +1,27 @@
 
+.. _scalable_rpc:
+
+----------------
+Scalable RPC架构
+----------------
+
+EMQPLUS企业版改进了分布节点间的通信机制，分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点间的消息吞吐与集群稳定性:
+
+.. NOTE:: 虚线为Erlang的分布集群通道，实线为节点间消息数据通道。
+
+.. image:: _static/images/scalable_rpc.png
+
+.. _fastlane:
+
+------------
+Fastlane订阅
+------------
+
+EMQPLUS企业版专为增加Fastlane订阅功能，大幅提高消息路由效率，非常适合数据采集类的物联网应用:
+
+.. image:: _static/images/fastlane.png
+
 .. _backends:
-
-==================
-消息存储(Backends)
-==================
-
-.. _redis_backend:
 
 ------------------------
 Redis存储(Redis Backend)
@@ -751,5 +767,9 @@ MongoDB 接收消息ack集合(Message Acked Collection)
 
     ./bin/emqttd_ctl plugins load emq_backend_mongo
 
+--------------------
+支持与服务(Supports)
+--------------------
 
+EMQPLUS企业版由杭州小莉科技有限公司提供技术支持与服务，详见: https:://emqtt.com/products/emqplus-enterprise。
 

@@ -3,27 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+=====================
 EMQPLUS企业版中文文档
 =====================
 
-简述：基于MQTT消息快速开发物联网、车联网、移动应用最佳平台        
+`EMQPLUS企业版`是基于开源EMQ消息服务器开发设计的商业版本，是基于MQTT协议快速开发物联网、车联网、智能硬件、移动应用的最佳开放平台。
 
-Scalable RPC，Fastlane，Various Backends
+`EMQPLUS企业版`相比开源EMQ消息服务器，支持更稳定的节点集群与更高性能的消息路由，支持消息存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库。
+
+.. TODO:: 企业版本图 EMQ + Backends
 
 Rapid to Markdet and Save Money
 
-TODO: 企业版本图 EMQ + Backends
-
-
-内容:
+文档内容:
 
 .. toctree::
    :maxdepth: 2
 
-   highlights
-   backends
-   
-EMQPLUS企业版本支持:
+   guide
+
+支持与联系:
 
 +------------+--------------------------------+
 | 官网:      | http://emqtt.com               |
@@ -35,7 +34,5 @@ EMQPLUS企业版本支持:
 | 微博:      | http://weibo.com/emqtt         |
 +------------+--------------------------------+
 | Twitter:   | @emqtt                         |
-+------------+--------------------------------+
-| 作者:      | 李枫 <feng@emqtt.io>           |
 +------------+--------------------------------+
 
