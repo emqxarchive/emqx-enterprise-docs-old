@@ -370,7 +370,7 @@ MySQL 接收消息ack表(Message Acked Table)
 
 .. code-block:: bash
 
-    ./bin/emqttd_ctl plugins load emq_backend_mysql
+    ./bin/emqctl plugins load emq_backend_mysql
 
 
 .. _postgre_backend:
@@ -569,7 +569,7 @@ PostgreSQL 接收消息ack表(Message Acked Table)
 
 .. code-block:: bash
 
-    ./bin/emqttd_ctl plugins load emq_backend_pgsql
+    ./bin/emqctl plugins load emq_backend_pgsql
 
 
 .. _mongodb_backend:
@@ -749,7 +749,5 @@ MongoDB 接收消息ack集合(Message Acked Collection)
 
 .. code-block:: bash
 
-    ./bin/emqttd_ctl plugins load emq_backend_mongo
-
-
+    ./bin/emqctl plugins load emq_backend_mongo
 
