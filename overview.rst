@@ -9,7 +9,11 @@
 概述
 ----
 
-*EMQ* 是目前全球市场广泛应用的开源MQTT消息服务器，全球市场(西欧、北美、印度、中国)累积超5000家企业用户，产品环境下承载超2000万线MQTT连接。EMQPLUS企业版是基于 *EMQ* 开发设计的商业服务版本， EMQPLUS企业版支持更稳定的节点集群与更高性能的消息路由，支持消息数据存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库，并由专业团队提供技术支持与咨询服务。EMQPLUS企业版帮助客户快速开发基于MQTT协议的物联网、车联网、智能硬件和移动消息应用。
+*EMQ* 是目前全球市场广泛应用的开源MQTT消息服务器，全球市场(西欧、北美、印度、中国)累积超5000家企业用户，产品环境下承载超2000万线MQTT连接。
+
+EMQPLUS企业版是基于 *EMQ* 开发设计的商业服务版本， EMQPLUS企业版支持更稳定的节点集群与更高性能的消息路由，支持消息数据存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库。
+
+EMQPLUS企业版帮助客户快速开发基于MQTT协议的物联网、车联网、智能硬件和移动消息应用。
 
 .. image:: _static/images/emqplus_enterprise.png
 
