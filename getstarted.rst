@@ -23,11 +23,11 @@
 
 4. 完整物联网协议支持，MQTT、MQTT-SN、CoAP、WebSocket或私有协议支持。
 
----------------
-*EMQPLUS企业版* 
----------------
+-------------
+EMQPLUS企业版
+-------------
 
-*EMQPLUS企业版* R2在 *EMQ* 2.0开源版本消息服务器的基础上，大幅改进了节点集群与消息路由设计，支持消息数据存储与Syslog日志集成:
+EMQPLUS企业版是在EMQ开源版本基础上，大幅改进了节点集群与消息路由设计，支持消息数据存储与Syslog日志集成:
 
 1. Scalable RPC架构: 分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点的消息吞吐与集群稳定性。
 
@@ -80,9 +80,9 @@ MQTT消息发布者(Publisher)只能向特定'名称主题'(不支持通配符)�
 安装启动EMQPLUS企业版
 ---------------------
 
-*EMQPLUS企业版* 支持Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
+EMQPLUS企业版支持Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
 
-*EMQPLUS企业版* 安装包名格式例如: emqplus-enterprise-centos7-r2.zip
+EMQPLUS企业版安装包名格式例如: emqplus-enterprise-centos7-r2.zip
 
 获取程序包可直接解压启动运行，例如CentOS7平台:
 
@@ -109,7 +109,7 @@ MQTT消息发布者(Publisher)只能向特定'名称主题'(不支持通配符)�
 Web管理控制台(Dashboard)
 ------------------------
 
-*EMQPLUS企业版* 服务器启动后，会默认加载Dashboard插件，启动Web管理控制台。用户可通过Web控制台，查看服务器运行状态、统计数据、客户端(Client)、会话(Session)、主题(Topic)、订阅(Subscription)、插件(Plugin)。
+EMQPLUS企业版服务器启动后，会默认加载Dashboard插件，启动Web管理控制台。用户可通过Web控制台，查看服务器运行状态、统计数据、客户端(Client)、会话(Session)、主题(Topic)、订阅(Subscription)、插件(Plugin)。
 
 控制台地址: http://127.0.0.1:18083，默认用户: admin，密码：public
 

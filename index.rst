@@ -7,7 +7,7 @@
 EMQPLUS企业版中文文档
 =====================
 
-*EMQPLUS企业版* R2版本中文产品文档:
+EMQPLUS企业版R2中文产品文档:
 
 .. toctree::
    :maxdepth: 2
