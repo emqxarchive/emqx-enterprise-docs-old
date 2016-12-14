@@ -5,18 +5,17 @@
 安装部署
 ========
 
-*EMQPLUS企业版* R2服务器可跨平台运行在Linux、FreeBSD、Mac OS X或Windows服务器上。
+EMQPLUS企业版R2服务器可跨平台运行在Linux、FreeBSD、Mac OS X或Windows服务器上。
 
 .. NOTE:: 产品部署建议Linux、FreeBSD服务器，不推荐Windows服务器。
 
-----------------------
-*EMQPLUS* R2程序包获取
-----------------------
+---------------------
+EMQPLUS企业版R2程序包
+---------------------
 
-*EMQPLUS* R2消息服务器每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
+EMQPLUS企业版服务器每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
 
-联系EMQ公司获取: http://emqtt.com/about#contacts
-
+联系EMQ公司获取程序包: http://emqtt.com/about#contacts
 
 安装包命名由平台、版本组成，例如: emqplus-enterprise-centos7-r2.zip
 
@@ -168,7 +167,7 @@ Windows平台程序包获取解压后，打开Windows命令行窗口，cd到程�
 Docker镜像安装
 --------------
 
-*EMQPLUS企业* R2 Docker镜像获取:
+EMQPLUS企业版R2 Docker镜像获取:
 
 解压emqplus-enterprise-docker镜像包::
 
@@ -200,7 +199,7 @@ Docker镜像安装
 TCP服务端口占用
 ---------------
 
-*EMQPLUS企业版* R2消息服务器默认占用的TCP端口包括:
+EMQPLUS企业版 R2消息服务器默认占用的TCP端口包括:
 
 +-----------+-----------------------------------+
 | 1883      | MQTT协议端口                      |

@@ -5,7 +5,9 @@
 管理命令
 ========
 
-*EMQPLUS企业版* 提供了'./bin/emqctl'的管理命令行。
+EMQPLUS企业版提供了'./bin/emqctl'的管理命令行。
+
+.. NOTE:: EMQ开源版本管理命令为'./bin/emqttd_ctl'
 
 ----------
 status命令
