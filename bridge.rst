@@ -1,11 +1,11 @@
 
 .. _bridge:
 
-================
-分布桥接(Bridge)
-================
+========
+节点桥接
+========
 
-.. _bridge_emqttd:
+.. _bridge_emq:
 
 -------------
 EMQ节点间桥接
@@ -24,34 +24,34 @@ EMQ节点桥接配置
 
 假设在本机创建两个EMQ节点，并创建一条桥接转发全部传感器(sensor)主题消息:
 
-+---------+---------------------+----------+
-| 目录    | 节点                | MQTT端口 |
-+---------+---------------------+----------+
-| emqttd1 | emqttd1@127.0.0.1   | 1883     |
-+---------+---------------------+----------+
-| emqttd2 | emqttd2@127.0.0.1   | 2883     |
-+---------+---------------------+----------+
++---------+------------------+----------+
+| 目录    | 节点             | MQTT端口 |
++---------+------------------+----------+
+| emqttd1 | emq1@127.0.0.1   | 1883     |
++---------+------------------+----------+
+| emqttd2 | emq2@127.0.0.1   | 2883     |
++---------+------------------+----------+
 
-启动emqttd1, emqttd2节点:
+启动emq1, emq2节点:
 
 .. code-block:: bash
 
     cd emqttd1/ && ./bin/emqttd start
     cd emqttd2/ && ./bin/emqttd start
 
-emqttd1节点上创建到emqttd2桥接:
+emq1节点上创建到emq2桥接:
 
 .. code-block:: bash
 
-    $ ./bin/emqctl bridges start emqttd2@127.0.0.1 sensor/#
+    $ ./bin/emqctl bridges start emq2@127.0.0.1 sensor/#
 
     bridge is started.
 
     $ ./bin/emqctl bridges list
 
-    bridge: emqttd1@127.0.0.1--sensor/#-->emqttd2@127.0.0.1
+    bridge: emq1@127.0.0.1--sensor/#-->emq2@127.0.0.1
 
-测试emqttd1--sensor/#-->emqttd2的桥接:
+测试emq1--sensor/#-->emq2的桥接:
 
 .. code-block:: bash
 
@@ -67,7 +67,7 @@ emqttd1节点上创建到emqttd2桥接:
 
 .. code-block:: bash
 
-    ./bin/emqctl bridges stop emqttd2@127.0.0.1 sensor/#
+    ./bin/emqctl bridges stop emq2@127.0.0.1 sensor/#
 
 .. _bridge_mosquitto:
 
@@ -75,7 +75,7 @@ emqttd1节点上创建到emqttd2桥接:
 mosquitto桥接
 -------------
 
-mosquitto可以普通MQTT连接方式，桥接到emqttd消息服务器::
+mosquitto可以普通MQTT连接方式，桥接到 *EMQ* 消息服务器::
 
                  -------------             -----------------
     Sensor ----> | mosquitto | --Bridge--> |               |

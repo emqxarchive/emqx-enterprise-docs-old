@@ -1,9 +1,9 @@
 
 .. _cluster:
 
-=================
-分布集群(Cluster)
-=================
+========
+分布集群
+========
 
 .. _cluster_erlang:
 
@@ -147,68 +147,68 @@ EMQ 2.0集群配置管理
 
 假设部署两台服务器s1.emqtt.io, s2.emqtt.io上部署集群:
 
-+-------------------------+-----------------+---------------------+
-| 节点名                  | 主机名(FQDN)    |    IP地址           |
-+-------------------------+-----------------+---------------------+
-| emqttd@s1.emqtt.io 或   | s1.emqtt.io     | 192.168.0.10        |
-| emqttd@192.168.0.10     |                 |                     |
-+-------------------------+-----------------+---------------------+
-| emqttd@s2.emqtt.io 或   | s2.emqtt.io     | 192.168.0.20        |
-| emqttd@192.168.0.20     |                 |                     |
-+-------------------------+-----------------+---------------------+
++----------------------+-----------------+---------------------+
+| 节点名               | 主机名(FQDN)    |    IP地址           |
++----------------------+-----------------+---------------------+
+| emq@s1.emqtt.io 或   | s1.emqtt.io     | 192.168.0.10        |
+| emq@192.168.0.10     |                 |                     |
++----------------------+-----------------+---------------------+
+| emq@s2.emqtt.io 或   | s2.emqtt.io     | 192.168.0.20        |
+| emq@192.168.0.20     |                 |                     |
++----------------------+-----------------+---------------------+
 
 .. WARNING:: 节点名格式: Name@Host, Host必须是IP地址或FQDN(主机名.域名)
 
-emqttd@s1.emqtt.io节点设置
---------------------------
+emq@s1.emqtt.io节点设置
+-----------------------
 
 emqttd/etc/emq.conf::
 
-    node.name = emqttd@s1.emqtt.io
+    node.name = emq@s1.emqtt.io
 
     或
 
-    node.name = emqttd@192.168.0.10
+    node.name = emq@192.168.0.10
 
 也可通过环境变量::
 
-    export EMQ_NODE_NAME=emqttd@s1.emqtt.io && ./bin/emqttd start
+    export EMQ_NODE_NAME=emq@s1.emqtt.io && ./bin/emqttd start
 
 .. WARNING:: 节点启动加入集群后，节点名称不能变更。
 
-emqttd@s2.emqtt.io节点设置
---------------------------
+emq@s2.emqtt.io节点设置
+-----------------------
 
 emqttd/etc/emq.conf::
 
-    node.name = emqttd@s2.emqtt.io
+    node.name = emq@s2.emqtt.io
 
     或
 
-    node.name = emqttd@192.168.0.20
+    node.name = emq@192.168.0.20
 
 节点加入集群
 ------------
 
-启动两台节点后，emqttd@s2.emqtt.io上执行::
+启动两台节点后，emq@s2.emqtt.io上执行::
 
-    $ ./bin/emqctl cluster join emqttd@s1.emqtt.io
-
-    Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqttd@s1.emqtt.io','emqttd@s2.emqtt.io']}]
-
-或，emqttd@s1.emqtt.io上执行::
-
-    $ ./bin/emqctl cluster join emqttd@s2.emqtt.io
+    $ ./bin/emqctl cluster join emq@s1.emqtt.io
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqttd@s1.emqtt.io','emqttd@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
+
+或，emq@s1.emqtt.io上执行::
+
+    $ ./bin/emqctl cluster join emq@s2.emqtt.io
+
+    Join the cluster successfully.
+    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
 
 任意节点上查询集群状态::
 
     $ ./bin/emqctl cluster status
 
-    Cluster status: [{running_nodes,['emqttd@s1.emqtt.io','emqttd@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
 
 节点退出集群
 ------------
@@ -219,13 +219,13 @@ emqttd/etc/emq.conf::
 
 2. remove: 从集群删除其他节点
 
-emqttd@s2.emqtt.io主动退出集群::
+emq@s2.emqtt.io主动退出集群::
 
     $ ./bin/emqctl cluster leave
 
-或emqttd@s1.emqtt.io节点上，从集群删除emqttd@s2.emqtt.io节点::
+或emq@s1.emqtt.io节点上，从集群删除emqttd@s2.emqtt.io节点::
 
-    $ ./bin/emqctl cluster remove emqttd@s2.emqtt.io
+    $ ./bin/emqctl cluster remove emq@s2.emqtt.io
 
 .. _cluster_session:
 
@@ -252,13 +252,25 @@ EMQ消息服务器集群模式下，MQTT连接的持久会话(Session)跨节点�
 防火墙设置
 ----------
 
-如果集群节点间存在防火墙，防火墙需要开启4369端口和一个TCP端口段。4369由epmd端口映射服务使用，TCP端口段用于节点间建立连接与通信。
+如果集群节点间存在防火墙，防火墙需要开启4369端口、5369端口和一个TCP端口段。4369由epmd端口映射服务使用，5369用于节点间数据通信，TCP端口段用于节点间集群通信。
 
-防火墙设置后，EMQ 需要配置相同的端口段，emqttd/etc/emq.conf文件::
+默认节点间集群默认需要开启的端口:
+
++--------------+-----------------------+
+| 端口         | 用途                  |
++--------------+-----------------------+
+| 4369         | epmd端口映射服务      | 
++--------------+-----------------------+
+| 5369         | 节点间数据通道        | 
++--------------+-----------------------+
+| 6369         | 节点间集群通道        | 
++--------------+-----------------------+
+
+防火墙设置后，emq.conf需要配置相同的端口段::
 
     ## Distributed node port range
-    node.dist_listen_min = 6000
-    node.dist_listen_max = 6999
+    node.dist_listen_min = 6369
+    node.dist_listen_max = 6369
 
 .. _cluster_netsplit:
 

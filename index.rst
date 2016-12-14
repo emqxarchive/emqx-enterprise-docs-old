@@ -7,30 +7,42 @@
 EMQPLUS企业版中文文档
 =====================
 
-*EMQPLUS企业版* 是基于MQTT协议快速开发物联网、车联网、智能硬件、移动应用的最佳开放平台。
-
-*EMQPLUS企业版* 相比开源版本的EMQ消息服务器，支持更稳定的节点集群与更高性能的消息路由，支持消息数据存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库。
-
-.. image:: _static/images/emqplus_enterprise.png
-
-文档内容:
+*EMQPLUS企业版* R2版本中文产品文档:
 
 .. toctree::
    :maxdepth: 2
 
+   overview
+   getstarted
+   mqtt
+   backends
+   install
+   config
    guide
+   advanced
+   cluster
+   bridge
+   design
+   commands
+   plugins
+   tune
+   supports
 
 支持与联系:
 
 +------------+--------------------------------+
 | 官网:      | http://emqtt.com               |
 +------------+--------------------------------+
-| 项目:      | https://github.com/emqtt       |
+| 电话:      | 400-696-5502                   |
++------------+--------------------------------+
+| 邮箱:      | contact@emqtt.io               |
 +------------+--------------------------------+
 | 微信:      | emqttd                         |
 +------------+--------------------------------+
 | 微博:      | http://weibo.com/emqtt         |
 +------------+--------------------------------+
 | Twitter:   | @emqtt                         |
++------------+--------------------------------+
+| 公司:      | 杭州小莉科技有限公司           |
 +------------+--------------------------------+
 
