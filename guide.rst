@@ -40,9 +40,6 @@ Scalable RPC配置::
     ## Probes lost to close the connection
     rpc.socket_keepalive_count = 2
 
-
-
-
 .. _fastlane:
 
 ------------
@@ -60,7 +57,15 @@ Fastlane订阅限制:
 1. CleanSession = true
 2. Qos = 0
 
-.. _backends:
+----------
+Syslog日志
+----------
+
+EMQPLUS企业版支持输出日志到Syslog，Syslog参数通过etc/emq.conf配置:
+
+
+
+.. _redis_backend:
 
 -------------
 Redis消息存储
