@@ -13,8 +13,6 @@ EMQPLUS企业版中文文档
    :maxdepth: 2
 
    overview
-   getstarted
-   mqtt
    backends
    install
    config
@@ -23,9 +21,10 @@ EMQPLUS企业版中文文档
    cluster
    bridge
    design
-   commands
+   cli
    plugins
    tune
+   mqtt
    supports
 
 支持与联系:

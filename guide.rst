@@ -1,824 +1,921 @@
 
-.. _scalable_rpc:
+.. _guide:
 
-----------------
-Scalable RPC架构
-----------------
+====================
+用户指南(User Guide)
+====================
 
-EMQPLUS企业版改进了分布节点间的通信机制，分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点间的消息吞吐与集群稳定性:
-
-.. NOTE:: 虚线为Erlang的分布集群通道，实线为节点间消息数据通道。
-
-.. image:: _static/images/scalable_rpc.png
-
-Scalable RPC配置::
-
-    ## TCP server port.
-    rpc.tcp_server_port = 5369
-
-    ## Default TCP port for outgoing connections
-    rpc.tcp_client_port = 5369
-
-    ## Client connect timeout
-    rpc.connect_timeout = 5000
-
-    ## Client and Server send timeout
-    rpc.send_timeout = 5000
-
-    ## Authentication timeout
-    rpc.authentication_timeout = 5000
-
-    ## Default receive timeout for call() functions
-    rpc.call_receive_timeout = 15000
-
-    ## Socket keepalive configuration
-    rpc.socket_keepalive_idle = 5
-
-    ## Seconds between probes
-    rpc.socket_keepalive_interval = 5
-
-    ## Probes lost to close the connection
-    rpc.socket_keepalive_count = 2
-
-.. _fastlane:
+.. _authentication:
 
 ------------
-Fastlane订阅
+MQTT认证设置
 ------------
 
-EMQPLUS企业版专为增加Fastlane订阅功能，大幅提高消息路由效率，非常适合数据采集类的物联网应用:
+*EMQ* 消息服务器认证由一系列认证插件(plugin)提供，系统支持按用户名密码、ClientID或匿名认证。
 
-.. image:: _static/images/fastlane.png
+系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
 
-Fastlane订阅使用方式: 主题加 *$fastlane/* 前缀。
+               ----------------           ----------------           ------------
+    Client --> | Username认证 | -ignore-> | ClientID认证 | -ignore-> | 匿名认证 |
+               ----------------           ----------------           ------------
+                      |                         |                         |
+                     \|/                       \|/                       \|/
+                allow | deny              allow | deny              allow | deny
 
-Fastlane订阅限制:
+.. NOTE:: EMQ 2.0消息服务器还提供了MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP认证插件。
 
-1. CleanSession = true
-2. Qos = 0
+------------
+开启匿名认证
+------------
 
-----------
-Syslog日志
-----------
-
-*EMQPLUS企业版* 支持输出日志到Syslog，Syslog参数通过etc/emq.conf配置:
+etc/emq.conf配置启用匿名认证:
 
 .. code-block:: properties
 
-    ## Syslog. Enum: on, off
-    log.syslog = on 
+    ## Allow Anonymous authentication
+    mqtt.allow_anonymous = true
 
-    ##  syslog level. Enum: debug, info, notice, warning, error, critical, alert, emergency
-    log.syslog.level = error
+EMQ 2.0版本提供的认证插件包括:
 
-.. _redis_backend:
++---------------------------+---------------------------+
+| 插件                      | 说明                      |
++===========================+===========================+
+| `emq_auth_clientid`_      | ClientId认证/鉴权插件     |
++---------------------------+---------------------------+
+| `emq_auth_username`_      | 用户名密码认证/鉴权插件   |
++---------------------------+---------------------------+
+| `emq_auth_ldap`_          | LDAP认证/鉴权插件         |
++---------------------------+---------------------------+
+| `emq_auth_http`_          | HTTP认证/鉴权插件         |
++---------------------------+---------------------------+
+| `emq_auth_mysql`_         | MySQL认证/鉴权插件        |
++---------------------------+---------------------------+
+| `emq_auth_pgsql`_         | Postgre认证/鉴权插件      |
++---------------------------+---------------------------+
+| `emq_auth_redis`_         | Redis认证/鉴权插件        |
++---------------------------+---------------------------+
+| `emq_auth_mongo`_         | MongoDB认证/鉴权插件      |
++---------------------------+---------------------------+
 
--------------
-Redis消息存储
--------------
-
-配置Redis存储插件
------------------
-
-配置文件: etc/plugins/emq_backend_redis.conf
-
-.. code-block:: properties
-
-    ## Redis Server
-    backend.redis.pool1.server = 127.0.0.1:6379
-
-    ## Redis Pool Size 
-    backend.redis.pool1.pool_size = 8
-
-    ## Redis database 
-    backend.redis.pool1.database = 1
-
-    ## Redis subscribe channel
-    backend.redis.pool1.channel = mqtt_channel
-
-    ## Client Connected Record Rule
-    backend.redis.rule.1 = {"action": "on_client_connected",   "pool": "pool1"}
-
-    ## Subscribe Lookup Record Rule
-    backend.redis.rule.2 = {"action": "on_subscribe_lookup",   "pool": "pool1"}
-
-    ## Client DisConnected Record Rule
-    backend.redis.rule.3 = {"action": "on_client_disconnected", "pool": "pool1"}
-
-    ## Lookup Unread Message Rule
-    backend.redis.rule.4 = {"action": "on_message_fetch",      "filter": "#", "pool": "pool1"}
-
-    ## Lookup Retain Message Rule
-    backend.redis.rule.5 = {"action": "on_retain_lookup",      "filter": "#", "pool": "pool1"}
-
-    ## Store Publish Message Rule, QOS > 0
-    backend.redis.rule.6 = {"action": "on_message_publish",    "filter": "#", "pool": "pool1"}
-
-    ## Store Retain Message Rule
-    backend.redis.rule.7 = {"action": "on_message_retain",     "filter": "#", "pool": "pool1"}
-
-    ## Delete Retain Message Rule
-    backend.redis.rule.8 = {"action": "on_retain_delete",      "filter": "#", "pool": "pool1"}
-
-    ## Store Ack Rule
-    backend.redis.rule.9 = {"action": "on_message_acked",      "filter": "#", "pool": "pool1"}
-
-加载Redis存储插件
------------------
-
-.. code-block::
-
-    ./bin/emqctl plugins load emq_backend_redis
-
-mqtt_state - 设备在线状态
--------------------------
-
-.. code-block::
-
-    hmset
-    key = mqtt:state:${clientid} 
-    value = {state:int, online_at:timestamp, offline_at:timestamp}
-
-    hset
-    key = mqtt:client:${node}
-    field = clientid
-    value = ts
-
-mqtt_retain - Retain消息
-------------------------
-
-.. code-block::
-
-    hmset
-    key = mqtt:retain:${topic}
-    value = {id: string, from: string, qos: int, topic: string, retain: int, payload: string, ts: timestamp}
-
-mqtt_message - 消息存储
------------------------
-
-.. code-block::
-
-    hmset
-    key = mqtt:message:${msgid}
-    value = {id: string, from: string, qos: int, topic: string, retain: int, payload: string, ts: timestamp}
-
-    zadd
-    key = mqtt:message:${topic}
-    field = 1
-    value = msgid
-
-    rpush
-    key = mqtt:message:${clientid}
-    value = msgid
-
-mqtt_acked - 消息确认
----------------------
-
-.. code-block::
-
-    set
-    key = mqtt:acked:${clientid}:${topic}
-    value = msgid
-
-mqtt_subscription - 订阅关系
-----------------------------
-
-.. code-block::
-
-    hset
-    key = mqtt:subscription:${clientid}
-    field = topic
-    value =  qos
-
-SUB/UNSUB 事件
+--------------
+用户名密码认证
 --------------
 
-.. code-block::
-    PUBLISH
-    channel = "mqtt_channel"
-    message = {type: string , topic: string, clientid: string, qos: int} 
-    \*type: [subscribe/unsubscribe]
+基于MQTT登录用户名(username)、密码(password)认证。
 
-示例
-----
+etc/plugins/emq_auth_username.conf中配置默认用户:
 
-用户test分别订阅主题test_topic0 test_topic1 test_topic2::
+.. code-block:: properties
 
-    HSET "mqtt:subscription:test" "test_topic0" 0
-    HSET "mqtt:subscription:test" "test_topic1" 1
-    HSET "mqtt:subscription:test" "test_topic2" 2
+    auth.username.$name=$password
 
-查询用户状态::
+启用`emq_auth_username`_插件:
 
-    HGETALL "mqtt:state:test"
+.. code-block:: bash
 
-查询发布的消息::
+    ./bin/emqttd_ctl plugins load emq_auth_username
 
-    LRANGE mqtt:message:${clientid} 0 -1
+使用'./bin/emqttd_ctl users'命令添加用户::
 
-查询retain消息::
+   $ ./bin/emqttd_ctl users add <Username> <Password>
 
-    HGETALL "mqtt:retain:test_topic0"
+------------
+ClientId认证
+------------
 
-用户test订阅主题::
+基于MQTT客户端ID(ClientId)认证。
 
-    PUBLISH "mqtt_channel" "{\"type\": \"subscribe\", \"topic\": \"test_topic0\", \"clientid\": \"test\", \"qos\": \"0\"}"
+etc/plugins/emq_auth_clientid.conf:
 
-用户test取消订阅主题::
+.. code-block:: properties
 
-    PUBLISH "mqtt_channel" "{\"type\": \"unsubscribe\", \"topic\": \"test_topic0\", \"clientid\": \"test\"}"
+    auth.clientid.$id=$password
 
-.. _mysql_backend:
+启用`emq_auth_clientid`_插件:
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl plugins load emq_auth_clientid
+
+------------
+LDAP插件认证
+------------
+
+etc/plugins/emq_auth_ldap.conf配置LDAP参数:
+
+.. code-block:: properties
+
+    auth.ldap.servers = 127.0.0.1
+
+    auth.ldap.port = 389
+
+    auth.ldap.timeout = 30
+
+    auth.ldap.user_dn = uid=%u,ou=People,dc=example,dc=com
+
+    auth.ldap.ssl = false
+
+启用LDAP认证插件::
+
+    ./bin/emqttd_ctl plugins load emq_auth_ldap
+
+------------
+HTTP插件认证
+------------
+
+etc/plugins/emq_auth_http.conf配置'super_req', 'auth_req':
+
+.. code-block:: properties
+
+    ## Variables: %u = username, %c = clientid, %a = ipaddress, %P = password, %t = topic
+
+    auth.http.auth_req = http://127.0.0.1:8080/mqtt/auth
+    auth.http.auth_req.method = post
+    auth.http.auth_req.params = clientid=%c,username=%u,password=%P
+
+    auth.http.super_req = http://127.0.0.1:8080/mqtt/superuser
+    auth.http.super_req.method = post
+    auth.http.super_req.params = clientid=%c,username=%u
+
+启用HTTP认证插件::
+
+    ./bin/emqttd_ctl plugins load emq_auth_http
 
 -------------
-MySQL消息存储
+MySQL插件认证
 -------------
 
-配置MySQL消息存储
------------------
+通过MySQL数据库表认证，可创建如下的'mqtt_user'表:
 
-etc/plugins/emq_backend_mysql.conf:
+.. code-block:: sql
+
+    CREATE TABLE `mqtt_user` (
+      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+      `username` varchar(100) DEFAULT NULL,
+      `password` varchar(100) DEFAULT NULL,
+      `salt` varchar(20) DEFAULT NULL,
+      `is_superuser` tinyint(1) DEFAULT 0,
+      `created` datetime DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `mqtt_username` (`username`)
+    ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+etc/plugins/emq_auth_mysql.conf配置'super_query', 'auth_query', 'password_hash':
 
 .. code-block:: properties
 
     ## Mysql Server
-    backend.mysql.pool1.server = 127.0.0.1:3306
+    auth.mysql.server = 127.0.0.1:3306
 
     ## Mysql Pool Size
-    backend.mysql.pool1.pool_size = 8
+    auth.mysql.pool = 8
 
     ## Mysql Username
-    backend.mysql.pool1.user = root
+    ## auth.mysql.username = 
 
     ## Mysql Password
-    backend.mysql.pool1.password = public
+    ## auth.mysql.password = 
 
     ## Mysql Database
-    backend.mysql.pool1.database = mqtt
+    auth.mysql.database = mqtt
 
-    ## Client Connected Record Rule
-    backend.mysql.rule.1 = {"action": "on_client_connected",   "pool": "pool1"}
+    ## Variables: %u = username, %c = clientid
 
-    ## Subscribe Lookup Record Rule
-    backend.mysql.rule.2 = {"action": "on_subscribe_lookup",   "pool": "pool1"}
+    ## Authentication Query: select password only
+    auth.mysql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
-    ## Client DisConnected Record Rule
-    backend.mysql.rule.3 = {"action": "on_client_disconnected", "pool": "pool1"}
+    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    auth.mysql.password_hash = sha256
 
-    ## Lookup Unread Message Rule
-    backend.mysql.rule.4 = {"action": "on_message_fetch",      "filter": "#", "pool": "pool1"}
+    ## %% Superuser Query
+    auth.mysql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
 
-    ## Lookup Retain Message Rule
-    backend.mysql.rule.5 = {"action": "on_retain_lookup",      "filter": "#", "pool": "pool1"}
+.. NOTE:: 如果系统已有MQTT认证表，可通过配置'auth_query'查询语句集成。
 
-    ## Store Publish Message Rule, QOS > 0
-    backend.mysql.rule.6 = {"action": "on_message_publish",    "filter": "#", "pool": "pool1"}
+启用MySQL认证插件::
 
-    ## Store Retain Message Rule
-    backend.mysql.rule.7 = {"action": "on_message_retain",     "filter": "#", "pool": "pool1"}
+    ./bin/emqttd_ctl plugins load emq_auth_mysql
 
-    ## Delete Retain Message Rule
-    backend.mysql.rule.8 = {"action": "on_retain_delete",      "filter": "#", "pool": "pool1"}
+---------------
+Postgre插件认证
+---------------
 
-    ## Store Ack Rule
-    backend.mysql.rule.9 = {"action": "on_message_acked",      "filter": "#", "pool": "pool1"}
+通过PostgreSQL数据库表认证，可创建如下的'mqtt_user'表:
 
-*backend* 消息存储规则包括:
+.. code-block:: sql 
 
-+------------------------+----------------------------------+
-| action                 | 说明                             |
-+========================+==================================+
-| on_client_connected    | 存储客户端在线状态               |
-+------------------------+----------------------------------+
-| on_subscribe_lookup    | 订阅主题                         |
-+------------------------+----------------------------------+
-| on_client_disconnected | 存储客户端离线状态               |
-+------------------------+----------------------------------+
-| on_message_fetch       | 获取离线消息                     |
-+------------------------+----------------------------------+
-| on_retain_lookup       | 获取retain消息                   |
-+------------------------+----------------------------------+
-| on_message_publish     | 存储发布消息                     |
-+------------------------+----------------------------------+
-| on_message_retain      | 存储retain消息                   |
-+------------------------+----------------------------------+
-| on_retain_delete       | 删除retain消息                   |
-+------------------------+----------------------------------+
-| on_message_acked       | 存储ACK消息                      |
-+------------------------+----------------------------------+
+    CREATE TABLE mqtt_user (
+      id SERIAL primary key,
+      is_superuser boolean,
+      username character varying(100),
+      password character varying(100),
+      salt character varying(40)
+    );
 
-MySQL数据库
------------
+etc/plugins/emq_auth_pgsql.conf配置'auth_query'、'password_hash':
 
-.. code-block:: sql
+.. code-block:: properties
 
-    create database mqtt;
+    ## Postgre Server
+    auth.pgsql.server = 127.0.0.1:5432
 
-导入MySQL表结构
---------------
+    auth.pgsql.pool = 8
+
+    auth.pgsql.username = root
+
+    #auth.pgsql.password = 
+
+    auth.pgsql.database = mqtt
+
+    auth.pgsql.encoding = utf8
+
+    auth.pgsql.ssl = false
+
+    ## Variables: %u = username, %c = clientid, %a = ipaddress
+
+    ## Authentication Query: select password only
+    auth.pgsql.auth_query = select password from mqtt_user where username = '%u' limit 1
+
+    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    auth.pgsql.password_hash = sha256
+
+    ## sha256 with salt prefix
+    ## auth.pgsql.password_hash = salt sha256
+
+    ## sha256 with salt suffix
+    ## auth.pgsql.password_hash = sha256 salt
+
+    ## Superuser Query
+    auth.pgsql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
+
+启用Postgre认证插件:
 
 .. code-block:: bash
 
-    mysql -u root -p mqtt < etc/sql/emq_backend_mysql.sql
+    ./bin/emqttd_ctl plugins load emq_auth_pgsql
 
-.. NOTE:: 数据库名称可自定义
+-------------
+Redis插件认证
+-------------
 
-MySQL 用户状态表(State Table)
------------------------------
+Redis认证。MQTT用户记录存储在Redis Hash, 键值: "mqtt_user:<Username>"
+
+etc/plugins/emq_auth_redis.conf设置'super_cmd'、'auth_cmd'、'password_hash':
+
+.. code-block:: properties
+
+    ## Redis Server
+    auth.redis.server = 127.0.0.1:6379
+
+    ## Redis Pool Size
+    auth.redis.pool = 8
+
+    ## Redis Database
+    auth.redis.database = 0
+
+    ## Redis Password
+    ## auth.redis.password =
+
+    ## Variables: %u = username, %c = clientid
+
+    ## Authentication Query Command
+    auth.redis.auth_cmd = HGET mqtt_user:%u password
+
+    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    auth.redis.password_hash = sha256
+
+    ## Superuser Query Command
+    auth.redis.super_cmd = HGET mqtt_user:%u is_superuser
+
+启用Redis认证插件:
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl plugins load emq_auth_redis
+
+---------------
+MongoDB插件认证
+---------------
+
+按MongoDB用户集合认证，例如创建'mqtt_user'集合::
+
+    {
+        username: "user",
+        password: "password hash",
+        is_superuser: boolean (true, false),
+        created: "datetime"
+    }
+
+etc/plugins/emq_auth_mongo.conf设置'super_query'、'auth_query':
+
+.. code-block:: properties
+
+    ## Mongo Server
+    auth.mongo.server = 127.0.0.1:27017
+
+    ## Mongo Pool Size
+    auth.mongo.pool = 8
+
+    ## Mongo User
+    ## auth.mongo.user = 
+
+    ## Mongo Password
+    ## auth.mongo.password = 
+
+    ## Mongo Database
+    auth.mongo.database = mqtt
+
+    ## auth_query
+    auth.mongo.auth_query.collection = mqtt_user
+
+    auth.mongo.auth_query.password_field = password
+
+    auth.mongo.auth_query.password_hash = sha256
+
+    auth.mongo.auth_query.selector = username=%u
+
+    ## super_query
+    auth.mongo.super_query.collection = mqtt_user
+
+    auth.mongo.super_query.super_field = is_superuser
+
+    auth.mongo.super_query.selector = username=%u
+
+启用MongoDB认证插件:
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl plugins load emq_auth_mongo
+
+.. _acl:
+
+-------------
+访问控制(ACL)
+-------------
+
+*EMQ* 消息服务器通过ACL(Access Control List)实现MQTT客户端访问控制。
+
+ACL访问控制规则定义::
+
+    允许(Allow)|拒绝(Deny) 谁(Who) 订阅(Subscribe)|发布(Publish) 主题列表(Topics)
+
+MQTT客户端发起订阅/发布请求时，EMQ消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止::
+
+              ---------              ---------              ---------
+    Client -> | Rule1 | --nomatch--> | Rule2 | --nomatch--> | Rule3 | --> Default
+              ---------              ---------              ---------
+                  |                      |                      |
+                match                  match                  match
+                 \|/                    \|/                    \|/
+            allow | deny           allow | deny           allow | deny
+
+----------------
+默认访问控制设置
+----------------
+
+*EMQ* 消息服务器默认访问控制，在etc/emq.conf中设置:
+
+.. code-block:: properties
+
+    ## Default ACL File
+    mqtt.acl_file = etc/acl.conf
+
+ACL规则定义在etc/acl.conf，EMQ启动时加载到内存:
+
+.. code-block:: erlang
+
+    %% Allow 'dashboard' to subscribe '$SYS/#'
+    {allow, {user, "dashboard"}, subscribe, ["$SYS/#"]}.
+
+    %% Allow clients from localhost to subscribe any topics
+    {allow, {ipaddr, "127.0.0.1"}, pubsub, ["$SYS/#", "#"]}.
+
+    %% Deny clients to subscribe '$SYS#' and '#'
+    {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
+
+    %% Allow all by default
+    {allow, all}.
+
+----------------
+HTTP插件访问控制
+----------------
+
+HTTP API实现访问控制: https://github.com/emqtt/emq_auth_http
+
+配置etc/plugins/emq_auth_http.conf, 启用HTTP认证插件后:
+
+.. code-block:: properties
+
+    ## 'access' parameter: sub = 1, pub = 2
+    auth.http.acl_req = http://127.0.0.1:8080/mqtt/acl
+    auth.http.acl_req.method = get
+    auth.http.acl_req.params = access=%A,username=%u,clientid=%c,ipaddr=%a,topic=%t
+
+    auth.http.acl_nomatch = deny
+
+-----------------
+MySQL插件访问控制
+-----------------
+
+MySQL插件访问控制，通过mqtt_acl表定义ACL规则:
 
 .. code-block:: sql
 
-    DROP TABLE IF EXISTS `mqtt_state`;
-    CREATE TABLE `mqtt_state` (
+    CREATE TABLE `mqtt_acl` (
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-      `clientid` varchar(64) DEFAULT NULL,
-      `state` varchar(3) DEFAULT NULL,
-      `node` varchar(100) DEFAULT NULL,
-      `online_at` datetime DEFAULT NULL,
-      `offline_at` datetime DEFAULT NULL,
-      `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (`id`),
-      KEY `mqtt_state_idx` (`clientid`),
-      UNIQUE KEY `mqtt_state_key` (`clientid`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-MySQL 用户订阅主题表(Subscription Table)
-----------------------------------------
-
-.. code-block:: sql
-
-    DROP TABLE IF EXISTS `mqtt_subscription`;
-    CREATE TABLE `mqtt_subscription` (
-      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-      `clientid` varchar(64) DEFAULT NULL,
-      `topic` varchar(256) DEFAULT NULL,
-      `qos` int(3) DEFAULT NULL,
-      `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (`id`),
-      KEY `mqtt_subscription_idx` (`clientid`,`topic`(255),`qos`),
-      UNIQUE KEY `mqtt_subscription_key` (`clientid`,`topic`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-MySQL 发布消息表(Message Table)
--------------------------------
-
-.. code-block:: sql
-    
-    DROP TABLE IF EXISTS `mqtt_message`;
-    CREATE TABLE `mqtt_message` (
-      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-      `msgid` varchar(100) DEFAULT NULL,
-      `topic` varchar(1024) NOT NULL,
-      `sender` varchar(1024) DEFAULT NULL,
-      `node` varchar(60) DEFAULT NULL,
-      `qos` int(11) NOT NULL DEFAULT '0',
-      `retain` tinyint(2) DEFAULT NULL,
-      `payload` blob,
-      `arrived` datetime NOT NULL,
+      `allow` int(1) DEFAULT NULL COMMENT '0: deny, 1: allow',
+      `ipaddr` varchar(60) DEFAULT NULL COMMENT 'IpAddress',
+      `username` varchar(100) DEFAULT NULL COMMENT 'Username',
+      `clientid` varchar(100) DEFAULT NULL COMMENT 'ClientId',
+      `access` int(2) NOT NULL COMMENT '1: subscribe, 2: publish, 3: pubsub',
+      `topic` varchar(100) NOT NULL DEFAULT '' COMMENT 'Topic Filter',
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-MySQL 保留消息表(Retained Message Table)
-----------------------------------------
+    INSERT INTO mqtt_acl (id, allow, ipaddr, username, clientid, access, topic)
+    VALUES
+        (1,1,NULL,'$all',NULL,2,'#'),
+        (2,0,NULL,'$all',NULL,1,'$SYS/#'),
+        (3,0,NULL,'$all',NULL,1,'eq #'),
+        (5,1,'127.0.0.1',NULL,NULL,2,'$SYS/#'),
+        (6,1,'127.0.0.1',NULL,NULL,2,'#'),
+        (7,1,NULL,'dashboard',NULL,1,'$SYS/#');
 
-.. code-block:: sql
-    
-    DROP TABLE IF EXISTS `mqtt_retain`;
-    CREATE TABLE `mqtt_retain` (
-      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-      `topic` varchar(200) DEFAULT NULL,
-      `msgid` varchar(60) DEFAULT NULL,
-      `sender` varchar(100) DEFAULT NULL,
-      `node` varchar(100) DEFAULT NULL,
-      `qos` int(2) DEFAULT NULL,
-      `payload` blob,
-      `arrived` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (`id`),
-      UNIQUE KEY `mqtt_retain_key` (`topic`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-MySQL 接收消息ACK表(Message Acked Table)
------------------------------------------
-
-.. code-block:: sql
-    
-    DROP TABLE IF EXISTS `mqtt_acked`;
-    CREATE TABLE `mqtt_acked` (
-      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-      `clientid` varchar(200) DEFAULT NULL,
-      `topic` varchar(200) DEFAULT NULL,
-      `mid` int(200) DEFAULT NULL,
-      `created` timestamp NULL DEFAULT NULL,
-      PRIMARY KEY (`id`),
-      UNIQUE KEY `mqtt_acked_key` (`clientid`,`topic`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-示例::
-
-    用户test分别订阅主题test_topic0 test_topic1 test_topic2
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic0", 0);
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic1", 1);
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic2", 2);
-
-    查询用户状态
-    select * from mqtt_state where clientid = "test";
-
-    查询发布的消息
-    select * from mqtt_message where sender = "test";
-
-    查询retain消息
-    select * from mqtt_retain where topic = "test_topic0";
-
-启用MySQL消息存储:
-
-.. code-block:: bash
-
-    ./bin/emqctl plugins load emq_backend_mysql
-
-
-.. _postgre_backend:
-
----------------
-Postgre消息存储
----------------
-
-配置PostgreSQL消息存储
----------------------
-
-etc/plugins/emq_backend_pgsql.conf:
+etc/plugins/emq_auth_mysql.conf配置'acl_query'与'acl_nomatch':
 
 .. code-block:: properties
 
-    ## Pgsql Server
-    backend.pgsql.pool1.server = 127.0.0.1:5432
+    ## ACL Query Command
+    auth.mysql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
 
-    ## Pgsql Pool Size
-    backend.pgsql.pool1.pool_size = 8
+    ## ACL nomatch
+    auth.mysql.acl_nomatch = deny
 
-    ## Pgsql Username
-    backend.pgsql.pool1.username = root
-
-    ## Pgsql Password
-    backend.pgsql.pool1.password = public
-
-    ## Pgsql Database
-    backend.pgsql.pool1.database = mqtt
-
-    ## Pgsql Ssl
-    backend.pgsql.pool1.ssl = false  
-
-    ## Client Connected Record Rule
-    backend.pgsql.rule.1 = {"action": "on_client_connected",   "pool": "pool1"}
-
-    ## Subscribe Lookup Record Rule
-    backend.pgsql.rule.2 = {"action": "on_subscribe_lookup",   "pool": "pool1"}
-
-    ## Client DisConnected Record Rule
-    backend.pgsql.rule.3 = {"action": "on_client_disconnected", "pool": "pool1"}
-
-    ## Lookup Unread Message Rule
-    backend.pgsql.rule.4 = {"action": "on_message_fetch",      "filter": "#", "pool": "pool1"}
-
-    ## Lookup Retain Message Rule
-    backend.pgsql.rule.5 = {"action": "on_retain_lookup",      "filter": "#", "pool": "pool1"}
-
-    ## Store Publish Message Rule, QOS > 0
-    backend.pgsql.rule.6 = {"action": "on_message_publish",    "filter": "#", "pool": "pool1"}
-
-    ## Store Retain Message Rule
-    backend.pgsql.rule.7 = {"action": "on_message_retain",     "filter": "#", "pool": "pool1"}
-
-    ## Delete Retain Message Rule
-    backend.pgsql.rule.8 = {"action": "on_retain_delete",      "filter": "#", "pool": "pool1"}
-
-    ## Store Ack Rule
-    backend.pgsql.rule.9 = {"action": "on_message_acked",      "filter": "#", "pool": "pool1"}
-
-
-*backend* 消息存储规则包括:
-
-+------------------------+----------------------------------+
-| action                 | 说明                             |
-+========================+==================================+
-| on_client_connected    | 存储客户端在线状态               |
-+------------------------+----------------------------------+
-| on_subscribe_lookup    | 订阅主题                         |
-+------------------------+----------------------------------+
-| on_client_disconnected | 存储客户端离线状态               |
-+------------------------+----------------------------------+
-| on_message_fetch       | 获取离线消息                     |
-+------------------------+----------------------------------+
-| on_retain_lookup       | 获取retain消息                   |
-+------------------------+----------------------------------+
-| on_message_publish     | 存储发布消息                     |
-+------------------------+----------------------------------+
-| on_message_retain      | 存储retain消息                   |
-+------------------------+----------------------------------+
-| on_retain_delete       | 删除retain消息                   |
-+------------------------+----------------------------------+
-| on_message_acked       | 存储ACK消息                      |
-+------------------------+----------------------------------+
-
-PostgreSQL数据库
-----------------
-
-.. code-block:: bash
-
-    createdb mqtt -E UTF8 -e
-
-导入PostgreSQL表结构
+-------------------
+Postgre插件访问控制
 -------------------
 
-.. code-block:: sql
-
-   \i etc/sql/emq_backend_pgsql.sql
-
-.. NOTE:: 数据库名称可自定义
-
-PostgreSQL 用户状态表(State Table)
---------------------------------------
+PostgreSQL插件访问控制，通过mqtt_acl表定义ACL规则:
 
 .. code-block:: sql
 
-    CREATE TABLE mqtt_state(
+    CREATE TABLE mqtt_acl (
       id SERIAL primary key,
+      allow integer,
+      ipaddr character varying(60),
+      username character varying(100),
       clientid character varying(100),
-      state integer,
-      node character varying(100),
-      online_at timestamp ,
-      offline_at timestamp,
-      created timestamp without time zone,
-      UNIQUE (clientid)
-    );  
-
-PostgreSQL 用户订阅主题表(Subscription Table)
-------------------------------------------------
-
-.. code-block:: sql
-    
-    CREATE TABLE mqtt_subscription(
-      id SERIAL primary key,
-      clientid character varying(100),
-      topic character varying(200),
-      qos integer,
-      created timestamp without time zone,
-      UNIQUE (clientid, topic)
+      access  integer,
+      topic character varying(100)
     );
 
-PostgreSQL 发布消息表(Message Table)
-----------------------------------------
+    INSERT INTO mqtt_acl (id, allow, ipaddr, username, clientid, access, topic)
+    VALUES
+        (1,1,NULL,'$all',NULL,2,'#'),
+        (2,0,NULL,'$all',NULL,1,'$SYS/#'),
+        (3,0,NULL,'$all',NULL,1,'eq #'),
+        (5,1,'127.0.0.1',NULL,NULL,2,'$SYS/#'),
+        (6,1,'127.0.0.1',NULL,NULL,2,'#'),
+        (7,1,NULL,'dashboard',NULL,1,'$SYS/#');
 
-.. code-block:: sql
-    
-    CREATE TABLE mqtt_message (
-      id SERIAL primary key,
-      msgid character varying(60),
-      sender character varying(100),
-      topic character varying(200),
-      qos integer,
-      retain integer,
-      payload text,
-      arrived timestamp without time zone
-    );
-
-
-PostgreSQL 保留消息表(Retain Message Table)
------------------------------------------------
-
-.. code-block:: sql
-    
-    CREATE TABLE mqtt_retain(
-      id SERIAL primary key,
-      topic character varying(200),
-      msgid character varying(60),
-      sender character varying(100),
-      qos integer,
-      payload text,
-      arrived timestamp without time zone,
-      UNIQUE (topic)
-    );
-
-PostgreSQL 接收消息ack表(Message Acked Table)
--------------------------------------------------
-
-.. code-block:: sql
-    
-    CREATE TABLE mqtt_acked (
-      id SERIAL primary key,
-      clientid character varying(100),
-      topic character varying(100),
-      mid integer,
-      created timestamp without time zone,
-      UNIQUE (clientid, topic)
-    );
-
-示例::
-
-    用户test分别订阅主题test_topic0 test_topic1 test_topic2
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic0", 0);
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic1", 1);
-    insert into mqtt_subscription(clientid, topic, qos) values("test", "test_topic2", 2);
-
-    查询用户状态
-    select * from mqtt_state where clientid = "test";
-
-    查询发布的消息
-    select * from mqtt_message where sender = "test";
-
-    查询retain消息
-    select * from mqtt_retain where topic = "test_topic0";
-
-启用PostgreSQL消息存储:
-
-.. code-block:: bash
-
-    ./bin/emqctl plugins load emq_backend_pgsql
-
-
-.. _mongodb_backend:
-
-----------------------------
-MongoDB存储(MongoDB Backend)
-----------------------------
-
-配置MongoDB消息存储
------------------------
-
-etc/plugins/emq_backend_mongo.conf:
+etc/plugins/emq_auth_pgsql.conf设置'acl_query'与'acl_nomatch':
 
 .. code-block:: properties
 
-    ## MongoDB Server
-    backend.mongo.pool1.server = 127.0.0.1:27017
+    ## ACL Query. Comment this query, the acl will be disabled.
+    auth.pgsql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
 
-    ## MongoDB Pool Size
-    backend.mongo.pool1.pool_size = 8
+    ## If no rules matched, return...
+    auth.pgsql.acl_nomatch = deny
 
-    ## MongoDB Database
-    backend.mongo.pool1.database = mqtt
+-----------------
+Redis插件访问控制
+-----------------
 
-    ## Client Connected Record Rule
-    backend.mongo.rule.1 = {"action": "on_client_connected",   "pool": "pool1"}
+Redis Hash存储一个MQTT客户端的访问控制规则::
 
-    ## Subscribe Lookup Record Rule
-    backend.mongo.rule.2 = {"action": "on_subscribe_lookup",   "pool": "pool1"}
+    HSET mqtt_acl:<username> topic1 1
+    HSET mqtt_acl:<username> topic2 2
+    HSET mqtt_acl:<username> topic3 3
 
-    ## Client DisConnected Record Rule
-    backend.mongo.rule.3 = {"action": "on_client_disconnected", "pool": "pool1"}
+etc/plugins/emq_auth_redis.conf配置'acl_cmd'与'acl_nomatch':
 
-    ## Lookup Unread Message Rule
-    backend.mongo.rule.2 = {"action": "on_message_fetch",      "filter": "#", "pool": "pool1"}
+.. code-block:: properties
 
-    ## Lookup Retain Message Rule
-    backend.mongo.rule.3 = {"action": "on_retain_lookup",      "filter": "#", "pool": "pool1"}
+    ## ACL Query Command
+    auth.redis.acl_cmd = HGETALL mqtt_acl:%u
 
-    ## Store Publish Message Rule, QOS > 0
-    backend.mongo.rule.4 = {"action": "on_message_publish",    "filter": "#", "pool": "pool1"}
+    ## ACL nomatch
+    auth.redis.acl_nomatch = deny
 
-    ## Store Retain Message Rule
-    backend.mongo.rule.5 = {"action": "on_message_retain",     "filter": "#", "pool": "pool1"}
+-------------------
+MongoDB插件访问控制
+-------------------
 
-    ## Delete Retain Message Rule
-    backend.mongo.rule.6 = {"action": "on_retain_delete",      "filter": "#", "pool": "pool1"}
-
-    ## Store Ack Rule
-    backend.mongo.rule.7 = {"action": "on_message_acked",      "filter": "#", "pool": "pool1"}
-
-*backend* 消息存储规则包括:
-
-+------------------------+----------------------------------+
-| action                 | 说明                             |
-+========================+==================================+
-| on_client_connected    | 存储客户端在线状态               |
-+------------------------+----------------------------------+
-| on_subscribe_lookup    | 订阅主题                         |
-+------------------------+----------------------------------+
-| on_client_disconnected | 存储客户端离线状态               |
-+------------------------+----------------------------------+
-| on_message_fetch       | 获取离线消息                     |
-+------------------------+----------------------------------+
-| on_retain_lookup       | 获取retain消息                   |
-+------------------------+----------------------------------+
-| on_message_publish     | 存储发布消息                     |
-+------------------------+----------------------------------+
-| on_message_retain      | 存储retain消息                   |
-+------------------------+----------------------------------+
-| on_retain_delete       | 删除retain消息                   |
-+------------------------+----------------------------------+
-| on_message_acked       | 存储ACK消息                      |
-+------------------------+----------------------------------+
-
-MongoDB数据库
--------------
-
-.. code-block:: mongodb
-
-    use mqtt
-    db.createCollection("mqtt_state")
-    db.createCollection("mqtt_subscription")
-    db.createCollection("mqtt_message")
-    db.createCollection("mqtt_retain")
-    db.createCollection("mqtt_acked")
-
-    db.mqtt_state.ensureIndex({clientid:1, node:2})
-    db.mqtt_subscription.ensureIndex({clientid:1})
-    db.mqtt_message.ensureIndex({sender:1, topic:2})
-    db.mqtt_retain.ensureIndex({topic:1})
-
-.. NOTE:: 数据库名称可自定义
-
-MongoDB 用户状态集合(State Collection)
----------------------------------
-
-.. code-block:: javascript
+MongoDB数据库创建'mqtt_acl'集合::
 
     {
-        clientid: string,
-        state: 0,1, //0离线 1在线
-        node: string,
-        online_at: timestamp,
-        offline_at: timestamp
+        username: "username",
+        clientid: "clientid",
+        publish: ["topic1", "topic2", ...],
+        subscribe: ["subtop1", "subtop2", ...],
+        pubsub: ["topic/#", "topic1", ...]
     }
 
-MongoDB 用户订阅主题集合(Subscription Collection)
---------------------------------------------------
+'mqtt_acl'集合插入数据，例如::
 
-.. code-block:: javascript
+    db.mqtt_acl.insert({username: "test", publish: ["t/1", "t/2"], subscribe: ["user/%u", "client/%c"]})
+    db.mqtt_acl.insert({username: "admin", pubsub: ["#"]})
 
-    {
-        clientid: string,
-        topic: string,
-        qos: 0,1,2
-    }
+etc/plugins/emq_auth_mongo.conf配置'acl_query'与'acl_nomatch':
 
-MongoDB 发布消息集合(Message Collection)
------------------------------------------
+.. code-block:: properties
 
-.. code-block:: javascript
+    ## acl_query
+    auth.mongo.acl_query.collection = mqtt_user
 
-    {
-        _id: int,
-        topic: string,
-        msgid: string, 
-        sender: string, 
-        qos: 0,1,2, 
-        retain: boolean (true, false),
-        payload: string,
-        arrived: timestamp
-    }
+    auth.mongo.acl_query.selector = username=%u
 
-MongoDB 保留消息集合(Retain Message Collection)
-------------------------------------------------
+    ## acl_nomatch
+    auth.mongo.acl_nomatch = deny
 
-.. code-block:: javascript
+------------
+MQTT发布订阅
+------------
 
-    {
-        topic: string,
-        msgid: string, 
-        sender: string, 
-        qos: 0,1,2, 
-        payload: string,
-        arrived: timestamp
-    }
+MQTT是为移动互联网、物联网设计的轻量发布订阅模式的消息服务器:
 
-MongoDB 接收消息ack集合(Message Acked Collection)
----------------------------------
+.. image:: ./_static/images/pubsub_concept.png
 
-.. code-block:: javascript
+*EMQ* 消息服务器安装启动后，任何设备或终端的MQTT客户端，可通过MQTT协议连接到服务器，发布订阅消息方式互通。
 
-    {
-        clientid: string, 
-        topic: string, 
-        mongo_id: int
-    }
+MQTT协议客户端库: https://github.com/mqtt/mqtt.github.io/wiki/libraries
 
-示例::
+例如，mosquitto_sub/pub命令行发布订阅消息::
 
-    用户test分别订阅主题test_topic0 test_topic1 test_topic2
-    db.mqtt_subscription.insert({clientid: "test", topic: "test_topic0", qos: 0})
-    db.mqtt_subscription.insert({clientid: "test", topic: "test_topic1", qos: 1})
-    db.mqtt_subscription.insert({clientid: "test", topic: "test_topic2", qos: 2})
+    mosquitto_sub -t topic -q 2
+    mosquitto_pub -t topic -q 1 -m "Hello, MQTT!"
 
-    查询用户状态
-    db.mqtt_state.findOne({clientid: "test"})
+MQTT V3.1.1版本协议规范: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html
 
-    查询发布的消息
-    db.mqtt_message.find({sender: "test"})
+*EMQ* 消息服务器的MQTT协议TCP监听器，可在etc/emq.conf文件中设置:
 
-    查询retain消息
-    db.mqtt_retain.findOne({topic: "test_topic0"})
+.. code-block:: properties
 
-启用MongoDB消息存储:
+    ## TCP Listener: 1883, 127.0.0.1:1883, ::1:1883
+    mqtt.listener.tcp = 1883
+
+    ## Size of acceptor pool
+    mqtt.listener.tcp.acceptors = 8
+
+    ## Maximum number of concurrent clients
+    mqtt.listener.tcp.max_clients = 1024
+
+MQTT(SSL) TCP监听器，缺省端口8883:
+
+.. code-block:: properties
+
+    ## SSL Listener: 8883, 127.0.0.1:8883, ::1:8883
+    mqtt.listener.ssl = 8883
+
+    ## Size of acceptor pool
+    mqtt.listener.ssl.acceptors = 4
+
+    ## Maximum number of concurrent clients
+    mqtt.listener.ssl.max_clients = 512
+
+.. _http_publish:
+
+------------
+HTTP发布接口
+------------
+
+*EMQ* 消息服务器提供了一个HTTP发布接口，应用服务器或Web服务器可通过该接口发布MQTT消息::
+
+    HTTP POST http://host:8083/mqtt/publish
+
+Web服务器例如PHP/Java/Python/NodeJS或Ruby on Rails，可通过HTTP POST请求发布MQTT消息:
 
 .. code-block:: bash
 
-    ./bin/emqctl plugins load emq_backend_mongo
+    curl -v --basic -u user:passwd -d "qos=1&retain=0&topic=/a/b/c&message=hello from http..." -k http://localhost:8083/mqtt/publish
 
---------------------
-支持与服务(Supports)
---------------------
+HTTP接口参数:
 
-EMQPLUS企业版由杭州小莉科技有限公司提供技术支持与服务。
++---------+----------------+
+| 参数    | 说明           |
++=========+================+
+| client  | MQTT客户端ID   |
++---------+----------------+
+| qos     | QoS: 0 | 1 | 2 |
++---------+----------------+
+| retain  | Retain: 0 | 1  |
++---------+----------------+
+| topic   | 主题(Topic)    |
++---------+----------------+
+| message | 消息           |
++---------+----------------+
 
-详见: https:://emqtt.com/products/emqplus-enterprise。
+.. NOTE:: HTTP接口采用Basic认证
+
+------------------
+MQTT WebSocket连接
+------------------
+
+*EMQ* 消息服务器支持MQTT WebSocket连接，Web浏览器可直接通过MQTT协议连接服务器:
+
++-------------------------+----------------------------+
+| WebSocket URI:          | ws(s)://host:8083/mqtt     |
++-------------------------+----------------------------+
+| Sec-WebSocket-Protocol: | 'mqttv3.1' or 'mqttv3.1.1' |
++-------------------------+----------------------------+
+
+Dashboard插件提供了一个MQTT WebSocket连接的测试页面::
+
+    http://127.0.0.1:18083/websocket.html
+
+*EMQ* 通过内嵌的HTTP服务器，实现MQTT WebSocket与HTTP发布接口，etc/emq.conf设置:
+
+.. code-block:: properties
+
+    ## HTTP and WebSocket Listener
+    mqtt.listener.http = 8083
+    mqtt.listener.http.acceptors = 4
+    mqtt.listener.http.max_clients = 64
+
+.. _sys_topic:
+
+-------------
+$SYS-系统主题
+-------------
+
+*EMQ* 消息服务器周期性发布自身运行状态、MQTT协议统计、客户端上下线状态到'$SYS/'开头系统主题。
+
+$SYS主题路径以"$SYS/brokers/{node}/"开头，'${node}'是Erlang节点名称::
+
+    $SYS/brokers/emqttd@127.0.0.1/version
+
+    $SYS/brokers/emqttd@host2/uptime
+
+.. NOTE:: 默认只允许localhost的MQTT客户端订阅$SYS主题，可通过etc/acl.config修改访问控制规则。
+
+$SYS系统消息发布周期，通过etc/emq.conf配置:
+
+.. code-block:: properties
+
+    ## System Interval of publishing broker $SYS Messages
+    mqtt.broker.sys_interval = 60
+
+.. _sys_brokers:
+
+服务器版本、启动时间与描述消息
+------------------------------
+
++--------------------------------+-----------------------+
+| 主题                           | 说明                  |
++================================+=======================+
+| $SYS/brokers                   | 集群节点列表          |
++--------------------------------+-----------------------+
+| $SYS/brokers/${node}/version   | emqttd版本            |
++--------------------------------+-----------------------+
+| $SYS/brokers/${node}/uptime    | emqttd启动时间        |
++--------------------------------+-----------------------+
+| $SYS/brokers/${node}/datetime  | emqttd服务器时间      |
++--------------------------------+-----------------------+
+| $SYS/brokers/${node}/sysdescr  | emqttd描述            |
++--------------------------------+-----------------------+
+
+.. _sys_clients:
+
+MQTT客户端上下线状态消息
+------------------------
+
+$SYS主题前缀: $SYS/brokers/${node}/clients/
+
++--------------------------+--------------------------------------------+------------------------------------+
+| 主题(Topic)              | 数据(JSON)                                 | 说明                               |
++==========================+============================================+====================================+
+| ${clientid}/connected    | {ipaddress: "127.0.0.1", username: "test", | Publish when a client connected    |
+|                          |  session: false, version: 3, connack: 0,   |                                    |
+|                          |  ts: 1432648482}                           |                                    |
++--------------------------+--------------------------------------------+------------------------------------+
+| ${clientid}/disconnected | {reason: "keepalive_timeout",              | Publish when a client disconnected |
+|                          |  ts: 1432749431}                           |                                    |
++--------------------------+--------------------------------------------+------------------------------------+
+
+'connected'消息JSON数据:
+
+.. code-block:: json
+
+    {
+        ipaddress: "127.0.0.1",
+        username:  "test",
+        session:   false,
+        protocol:  3,
+        connack:   0,
+        ts:        1432648482
+    }
+
+'disconnected'消息JSON数据:
+
+.. code-block:: json
+
+    {
+        reason: normal,
+        ts:     1432648486
+    }
+
+.. _sys_stats:
+
+Statistics - 系统统计消息
+--------------------------
+
+系统主题前缀: $SYS/brokers/${node}/stats/
+
+Clients - 客户端统计
+....................
+
++---------------------+---------------------------------------------+
+| 主题(Topic)         | 说明                                        |
++---------------------+---------------------------------------------+
+| clients/count       | 当前客户端总数                              |
++---------------------+---------------------------------------------+
+| clients/max         | 最大客户端数量                              |
++---------------------+---------------------------------------------+
+
+Sessions - 会话统计
+...................
+
++---------------------+---------------------------------------------+
+| 主题(Topic)         | 说明                                        |
++---------------------+---------------------------------------------+
+| sessions/count      | 当前会话总数                                |
++---------------------+---------------------------------------------+
+| sessions/max        | 最大会话数量                                |
++---------------------+---------------------------------------------+
+
+Subscriptions - 订阅统计
+........................
+
++---------------------+---------------------------------------------+
+| 主题(Topic)         | 说明                                        |
++---------------------+---------------------------------------------+
+| subscriptions/count | 当前订阅总数                                |
++---------------------+---------------------------------------------+
+| subscriptions/max   | 最大订阅数量                                |
++---------------------+---------------------------------------------+
+
+Topics - 主题统计
+................
+
++---------------------+---------------------------------------------+
+| 主题(Topic)         | 说明                                        |
++---------------------+---------------------------------------------+
+| topics/count        | 当前Topic总数(跨节点)                       |
++---------------------+---------------------------------------------+
+| topics/max          | Max number of topics                        |
++---------------------+---------------------------------------------+
+
+Metrics-收发流量/报文/消息统计
+------------------------------
+
+系统主题(Topic)前缀: $SYS/brokers/${node}/metrics/
+
+收发流量统计
+............
+
++---------------------+---------------------------------------------+
+| 主题(Topic)         | 说明                                        |
++---------------------+---------------------------------------------+
+| bytes/received      | 累计接收流量                                |
++---------------------+---------------------------------------------+
+| bytes/sent          | 累计发送流量                                |
++---------------------+---------------------------------------------+
+
+MQTT报文收发统计
+................
+
++--------------------------+---------------------------------------------+
+| 主题(Topic)              | 说明                                        |
++--------------------------+---------------------------------------------+
+| packets/received         | 累计接收MQTT报文                            |
++--------------------------+---------------------------------------------+
+| packets/sent             | 累计发送MQTT报文                            |
++--------------------------+---------------------------------------------+
+| packets/connect          | 累计接收MQTT CONNECT报文                    |
++--------------------------+---------------------------------------------+
+| packets/connack          | 累计发送MQTT CONNACK报文                    |
++--------------------------+---------------------------------------------+
+| packets/publish/received | 累计接收MQTT PUBLISH报文                    |
++--------------------------+---------------------------------------------+
+| packets/publish/sent     | 累计发送MQTT PUBLISH报文                    |
++--------------------------+---------------------------------------------+
+| packets/subscribe        | 累计接收MQTT SUBSCRIBE报文                  |
++--------------------------+---------------------------------------------+
+| packets/suback           | 累计发送MQTT SUBACK报文                     |
++--------------------------+---------------------------------------------+
+| packets/unsubscribe      | 累计接收MQTT UNSUBSCRIBE报文                |
++--------------------------+---------------------------------------------+
+| packets/unsuback         | 累计发送MQTT UNSUBACK报文                   |
++--------------------------+---------------------------------------------+
+| packets/pingreq          | 累计接收MQTT PINGREQ报文                    |
++--------------------------+---------------------------------------------+
+| packets/pingresp         | 累计发送MQTT PINGRESP报文数量               |
++--------------------------+---------------------------------------------+
+| packets/disconnect       | 累计接收MQTT DISCONNECT数量                 |
++--------------------------+---------------------------------------------+
+
+MQTT消息收发统计
+................
+
++--------------------------+---------------------------------------------+
+| 主题(Topic)              | 说明                                        |
++--------------------------+---------------------------------------------+
+| messages/received        | 累计接收消息                                |
++--------------------------+---------------------------------------------+
+| messages/sent            | 累计发送消息                                |
++--------------------------+---------------------------------------------+
+| messages/retained        | Retained消息总数                            |
++--------------------------+---------------------------------------------+
+| messages/dropped         | 丢弃消息总数                                |
++--------------------------+---------------------------------------------+
+
+.. _sys_alarms:
+
+Alarms-系统告警
+---------------
+
+系统主题(Topic)前缀: $SYS/brokers/${node}/alarms/
+
++------------------+------------------+
+| 主题(Topic)      | 说明             |
++------------------+------------------+
+| ${alarmId}/alert | 新产生告警       |
++------------------+------------------+
+| ${alarmId}/clear | 清除告警         |
++------------------+------------------+
+
+.. _sys_sysmon:
+
+Sysmon-系统监控
+---------------
+
+系统主题(Topic)前缀: $SYS/brokers/${node}/sysmon/
+
++------------------+--------------------+
+| 主题(Topic)      | 说明               |
++------------------+--------------------+
+| long_gc          | GC时间过长警告     |
++------------------+--------------------+
+| long_schedule    | 调度时间过长警告   |
++------------------+--------------------+
+| large_heap       | Heap内存占用警告   |
++------------------+--------------------+
+| busy_port        | Port忙警告         |
++------------------+--------------------+
+| busy_dist_port   | Dist Port忙警告    |
++------------------+--------------------+
+
+.. _trace:
+
+----
+追踪
+----
+
+EMQ消息服务器支持追踪来自某个客户端(Client)的全部报文，或者发布到某个主题(Topic)的全部消息。
+
+追踪客户端(Client):
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl trace client "clientid" "trace_clientid.log"
+
+追踪主题(Topic):
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl trace topic "topic" "trace_topic.log"
+
+查询追踪:
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl trace list
+
+停止追踪:
+
+.. code-block:: bash
+
+    ./bin/emqttd_ctl trace client "clientid" off
+
+    ./bin/emqttd_ctl trace topic "topic" off
+
+.. _emq_auth_clientid: https://github.com/emqtt/emq_auth_clientid
+.. _emq_auth_username: https://github.com/emqtt/emq_auth_username
+.. _emq_auth_ldap:     https://github.com/emqtt/emq_auth_ldap
+.. _emq_auth_http:     https://github.com/emqtt/emq_auth_http
+.. _emq_auth_mysql:    https://github.com/emqtt/emq_auth_mysql
+.. _emq_auth_pgsql:    https://github.com/emqtt/emq_auth_pgsql
+.. _emq_auth_redis:    https://github.com/emqtt/emq_auth_redis
+.. _emq_auth_mongo:    https://github.com/emqtt/emq_auth_mongo
 
