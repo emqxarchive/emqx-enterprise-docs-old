@@ -95,9 +95,7 @@ Redis数据存储
 mqtt:state - 设备在线状态Hash
 -----------------------------
 
-*mqtt:state* Hash存储设备在线状态:
-
-.. code-block::
+*mqtt:state* Hash存储设备在线状态::
 
     hmset
     key = mqtt:state:${clientid} 
@@ -115,7 +113,7 @@ mqtt:state - 设备在线状态Hash
 mqtt:retain - Retain消息
 ------------------------
 
-.. code-block::
+*mqtt:retain* Hash存储Retain消息::
 
     hmset
     key = mqtt:retain:${topic}
@@ -128,9 +126,7 @@ mqtt:retain - Retain消息
 mqtt:message - 消息存储
 -----------------------
 
-*mqtt:state* Hash存储MQTT消息:
-
-.. code-block::
+*mqtt:message* Hash存储MQTT消息::
 
     hmset
     key = mqtt:message:${msgid}
@@ -145,18 +141,14 @@ mqtt:message - 消息存储
     key = mqtt:message:${clientid}
     value = ${msgid}
 
-查询某个客户端发布的消息:
-
-.. code-block::
+查询某个客户端发布的消息::
 
     LRANGE mqtt:message:${clientid} 0 -1
 
 mqtt:acked - 消息确认
 ---------------------
 
-*mqtt:acked* SET存储客户端消息确认:
-
-.. code-block::
+*mqtt:acked* SET存储客户端消息确认::
 
     set
     key = mqtt:acked:${clientid}:${topic}
@@ -165,18 +157,14 @@ mqtt:acked - 消息确认
 mqtt:subscription - 订阅关系
 ----------------------------
 
-*mqtt:subscription* Hash存储订阅关系:
-
-.. code-block::
+*mqtt:subscription* Hash存储订阅关系::
 
     hset
     key = mqtt:subscription:${clientid}
     field = ${topic}
     value = ${qos}
 
-例如为ClientId为"test"的客户端订阅主题topic0, topic1, topic2:
-
-.. code-block::
+例如为ClientId为"test"的客户端订阅主题topic0, topic1, topic2::
 
     HSET "mqtt:subscription:test" "topic0" 0
     HSET "mqtt:subscription:test" "topic1" 1
@@ -185,9 +173,7 @@ mqtt:subscription - 订阅关系
 SUB/UNSUB 事件发布
 ------------------
 
-当客户端订阅/取消订阅主题时，EMQ向Redis发布事件消息:
-
-.. code-block::
+当客户端订阅/取消订阅主题时，EMQ向Redis发布事件消息::
 
     PUBLISH
     channel = "mqtt_channel"
@@ -305,6 +291,8 @@ MySQL 设备在线状态表(State Table)
 MySQL 设备订阅主题表(Subscription Table)
 ----------------------------------------
 
+*mqtt_subscription* 表存储设备订阅主题:
+
 .. code-block:: sql
 
     DROP TABLE IF EXISTS `mqtt_subscription`;
@@ -329,6 +317,8 @@ MySQL 设备订阅主题表(Subscription Table)
 
 MySQL MQTT消息表(Message Table)
 -------------------------------
+
+*mqtt_message* 表存储MQTT消息:
 
 .. code-block:: sql
     
@@ -377,6 +367,8 @@ MySQL 保留消息表(Retained Message Table)
 
 MySQL 接收消息ACK表(Message Acked Table)
 ----------------------------------------
+
+*mqtt_acked* 表存储接收消息ACK:
 
 .. code-block:: sql
     
@@ -472,6 +464,8 @@ Postgre数据存储
 PostgreSQL 设备状态表(State Table)
 ----------------------------------
 
+*mqtt_state* 表存储设备在线状态:
+
 .. code-block:: sql
 
     CREATE TABLE mqtt_state(
@@ -491,6 +485,8 @@ PostgreSQL 设备状态表(State Table)
 
 PostgreSQL 用户订阅主题表(Subscription Table)
 ---------------------------------------------
+
+*mqtt_subscription* 表存储设备订阅主题:
 
 .. code-block:: sql
     
@@ -555,6 +551,8 @@ PostgreSQL 保留消息表(Retain Message Table)
 
 PostgreSQL 接收消息ack表(Message Acked Table)
 ---------------------------------------------
+
+*mqtt_acked* 表存储接收消息ACK:
 
 .. code-block:: sql
     
@@ -645,6 +643,8 @@ MongoDB数据存储
 MongoDB 设备状态集合(State Collection)
 --------------------------------------
 
+*mqtt_state* 集合存储设备在线状态:
+
 .. code-block:: javascript
 
     {
@@ -662,6 +662,8 @@ MongoDB 设备状态集合(State Collection)
 MongoDB 用户订阅主题集合(Subscription Collection)
 -------------------------------------------------
 
+*mqtt_subscription* 集合存储设备订阅主题:
+
 .. code-block:: javascript
 
     {
@@ -678,6 +680,8 @@ MongoDB 用户订阅主题集合(Subscription Collection)
 
 MongoDB 发布消息集合(Message Collection)
 ----------------------------------------
+
+*mqtt_message* 集合存储MQTT消息:
 
 .. code-block:: javascript
 
@@ -699,6 +703,8 @@ MongoDB 发布消息集合(Message Collection)
 MongoDB 保留消息集合(Retain Message Collection)
 -----------------------------------------------
 
+*mqtt_retain* 集合存储保留消息:
+
 .. code-block:: javascript
 
     {
@@ -716,6 +722,8 @@ MongoDB 保留消息集合(Retain Message Collection)
 
 MongoDB 接收消息ACK集合(Message Acked Collection)
 -------------------------------------------------
+
+*mqtt_acked* 集合存储接收消息ACK:
 
 .. code-block:: javascript
 
