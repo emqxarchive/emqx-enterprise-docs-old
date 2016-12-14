@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'EMQPLUS企业版中文文档'
+project = u'EMQPLUS企业版'
 copyright = u'2016, 杭州小莉科技有限公司'
 author = u'杭州小莉科技有限公司<contact@emqtt.io>'
 
@@ -253,7 +253,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'EMQPLUS.tex', u'EMQPLUS企业版中文文档 Documentation',
+    (master_doc, 'EMQPLUS.tex', u'EMQPLUS企业版',
      u'李枫\\textless{}feng@emqtt.io\\textgreater{}', 'manual'),
 ]
 
@@ -283,7 +283,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'emqplus', u'EMQPLUS企业版中文文档R2',
+    (master_doc, 'emqplus', u'EMQPLUS企业版',
      [author], 1)
 ]
 
@@ -297,8 +297,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'EMQPLUS', u'EMQPLUS企业版中文文档R2',
-     author, 'EMQPLUS', 'EMQPLUS企业版中文文档R2',
+    (master_doc, 'EMQPLUS', u'EMQPLUS企业版',
+     author, 'EMQPLUS', 'EMQPLUS企业版',
      'Miscellaneous'),
 ]
 
@@ -318,7 +318,7 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'EMQPLUS企业版中文文档R2'
+epub_title = u'EMQPLUS企业版'
 epub_author = u'李枫<feng@emqtt.io>'
 epub_publisher = u'李枫<feng@emqtt.io>'
 epub_copyright = u'2016,杭州小莉科技有限公司'
