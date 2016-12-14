@@ -3,7 +3,7 @@
 
 *EMQPLUS企业版* 是基于 *EMQ* 开发设计的商业服务版本，*EMQPLUS企业版* 支持更稳定的节点集群与更高性能的消息路由，支持消息数据存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库，并由专业团队提供技术支持与咨询服务。*EMQPLUS企业版* 帮助客户快速开发基于MQTT协议的物联网、车联网、智能硬件和移动消息应用。
 
-![enterprise-](static/images/emqplus_enterprise.png)
+![emqplus-enterprise](./_static/images/emqplus_enterprise.png)
 
 ## 版权
 
