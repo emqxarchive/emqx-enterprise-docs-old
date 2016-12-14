@@ -5,45 +5,20 @@
 安装部署
 ========
 
-*EMQ* 2.0消息服务器可跨平台运行在Linux、FreeBSD、Mac OS X或Windows服务器上。
+*EMQPLUS企业版* R2服务器可跨平台运行在Linux、FreeBSD、Mac OS X或Windows服务器上。
 
 .. NOTE:: 产品部署建议Linux、FreeBSD服务器，不推荐Windows服务器。
 
--------------------
-*EMQ* 2.0程序包下载
--------------------
+----------------------
+*EMQPLUS* R2程序包获取
+----------------------
 
-*EMQ* 2.0消息服务器每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
+*EMQPLUS* R2消息服务器每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
 
-下载地址: http://emqtt.com/downloads
+联系EMQ公司获取: http://emqtt.com/about#contacts
 
-+-------------+-----------------------------------------------+
-| Debian      | http://emqtt.com/downloads/latest/debian      |
-+-------------+-----------------------------------------------+
-| Ubuntu12.04 | http://emqtt.com/downloads/latest/ubuntu12_04 |
-+-------------+-----------------------------------------------+
-| Ubuntu14.04 | http://emqtt.com/downloads/latest/ubuntu14_04 |
-+-------------+-----------------------------------------------+
-| Ubuntu16.04 | http://emqtt.com/downloads/latest/ubuntu16_04 |
-+-------------+-----------------------------------------------+
-| CentOS7     | http://emqtt.com/downloads/latest/centos7     |
-+-------------+-----------------------------------------------+
-| Debian7     | http://emqtt.com/downloads/latest/debian7     |
-+-------------+-----------------------------------------------+
-| Debian8     | http://emqtt.com/downloads/latest/debian7     |
-+-------------+-----------------------------------------------+
-| FreeBSD     | http://emqtt.com/downloads/latest/freebsd     |
-+-------------+-----------------------------------------------+
-| Windows7    | http://emqtt.com/downloads/latest/indows7    |
-+-------------+-----------------------------------------------+
-| Windows10   | http://emqtt.com/downloads/latest/windows10   |
-+-------------+-----------------------------------------------+
-| Mac OS X    | http://emqtt.com/downloads/latest/macosx      |
-+-------------+-----------------------------------------------+
-| Docker      | http://emqtt.com/downloads/latest/docker      |
-+-------------+-----------------------------------------------+
 
-安装包命名由平台、版本组成，例如: emqttd-macosx-v2.0.zip
+安装包命名由平台、版本组成，例如: emqplus-enterprise-centos7-r2.zip
 
 .. _install_on_linux:
 
@@ -51,11 +26,11 @@
 Linux服务器安装
 ---------------
 
-CentOS平台为例，下载安装包解压: http://emqtt.com/downloads/latest/centos7
+CentOS平台为例，获取安装包: emqplus-enterprise-centos7-r2.zip
 
 .. code-block:: bash
 
-    unzip emqttd-centos7-v2.0.zip
+    unzip emqplus-enterprise-centos7-r2.zip
 
 控制台调试模式启动，检查 *EMQ* 是否可正常启动:
 
@@ -67,7 +42,7 @@ CentOS平台为例，下载安装包解压: http://emqtt.com/downloads/latest/ce
 
 .. code-block:: bash
 
-    starting emqttd on node 'emqttd@127.0.0.1'
+    starting emqttd on node 'emq@127.0.0.1'
     emqttd ctl is starting...[ok]
     emqttd hook is starting...[ok]
     emqttd router is starting...[ok]
@@ -90,7 +65,7 @@ CentOS平台为例，下载安装包解压: http://emqtt.com/downloads/latest/ce
     mqtt:tcp listen on 0.0.0.0:1883 with 8 acceptors.
     mqtt:ssl listen on 0.0.0.0:8883 with 4 acceptors.
     mqtt:ws listen on 0.0.0.0:8083 with 4 acceptors.
-    Erlang MQTT Broker 2.0 is running now
+    Enterprise EMQ Broker 2.13 is running now
 
 CTRL+c关闭控制台。守护进程模式启动:
 
@@ -104,15 +79,15 @@ CTRL+c关闭控制台。守护进程模式启动:
 
 .. code-block:: bash
 
-    ./bin/emqttd_ctl status
+    ./bin/emqctl status
 
 正常运行状态，查询命令返回:
 
 .. code-block:: bash
 
-    $ ./bin/emqttd_ctl status
-    Node 'emqttd@127.0.0.1' is started
-    emqttd 2.0 is running
+    $ ./bin/emqctl status
+    Node 'emq@127.0.0.1' is started
+    emqttd 2.1.3 is running
 
 *EMQ* 消息服务器提供了状态监控URL::
 
@@ -138,9 +113,7 @@ FreeBSD平台安装过程与Linux相同。
 Mac OS X系统安装
 ----------------
 
-Mac下开发调试MQTT应用，可直接下载安装: http://emqtt.com/downloads/latest/macosx
-
-配置文件'etc/emq.conf' log段落打开debug日志，控制台可以查看收发MQTT报文详细:
+Mac下开发调试MQTT应用，配置文件'etc/emq.conf' log段落打开debug日志，控制台可以查看收发MQTT报文详细:
 
 .. code-block::
 
@@ -161,9 +134,7 @@ Mac下开发调试MQTT应用，可直接下载安装: http://emqtt.com/downloads
 Windows服务器安装
 -----------------
 
-Windows平台程序包下载: http://emqtt.com/downloads/latest/windows10
-
-程序包下载解压后，打开Windows命令行窗口，cd到程序目录。
+Windows平台程序包获取解压后，打开Windows命令行窗口，cd到程序目录。
 
 控制台模式启动::
 
@@ -197,63 +168,31 @@ Windows平台程序包下载: http://emqtt.com/downloads/latest/windows10
 Docker镜像安装
 --------------
 
-*EMQ* 2.0 Docker镜像下载: http://emqtt.com/downloads/latest/docker
+*EMQPLUS企业* R2 Docker镜像获取:
 
-解压emqttd-docker镜像包::
+解压emqplus-enterprise-docker镜像包::
 
-    unzip emqttd-docker-v2.0.zip
+    unzip emqplus-enterprise-docker-r2.zip
 
 加载镜像::
 
-    docker load < emqttd-docker-v2.0
+    docker load < emqplus-enterprise-docker-r2
 
 启动容器::
 
-    docker run -itd --net='host' --name emq20 emqttd-docker-v2.0
+    docker run -itd --net='host' --name emqplus20 emqplus-enterprise-docker-r2
 
 停止容器::
 
-    docker stop emq20
+    docker stop emqplus20
 
 开启容器::
 
-    docker start emq20
+    docker start emqplus20
 
 进入Docker控制台::
 
-    docker exec -it emq20 /bin/bash
-
-.. _build_from_source:
-
-------------
-源码编译安装
-------------
-
-*EMQ* 消息服务器基于Erlang/OTP平台开发，项目托管的GitHub管理维护，源码编译依赖Erlang环境和git客户端。
-
-Erlang安装: http://www.erlang.org/
-
-Git客户端: http://www.git-scm.com/
-
-Ubuntu平台可通过apt-get命令安装，CentOS/RedHat平台可通过yum命令安装，Mac下可通过brew包管理命令安装，Windows下... :(
-
-编译环境准备好之后，clone代码开始编译:
-
-.. code-block:: bash
-
-    git clone https://github.com/emqtt/emq-relx.git
-
-    cd emq-relx && make
-
-    cd _rel/emqttd && ./bin/emqttd console
-
-编译成功后，可执行程序包在目录::
-
-    _rel/emqttd
-
-控制台启动编译的emqttd程序包::
-
-    cd _rel/emqttd && ./bin/emqttd console
+    docker exec -it emqplus20 /bin/bash
 
 .. _tcp_ports:
 
@@ -261,7 +200,7 @@ Ubuntu平台可通过apt-get命令安装，CentOS/RedHat平台可通过yum命令
 TCP服务端口占用
 ---------------
 
-*EMQ* 2.0消息服务器默认占用的TCP端口包括:
+*EMQPLUS企业版* R2消息服务器默认占用的TCP端口包括:
 
 +-----------+-----------------------------------+
 | 1883      | MQTT协议端口                      |
@@ -273,7 +212,7 @@ TCP服务端口占用
 | 18083     | Dashboard管理控制台端口           |
 +-----------+-----------------------------------+
 
-*EMQ* 2.0占用的上述端口，可通过etc/emq.conf配置文件的'Listeners'段落设置:
+上述占用端口可通过etc/emq.conf配置文件的'Listeners'段落设置:
 
 .. code-block:: properties
 

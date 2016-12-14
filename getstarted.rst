@@ -7,11 +7,11 @@
 
 .. _intro:
 
-------------------------
-*EMQ* 2.0 消息服务器简介
-------------------------
+--------------------
+*EMQ* 2.0 消息服务器
+--------------------
 
-*EMQ* (Erlang/Enterprise/Elastic MQTT Broker)是基于Erlang/OTP平台开发的开源物联网MQTT消息服务器。Erlang/OTP是出色的软实时(Soft-Realtime)、低延时(Low-Latency)、分布式(Distributed)的语言平台。MQTT是轻量的(Lightweight)、发布订阅模式(PubSub)的物联网消息协议。
+*EMQ* (Erlang MQTT Broker)是基于Erlang/OTP平台开发的开源物联网MQTT消息服务器。Erlang/OTP是出色的软实时(Soft-Realtime)、低延时(Low-Latency)、分布式(Distributed)的语言平台。MQTT是轻量的(Lightweight)、发布订阅模式(PubSub)的物联网消息协议。
 
 *EMQ* 项目设计目标是承载移动终端或物联网终端海量的MQTT连接，并实现在海量物联网设备间快速低延时(Low-Latency)消息路由:
 
@@ -22,6 +22,26 @@
 3. 消息服务器内扩展，支持定制多种认证方式、高效存储消息到后端数据库。
 
 4. 完整物联网协议支持，MQTT、MQTT-SN、CoAP、WebSocket或私有协议支持。
+
+---------------
+*EMQPLUS企业版* 
+---------------
+
+*EMQPLUS企业版* R2在 *EMQ* 2.0开源版本消息服务器的基础上，大幅改进了节点集群与消息路由设计，支持消息数据存储与Syslog日志集成:
+
+1. Scalable RPC架构: 分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点的消息吞吐与集群稳定性。
+
+2. Fastlane订阅: 专为数据采集型物联网应用提供的Fastlane快速消息路由。
+
+3. Redis存储订阅关系、设备在线状态、MQTT消息、保留消息，发布SUB/UNSUB事件。
+
+4. MySQL存储订阅关系、设备在线状态、MQTT消息、保留消息。
+   
+5. PostgreSQL存储订阅关系、设备在线状态、MQTT消息、保留消息。
+ 
+6. MongoDB存储订阅关系、设备在线状态、MQTT消息、保留消息。
+
+7. Syslog日志集成。
 
 .. _mqtt_pubsub:
 
@@ -56,44 +76,32 @@ MQTT消息发布者(Publisher)只能向特定'名称主题'(不支持通配符)�
 
 .. _quick_start:
 
------------------
-五分钟下载启动EMQ
------------------
+---------------------
+安装启动EMQPLUS企业版
+---------------------
 
-*EMQ* 2.0消息服务器每个版本，会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
+*EMQPLUS企业版* 支持Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
 
-下载地址: http://emqtt.com/downloads
+*EMQPLUS企业版* 安装包名格式例如: emqplus-enterprise-centos7-r2.zip
 
-程序包下载后，可直接解压启动运行，例如Mac平台:
+获取程序包可直接解压启动运行，例如CentOS7平台:
 
 .. code-block:: bash
 
-    unzip emqttd-macosx-v2.0.zip && cd emqttd
+    unzip emqplus-enterprise-centos7-r2.zip && cd emqttd
 
-    # 启动emqttd
+    # 启动
     ./bin/emqttd start
 
     # 检查运行状态
-    ./bin/emqttd_ctl status
+    ./bin/emqctl status
 
-    # 停止emqttd
+    # 停止
     ./bin/emqttd stop
 
 *EMQ* 消息服务默认允许匿名认证，启动后MQTT客户端可连接1883端口，启动运行日志输出在log/目录。
 
 .. _compile:
-
-----------------
-源码编译EMQ 2.0
-----------------
-
-.. code-block:: bash
-
-    git clone https://github.com/emqtt/emq-relx.git
-
-    cd emq-relx && make
-
-    cd _rel/emqttd && ./bin/emqttd console
 
 .. _dashboard:
 
@@ -101,7 +109,7 @@ MQTT消息发布者(Publisher)只能向特定'名称主题'(不支持通配符)�
 Web管理控制台(Dashboard)
 ------------------------
 
-*EMQ* 消息服务器启动后，会默认加载Dashboard插件，启动Web管理控制台。用户可通过Web控制台，查看服务器运行状态、统计数据、客户端(Client)、会话(Session)、主题(Topic)、订阅(Subscription)、插件(Plugin)。
+*EMQPLUS企业版* 服务器启动后，会默认加载Dashboard插件，启动Web管理控制台。用户可通过Web控制台，查看服务器运行状态、统计数据、客户端(Client)、会话(Session)、主题(Topic)、订阅(Subscription)、插件(Plugin)。
 
 控制台地址: http://127.0.0.1:18083，默认用户: admin，密码：public
 
@@ -191,9 +199,9 @@ Web管理控制台(Dashboard)
 | `emq_sockjs`_              | SockJS插件()                      |
 +----------------------------+-----------------------------------+
 
-扩展插件通过'bin/emqttd_ctl'管理命令行，或Dashboard控制台加载启用。例如启用PostgreSQL认证插件::
+扩展插件通过'bin/emqctl'管理命令行，或Dashboard控制台加载启用。例如启用PostgreSQL认证插件::
 
-    ./bin/emqttd_ctl plugins load emq_auth_pgsql
+    ./bin/emqctl plugins load emq_auth_pgsql
 
 .. _c1000k:
 

@@ -13,6 +13,7 @@ EMQPLUS企业版中文文档
    :maxdepth: 2
 
    overview
+   getstarted
    backends
    install
    config
