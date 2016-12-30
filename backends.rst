@@ -303,7 +303,7 @@ mqtt:sub - 订阅关系
 SUB/UNSUB 事件发布
 ------------------
 
-当客户端订阅/取消订阅主题时，EMQ向Redis发布事件消息::
+设备需要订阅/取消订阅主题时，业务服务器向Redis发布事件消息::
 
     PUBLISH
     channel = "mqtt_channel"
