@@ -155,9 +155,9 @@ etc/plugins/emq_backend_redis.conf:
 +----------------------+-----------------------------------------------+-----------------------------------------+
 | message.publish      | message, msgid, topic, payload, qos, clientid | RPUSH pub:${topic} msgid                |
 +----------------------+-----------------------------------------------+-----------------------------------------+
-| message.acked        | msgid, topic, payload, qos, clientid          | HSET ack:${clientid} topic msgid        |
+| message.acked        | msgid, topic, clientid                        | HSET ack:${clientid} topic msgid        |
 +----------------------+-----------------------------------------------+-----------------------------------------+
-| message.delivered    | msgid, topic, payload, qos, clientid          | HSET delivered:${clientid} topic msgid  |
+| message.delivered    | msgid, topic, clientid                        | HSET delivered:${clientid} topic msgid  |
 +----------------------+-----------------------------------------------+-----------------------------------------+
 
 配置redis commands:
@@ -412,9 +412,9 @@ etc/plugins/emq_backend_mysql.conf:
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 | message.publish      | msgid, topic, payload, qos, clientid  | insert into msg(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.acked        | msgid, topic, payload, qos, clientid  | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
+| message.acked        | msgid, topic, clientid                | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.delivered    | msgid, topic, payload, qos, clientid  | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
+| message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 
 支持sql语句配置:
@@ -721,9 +721,9 @@ etc/plugins/emq_backend_pgsql.conf:
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 | message.publish      | msgid, topic, payload, qos, clientid  | insert into msg(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.acked        | msgid, topic, payload, qos, clientid  | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
+| message.acked        | msgid, topic, clientid                | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.delivered    | msgid, topic, payload, qos, clientid  | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
+| message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 
 支持sql语句配置:
@@ -1001,9 +1001,9 @@ etc/plugins/emq_backend_pgsql.conf:
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 | message.publish      | msgid, topic, payload, qos, clientid  | insert into msg(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.acked        | msgid, topic, payload, qos, clientid  | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
+| message.acked        | msgid, topic, clientid                | insert into ack(msgid, topic) values(${msgid}, ${topic})       |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
-| message.delivered    | msgid, topic, payload, qos, clientid  | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
+| message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 
 支持sql语句配置:
