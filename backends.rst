@@ -779,7 +779,7 @@ PostgreSQL 用户状态表(State Table)
 
 例如ClientId为test客户端上线::
 
-    select * from mqtt_client where clientid = "test";
+    select * from mqtt_client where clientid = 'test';
 
      id | clientid | state | node             | online_at           | offline_at          | created             
     ----+----------+-------+------------------+---------------------+---------------------+---------------------
@@ -788,7 +788,7 @@ PostgreSQL 用户状态表(State Table)
 
 例如ClientId为test客户端下线::
 
-    select * from mqtt_client where clientid = "test";
+    select * from mqtt_client where clientid = 'test';
 
      id | clientid | state | node             | online_at           | offline_at          | created             
     ----+----------+-------+------------------+---------------------+---------------------+---------------------
@@ -811,16 +811,16 @@ PostgreSQL 用户订阅主题表(Subscription Table)
 
 用户test分别订阅主题test_topic1 test_topic2::
 
-    insert into mqtt_sub(clientid, topic, qos) values("test", "test_topic1", 1);
-    insert into mqtt_sub(clientid, topic, qos) values("test", "test_topic2", 2);
+    insert into mqtt_sub(clientid, topic, qos) values('test', 'test_topic1', 1);
+    insert into mqtt_sub(clientid, topic, qos) values('test', 'test_topic2', 2);
 
 某个客户端订阅主题::
     
     select * from mqtt_sub where clientid = ${clientid};
 
-查询ClientId为"test"的客户端已订阅主题::
+查询ClientId为test的客户端已订阅主题::
     
-    select * from mqtt_sub where clientid = "test";
+    select * from mqtt_sub where clientid = 'test';
 
      id | clientId     | topic       | qos  | created             
     ----+--------------+-------------+------+---------------------
@@ -850,7 +850,7 @@ PostgreSQL 发布消息表(Message Table)
 
 查询ClientId为"test"的客户端发布的消息::
 
-    select * from mqtt_msg where sender = "test";
+    select * from mqtt_msg where sender = 'test';
 
      id | msgid                         | topic    | sender | node | qos | retain | payload | arrived             
     ----+-------------------------------+----------+--------+------+-----+--------+---------+---------------------
@@ -878,9 +878,9 @@ PostgreSQL 保留消息表(Retain Message Table)
 
     select * from mqtt_retain where topic = ${topic};
 
-查询topic为"retain"的retain消息::
+查询topic为retain的retain消息::
 
-    select * from mqtt_retain where topic = "retain";
+    select * from mqtt_retain where topic = 'retain';
 
      id | topic    | msgid                         | sender  | node | qos  | payload | arrived             
     ----+----------+-------------------------------+---------+------+------+---------+---------------------
