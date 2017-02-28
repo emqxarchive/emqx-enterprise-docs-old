@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=====================
-EMQPLUS企业版中文文档
-=====================
+=================
+EMQ企业版中文文档
+=================
 
-EMQPLUS企业版R2中文产品文档:
+EMQ企业版R2中文产品文档:
 
 .. toctree::
    :maxdepth: 2
