@@ -118,6 +118,11 @@ broker.cfg桥接配置::
 ------------
 Kafka消息桥接
 ------------
+*EMQX* 消息服务器支持消息桥接到Kafka server::
+
+                   ---------                      --------- 
+    Publisher -->  |  EMQX  | --Bridge Forward--> | Kafka  |  --> Subscriber
+                   ---------                      --------- 
 
 配置Kafka消息桥接
 -----------------------
