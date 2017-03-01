@@ -11,11 +11,11 @@
 
 *EMQ* 是目前全球市场广泛应用的百万级开源MQTT消息服务器，全球市场(西欧、北美、印度、中国)累积超5000家企业用户，产品环境下部署超10万节点，承载MQTT连接超3000万线。
 
-EMQ企业版是基于 *EMQ* 开发设计的商业服务版本，简称EMQ X (Extreme)。EMQ企业版大幅改进系统设计架构，采用*Scalable RPC*机制，支持更稳定的节点集群与更高性能的消息路由。
+EMQ企业版是基于 *EMQ* 开发设计的商业服务版本，简称 *EMQ X* 寓意我们希望把EMQ的架构和设计优化到极致。 *EMQ X* 企业版大幅改进系统设计架构，采用 *Scalable RPC* 机制，支持更稳定的节点集群与更高性能的消息路由。
 
-EMQ企业版同时支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发消息到Kafka、RabbitMQ企业消息中间件。
+*EMQ* 企业版同时支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发消息到Kafka、RabbitMQ企业消息中间件。
 
-EMQ企业版可以作为智能硬件、智能家居、物联网、车联网、移动消息等应用的一站式开发平台。
+*EMQ* 企业版可以作为智能硬件、智能家居、物联网、车联网、移动消息等应用的一站式开发平台。
 
 .. image:: _static/images/emqplus_enterprise.png
 
@@ -25,7 +25,7 @@ EMQ企业版可以作为智能硬件、智能家居、物联网、车联网、�
 Scalable RPC架构
 ----------------
 
-EMQ企业版改进了分布节点间的通信机制，分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点间的消息吞吐与集群稳定性:
+*EMQ X* 企业版改进了分布节点间的通信机制，分离Erlang自身的集群通道与EMQ的数据通道，大幅提高集群节点间的消息吞吐与集群稳定性:
 
 .. NOTE:: 虚线为Erlang的分布集群通道，实线为节点间消息数据通道。
 
@@ -110,7 +110,7 @@ EMQ企业版支持存储订阅关系、MQTT消息、设备状态到Redis、MySQL
 消息数据桥接
 ------------
 
-EMQ企业版支持直接转发MQTT消息到RabbitMQ、Kafka，可以作为百万级的物联网接入服务器(IoT Hub):
+EMQ企业版支持直接转发MQTT消息到RabbitMQ、Kafka，可作为百万级的物联网接入服务器(IoT Hub):
 
 .. image:: _static/images/iothub.png
 

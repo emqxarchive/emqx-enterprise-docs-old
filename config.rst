@@ -5,82 +5,25 @@
 配置指南
 ========
 
-----------------
-EMQ 2.0 配置文件
-----------------
+-----------------
+EMQ企业版配置文件
+-----------------
 
-*EMQ* 2.0消息服务器通过etc/目录下配置文件进行设置，主要配置文件包括:
+*EMQ* 企业版主要配置文件包括:
 
 +----------------------------+-----------------------------------+
 | 配置文件                   | 说明                              |
 +----------------------------+-----------------------------------+
-| etc/emq.conf               | EMQ 2.0消息服务器配置文件         |
+| etc/emqx.conf              | EMQ 企业版服务器配置文件          |
 +----------------------------+-----------------------------------+
-| etc/acl.conf               | EMQ 2.0默认ACL规则配置文件        |
+| etc/acl.conf               | EMQ 默认ACL规则配置文件           |
 +----------------------------+-----------------------------------+
-| etc/plugins/\*.conf        | EMQ 2.0各类插件配置文件           |
+| etc/plugins/\*.conf        | EMQ 插件配置文件                  |
 +----------------------------+-----------------------------------+
 
-----------------
-EMQ 配置变更历史
-----------------
-
-为方便用户与插件开发者使用，*EMQ* 配置文件经过三次调整。
-
-1. EMQ 1.x版本采用Erlang原生配置文件格式etc/emqttd.config:
-
-.. code-block:: erlang
-
-    {emqttd, [
-      %% Authentication and Authorization
-      {access, [
-        %% Authetication. Anonymous Default
-        {auth, [
-            %% Authentication with username, password
-            %{username, []},
-            
-            %% Authentication with clientid
-            %{clientid, [{password, no}, {file, "etc/clients.config"}]},
-
-Erlang的原生配置格式多层级嵌套，对非Erlang开发者的用户很不友好。
-
-2. EMQ 2.0-beta.x版本简化了原生Erlang配置文件，采用类似rebar.config或relx.config格式:
-
-.. code-block:: erlang
-
-    %% Max ClientId Length Allowed.
-    {mqtt_max_clientid_len, 512}.
-
-    %% Max Packet Size Allowed, 64K by default.
-    {mqtt_max_packet_size, 65536}.
-
-    %% Client Idle Timeout.
-    {mqtt_client_idle_timeout, 30}. % Second
-
-简化后的Erlang原生配置格式方便用户配置，但插件开发者不得不依赖gen_conf库，而不是通过appliaton:get_env读取配置参数。
-
-3. EMQ 2.0-rc.2正式版集成了cuttlefish库，采用了类似sysctl的`k = v`通用格式，并在系统启动时翻译成Erlang原生配置格式:
-
-.. code-block:: properties
-
-    ## Node name
-    node.name = emqttd@127.0.0.1
-    ...
-    ## Max ClientId Length Allowed.
-    mqtt.max_clientid_len = 1024
-    ...
-
-EMQ 2.0启动时配置文件处理流程::
-
-    ----------------------                                          2.0/schema/*.schema      -------------------
-    | etc/emq.conf       |                   -----------------              \|/              | data/app.config |
-    |       +            | --> mergeconf --> | data/app.conf | -->  cuttlefish generate  --> |                 |
-    | etc/plugins/*.conf |                   -----------------                               | data/vm.args    |
-    ----------------------                                                                   -------------------
-
-----------------
-EMQ 2.0 环境变量
-----------------
+-----------------
+EMQ企业版环境变量
+-----------------
 
 +-------------------+----------------------------------------+
 | EMQ_NODE_NAME     | Erlang节点名称，例如: emqttd@127.0.0.1 |
@@ -107,10 +50,10 @@ Erlang节点名称、分布式节点间通信Cookie:
 .. code-block:: properties
 
     ## Node name
-    node.name = emqttd@127.0.0.1
+    node.name = emqx@127.0.0.1
 
     ## Cookie for distributed node
-    node.cookie = emq_dist_cookie
+    node.cookie = emqx_dist_cookie
 
 .. NOTE::
 
@@ -125,6 +68,11 @@ Erlang虚拟机参数
 
     ## SMP support: enable, auto, disable
     node.smp = auto
+
+    ## vm.args: -heart
+    ## Heartbeat monitoring of an Erlang runtime system
+    ## Value should be 'on' or comment the line
+    ## node.heartbeat = on
 
     ## Enable kernel poll
     node.kernel_poll = on
@@ -149,14 +97,14 @@ Erlang虚拟机参数
     node.fullsweep_after = 1000
 
     ## Crash dump
-    node.crash_dump = log/crash.dump
+    node.crash_dump = {{ platform_log_dir }}/crash.dump
 
     ## Distributed node ticktime
     node.dist_net_ticktime = 60
 
     ## Distributed node port range
-    ## node.dist_listen_min = 6000
-    ## node.dist_listen_max = 6999
+    ## node.dist_listen_min = 6369
+    ## node.dist_listen_max = 6369
 
 Erlang虚拟机主要参数说明:
 
@@ -195,13 +143,13 @@ Erlang虚拟机主要参数说明:
     rpc.call_receive_timeout = 15000
 
     ## Socket keepalive configuration
-    rpc.socket_keepalive_idle = 5
+    rpc.socket_keepalive_idle = 7200
 
     ## Seconds between probes
-    rpc.socket_keepalive_interval = 5
+    rpc.socket_keepalive_interval = 75
 
     ## Probes lost to close the connection
-    rpc.socket_keepalive_count = 2
+    rpc.socket_keepalive_count = 9
 
 ------------
 日志参数配置
@@ -218,16 +166,13 @@ console日志
     ## Console log level. Enum: debug, info, notice, warning, error, critical, alert, emergency
     log.console.level = error
 
-    ## Console log file
-    ## log.console.file = log/console.log
-
 error日志
 ---------
 
 .. code-block:: properties
 
     ## Error log file
-    log.error.file = log/error.log
+    log.error.file = {{ platform_log_dir }}/error.log
 
 crash日志
 ---------
@@ -237,7 +182,7 @@ crash日志
     ## Enable the crash log. Enum: on, off
     log.crash = on
 
-    log.crash.file = log/crash.log
+    log.crash.file = {{ platform_log_dir }}/crash.log
 
 syslog日志
 ----------
@@ -245,40 +190,10 @@ syslog日志
 .. code-block:: properties
 
     ## Syslog. Enum: on, off
-    log.syslog = on 
+    log.syslog = on
 
     ##  syslog level. Enum: debug, info, notice, warning, error, critical, alert, emergency
     log.syslog.level = error
-
------------------
-MQTT 协议参数配置
------------------
-
-ClientId最大允许长度
---------------------
-
-.. code-block:: properties
-
-    ## Max ClientId Length Allowed.
-    mqtt.max_clientid_len = 1024
-
-MQTT最大报文尺寸
-----------------
-
-.. code-block:: properties
-
-    ## Max Packet Size Allowed, 64K by default.
-    mqtt.max_packet_size = 64KB
-
-客户端连接闲置时间
-------------------
-
-设置MQTT客户端最大允许闲置时间(Socket连接建立，但未收到CONNECT报文):
-
-.. code-block:: properties
-
-    ## Client Idle Timeout (Second)
-    mqtt.client_idle_timeout = 30
 
 -----------------
 匿名认证与ACL文件
@@ -336,7 +251,53 @@ etc/acl.conf默认访问规则设置:
 
 .. NOTE:: 默认规则只允许本机用户订阅'$SYS/#'与'#'
 
-*EMQ* 消息服务器接收到MQTT客户端发布(PUBLISH)或订阅(SUBSCRIBE)请求时，会逐条匹配ACL访问控制规则，直到匹配成功返回allow或deny。
+*EMQ* 服务器接收到MQTT客户端发布(PUBLISH)或订阅(SUBSCRIBE)请求时，会逐条匹配ACL访问控制规则，直到匹配成功返回allow或deny。
+
+----------------
+MQTT协议参数配置
+----------------
+
+ClientId最大允许长度
+--------------------
+
+.. code-block:: properties
+
+    ## Max ClientId Length Allowed.
+    mqtt.max_clientid_len = 1024
+
+MQTT最大报文尺寸
+----------------
+
+.. code-block:: properties
+
+    ## Max Packet Size Allowed, 64K by default.
+    mqtt.max_packet_size = 64KB
+
+客户端连接闲置时间
+------------------
+
+设置MQTT客户端最大允许闲置时间(Socket连接建立，但未收到CONNECT报文):
+
+.. code-block:: properties
+
+    ## Client Idle Timeout (Second)
+    mqtt.client.idle_timeout = 30
+
+单连接统计支持
+--------------
+
+.. code-block:: properties
+
+    ## Enable client Stats: on | off
+    mqtt.client.enable_stats = off
+
+强制客户端连接GC
+----------------
+
+.. code-block:: properties
+
+    ## Force GC: integer. Value 0 disabled the Force GC.
+    mqtt.conn.force_gc_count = 100
 
 ----------------
 MQTT会话参数设置
@@ -344,21 +305,27 @@ MQTT会话参数设置
 
 .. code-block:: properties
 
-    ## Max number of QoS 1 and 2 messages that can be “inflight” at one time.
-    ## 0 means no limit
-    mqtt.session.max_inflight = 100
+    ## Max Number of Subscriptions, 0 means no limit.
+    mqtt.session.max_subscriptions = 0
 
-    ## Retry interval for redelivering QoS1/2 messages.
-    mqtt.session.retry_interval = 60
+    ## Upgrade QoS?
+    mqtt.session.upgrade_qos = off
+
+    ## Max Size of the Inflight Window for QoS1 and QoS2 messages
+    ## 0 means no limit
+    mqtt.session.max_inflight = 32
+
+    ## Retry Interval for redelivering QoS1/2 messages.
+    mqtt.session.retry_interval = 20s
+
+    ## Client -> Broker: Max Packets Awaiting PUBREL, 0 means no limit
+    mqtt.session.max_awaiting_rel = 100
 
     ## Awaiting PUBREL Timeout
-    mqtt.session.await_rel_timeout = 20
+    mqtt.session.await_rel_timeout = 20s
 
-    ## Max Packets that Awaiting PUBREL, 0 means no limit
-    mqtt.session.max_awaiting_rel = 0
-
-    ## Statistics Collection Interval(seconds)
-    mqtt.session.collect_interval = 0
+    ## Enable Statistics: on | off
+    mqtt.session.enable_stats = off
 
     ## Expired after 1 day:
     ## w - week
@@ -366,28 +333,32 @@ MQTT会话参数设置
     ## h - hour
     ## m - minute
     ## s - second
-    mqtt.session.expired_after = 1d
+    mqtt.session.expiry_interval = 2h
 
++---------------------------+----------------------------------------------------------+
+| session.max_subscriptions | 最大允许创建订阅数量                                     |
++---------------------------+----------------------------------------------------------+
+| session.upgrade_qos       | 根据订阅升级消息QoS                                      |
 +---------------------------+----------------------------------------------------------+
 | session.max_inflight      | 飞行窗口。最大允许同时下发的Qos1/2报文数，0表示没有限制。|
 |                           | 窗口值越大，吞吐越高；窗口值越小，消息顺序越严格         |
 +---------------------------+----------------------------------------------------------+
 | session.retry_interval    | 下发QoS1/2消息未收到PUBACK响应的重试间隔                 |
 +---------------------------+----------------------------------------------------------+
-| session.await_rel_timeout | 收到QoS2消息，等待PUBREL报文超时时间                     |
-+---------------------------+----------------------------------------------------------+
 | session.max_awaiting_rel  | 最大等待PUBREL的QoS2报文数                               |
 +---------------------------+----------------------------------------------------------+
-| session.collect_interval  | 采集会话统计数据间隔，默认0表示关闭统计                  |
+| session.await_rel_timeout | 收到QoS2消息，等待PUBREL报文超时时间                     |
 +---------------------------+----------------------------------------------------------+
-| session.expired_after     | 持久会话到期时间，从客户端断开算起，单位：分钟           |
+| session.enable_stats      | 启用会话指标统计                                         |
++---------------------------+----------------------------------------------------------+
+| session.expiry_interval   | 持久会话超期时间，从客户端断开算起，单位：分钟           |
 +---------------------------+----------------------------------------------------------+
 
 --------------------
 MQTT消息队列参数设置
 --------------------
 
-EMQ消息服务器会话通过队列缓存Qos1/Qos2消息:
+EMQ服务器会话通过队列缓存Qos1/Qos2消息:
 
 1. 持久会话(Session)的离线消息
 
@@ -398,39 +369,39 @@ EMQ消息服务器会话通过队列缓存Qos1/Qos2消息:
 .. code-block:: properties
 
     ## Type: simple | priority
-    mqtt.queue.type = simple
+    mqtt.mqueue.type = simple
 
     ## Topic Priority: 0~255, Default is 0
-    ## mqtt.queue.priority = topic/1=10,topic/2=8
+    ## mqtt.mqueue.priority = topic/1=10,topic/2=8
 
     ## Max queue length. Enqueued messages when persistent client disconnected,
-    ## or inflight window is full.
-    mqtt.queue.max_length = infinity
+    ## or inflight window is full. 0 means no limit.
+    mqtt.mqueue.max_length = 0
 
     ## Low-water mark of queued messages
-    mqtt.queue.low_watermark = 20%
+    mqtt.mqueue.low_watermark = 20%
 
     ## High-water mark of queued messages
-    mqtt.queue.high_watermark = 60%
+    mqtt.mqueue.high_watermark = 60%
 
     ## Queue Qos0 messages?
-    mqtt.queue.qos0 = true
+    mqtt.mqueue.store_qos0 = true
 
 队列参数说明:
 
-+----------------------+---------------------------------------------------+
-| queue.type           | 队列类型。simple: 简单队列，priority: 优先级队列  |
-+----------------------+---------------------------------------------------+
-| queue.priority       | 主题(Topic)队列优先级设置                         |
-+----------------------+---------------------------------------------------+
-| queue.max_length     | 队列长度, infinity表示不限制                      |
-+----------------------+---------------------------------------------------+
-| queue.low_watermark  | 解除告警水位线                                    |
-+----------------------+---------------------------------------------------+
-| queue.high_watermark | 队列满告警水位线                                  |
-+----------------------+---------------------------------------------------+
-| queue.qos0           | 是否缓存QoS0消息                                  |
-+----------------------+---------------------------------------------------+
++-----------------------------+---------------------------------------------------+
+| mqueue.type                 | 队列类型。simple: 简单队列，priority: 优先级队列  |
++-----------------------------+---------------------------------------------------+
+| mqueue.priority             | 主题(Topic)队列优先级设置                         |
++-----------------------------+---------------------------------------------------+
+| mqueue.max_length           | 队列长度, infinity表示不限制                      |
++-----------------------------+---------------------------------------------------+
+| mqueue.low_watermark        | 解除告警水位线                                    |
++-----------------------------+---------------------------------------------------+
+| mqueue.high_watermark       | 队列满告警水位线                                  |
++-----------------------------+---------------------------------------------------+
+| mqueue.store_qos0           | 是否缓存QoS0消息                                  |
++-----------------------------+---------------------------------------------------+
 
 --------------
 Broker参数设置
@@ -476,36 +447,38 @@ Plugins插件配置目录设置
 .. code-block:: properties
 
     ## Dir of plugins' config
-    mqtt.plugins.etc_dir = etc/plugins/
+    mqtt.plugins.etc_dir ={{ platform_etc_dir }}/plugins/
 
     ## File to store loaded plugin names.
-    mqtt.plugins.loaded_file = data/loaded_plugins
+    mqtt.plugins.loaded_file = {{ platform_data_dir }}/loaded_plugins
 
 ----------------------
 MQTT Listeners参数说明
 ----------------------
 
-*EMQ* 消息服务器支持MQTT、MQTT/SSL、MQTT/WS协议服务端，可通过mqtt.listener.*设置端口、最大允许连接数等参数。
+*EMQ* 服务器支持MQTT、MQTT/SSL、MQTT/WS协议服务端，可通过listener.*设置端口、最大允许连接数等参数。
 
-*EMQ* 2.0消息服务器默认开启的TCP服务端口包括:
+*EMQ* 服务器默认开启的TCP服务端口包括:
 
 +-----------+-----------------------------------+
 | 1883      | MQTT协议端口                      |
 +-----------+-----------------------------------+
 | 8883      | MQTT(SSL)端口                     |
 +-----------+-----------------------------------+
-| 8083      | MQTT(WebSocket), HTTP API端口     |
+| 8083      | MQTT(WebSocket)端口               |
++-----------+-----------------------------------+
+| 8084      | MQTT(WebSocket)端口               |
 +-----------+-----------------------------------+
 
-Listener参数说明:
+*EMQ* 企业版允许用户启用多个TCP监听器，监听器主要参数:
 
-+-----------------------------+----------------------------------------------+
-| mqtt.listener.*.acceptors   | TCP Acceptor池                               |
-+-----------------------------+----------------------------------------------+
-| mqtt.listener.*.max_clients | 最大允许TCP连接数                            |
-+-----------------------------+----------------------------------------------+
-| mqtt.listener.*.rate_limit  | 连接限速配置，例如限速10KB/秒:  "100,10"     |
-+-----------------------------+----------------------------------------------+
++----------------------------------+----------------------------------------------+
+| listener.tcp.${name}.acceptors   | TCP Acceptor池                               |
++----------------------------------+----------------------------------------------+
+| listener.tcp.${name}.max_clients | 最大允许TCP连接数                            |
++----------------------------------+----------------------------------------------+
+| listener.tcp.${name}.rate_limit  | 连接限速配置，例如限速10KB/秒:  "100,10"     |
++----------------------------------+----------------------------------------------+
 
 ----------------------
 MQTT(TCP)监听器 - 1883
@@ -513,24 +486,34 @@ MQTT(TCP)监听器 - 1883
 
 .. code-block:: properties
 
-    ## TCP Listener: 1883, 127.0.0.1:1883, ::1:1883
-    mqtt.listener.tcp = 1883
+    ## External TCP Listener: 1883, 127.0.0.1:1883, ::1:1883
+    listener.tcp.external = 0.0.0.0:1883
 
     ## Size of acceptor pool
-    mqtt.listener.tcp.acceptors = 8
+    listener.tcp.external.acceptors = 8
 
     ## Maximum number of concurrent clients
-    mqtt.listener.tcp.max_clients = 1024
+    listener.tcp.external.max_clients = 1024
+
+    #listener.tcp.external.mountpoint = external/
 
     ## Rate Limit. Format is 'burst,rate', Unit is KB/Sec
-    ## mqtt.listener.tcp.rate_limit = 100,10
+    #listener.tcp.external.rate_limit = 100,10
+
+    #listener.tcp.external.access.1 = allow 192.168.0.0/24
+
+    listener.tcp.external.access.2 = allow all
 
     ## TCP Socket Options
-    mqtt.listener.tcp.backlog = 1024
-    ## mqtt.listener.tcp.recbuf = 4096
-    ## mqtt.listener.tcp.sndbuf = 4096
-    ## mqtt.listener.tcp.buffer = 4096
-    ## mqtt.listener.tcp.nodelay = true
+    listener.tcp.external.backlog = 1024
+
+    #listener.tcp.external.recbuf = 4KB
+
+    #listener.tcp.external.sndbuf = 4KB
+
+    listener.tcp.external.buffer = 4KB
+
+    listener.tcp.external.nodelay = true
 
 ----------------------
 MQTT(SSL)监听器 - 8883
@@ -539,25 +522,51 @@ MQTT(SSL)监听器 - 8883
 .. code-block:: properties
 
     ## SSL Listener: 8883, 127.0.0.1:8883, ::1:8883
-    mqtt.listener.ssl = 8883
+    listener.ssl.external = 8883
 
     ## Size of acceptor pool
-    mqtt.listener.ssl.acceptors = 4
+    listener.ssl.external.acceptors = 4
 
     ## Maximum number of concurrent clients
-    mqtt.listener.ssl.max_clients = 512
+    listener.ssl.external.max_clients = 1024
+
+    ## Authentication Zone
+    ## listener.ssl.external.zone = external
+
+    ## listener.ssl.external.mountpoint = inbound/
 
     ## Rate Limit. Format is 'burst,rate', Unit is KB/Sec
-    ## mqtt.listener.ssl.rate_limit = 100,10
+    ## listener.ssl.external.rate_limit = 100,10
 
-    ## SSL Options
-    mqtt.listener.ssl.handshake_timeout = 15
-    mqtt.listener.ssl.keyfile = etc/certs/key.pem
-    mqtt.listener.ssl.certfile = etc/certs/cert.pem
-    ## 开启双向认证
-    ## mqtt.listener.ssl.cacertfile = etc/certs/cacert.pem
-    ## mqtt.listener.ssl.verify = verify_peer
-    ## mqtt.listener.ssl.fail_if_no_peer_cert = true
+    listener.ssl.external.access.1 = allow all
+
+    listener.ssl.external.handshake_timeout = 15s
+
+    ### In order to escape this situation, first we need to generate a fresh,
+    ### strong DH group, store it in a file and then use the option above,
+    ### to force our SSL application to use the new DH group. Fortunately,
+    ### OpenSSL provides us with a tool to do that. Simply run:
+    ### openssl dhparam -out dh-params.pem 2048
+    listener.ssl.external.dhfile = {{ platform_etc_dir }}/certs/dh-params.pem
+
+    listener.ssl.external.keyfile = {{ platform_etc_dir }}/certs/key.pem
+
+    listener.ssl.external.certfile = {{ platform_etc_dir }}/certs/cert.pem
+
+    listener.ssl.external.cacertfile = {{ platform_etc_dir }}/certs/cacert.pem
+
+    listener.ssl.external.verify = verify_peer
+
+    listener.ssl.external.fail_if_no_peer_cert = true
+
+    ### A performance optimization setting, it allows clients to reuse 
+    ### pre-existing sessions, instead of initializing new ones.
+    ### Read more about it here.
+    listener.ssl.external.reuse_sessions = on
+
+    ### Use the CN or DN value from the client certificate as a username.
+    ### Notice: 'verify' should be configured as 'verify_peer'
+    listener.ssl.external.peer_cert_as_username = cn
 
 ----------------------------
 MQTT(WebSocket)监听器 - 8083
@@ -566,9 +575,15 @@ MQTT(WebSocket)监听器 - 8083
 .. code-block:: properties
 
     ## HTTP and WebSocket Listener
-    mqtt.listener.http = 8083
-    mqtt.listener.http.acceptors = 4
-    mqtt.listener.http.max_clients = 64
+    listener.http.external = 8083
+
+    listener.http.external.acceptors = 4
+
+    listener.http.external.max_clients = 64
+
+    ## listener.http.external.zone = external
+
+    listener.http.external.access.1 = allow all
 
 --------------------------------
 MQTT(WebSocket/SSL)监听器 - 8084
@@ -576,18 +591,30 @@ MQTT(WebSocket/SSL)监听器 - 8084
 
 .. code-block:: properties
 
-    ## HTTP(SSL) Listener
-    mqtt.listener.https = 8084
-    mqtt.listener.https.acceptors = 4
-    mqtt.listener.https.max_clients = 64
+    ## External HTTPS and WSS Listener
+
+    listener.https.external = 8084
+
+    listener.https.external.acceptors = 4
+
+    listener.https.external.max_clients = 64
+
+    ## listener.https.external.zone = external
+
+    listener.https.external.access.1 = allow all
+
     ## SSL Options
-    mqtt.listener.https.handshake_timeout = 15
-    mqtt.listener.https.certfile = etc/certs/cert.pem
-    mqtt.listener.https.keyfile = etc/certs/key.pem
-    ## 开启双向认证
-    ## mqtt.listener.https.cacertfile = etc/certs/cacert.pem
-    ## mqtt.listener.https.verify = verify_peer
-    ## mqtt.listener.https.fail_if_no_peer_cert = true
+    listener.https.external.handshake_timeout = 15s
+
+    listener.https.external.keyfile = {{ platform_etc_dir }}/certs/key.pem
+
+    listener.https.external.certfile = {{ platform_etc_dir }}/certs/cert.pem
+
+    listener.https.external.cacertfile = {{ platform_etc_dir }}/certs/cacert.pem
+
+    listener.https.external.verify = verify_peer
+
+    listener.https.external.fail_if_no_peer_cert = true
 
 --------------------
 Erlang虚拟机监控设置
@@ -614,45 +641,35 @@ Erlang虚拟机监控设置
 扩展插件配置文件
 ----------------
 
-*EMQ* 2.0插件配置文件，全部在etc/plugins/目录:
+*EMQ* 企业版插件配置文件，全部在etc/plugins/目录:
 
-+----------------------------------------+-----------------------------------+
-| 配置文件                               | 说明                              |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_mod_presence           | 客户端上下线状态消息发布          |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_mod_retainer           | Retain消息存储插件                |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_mod_subscription       | 客户端上线自动主题订阅            |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_username.conf     | 用户名、密码认证插件              |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_clientid.conf     | ClientId认证插件                  |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_http.conf         | HTTP认证插件配置                  |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_mongo.conf        | MongoDB认证插件配置               |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_mysql.conf        | MySQL认证插件配置                 |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_pgsql.conf        | Postgre认证插件配置               |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_auth_redis.conf        | Redis认证插件配置                 |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_coap.conf              | CoAP协议服务器配置                |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_dashboard.conf         | Dashboard控制台插件配置           |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_mod_rewrite.conf       | 主题(Topic)重写插件配置           |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_plugin_template.conf   | 示例插件模版                      |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_recon.conf             | Recon调试插件配置                 |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_reloader.conf          | 热加载插件配置                    |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_sn.conf                | MQTT-SN协议插件配置               |
-+----------------------------------------+-----------------------------------+
-| etc/plugins/emq_stomp.conf             | Stomp协议插件配置                 |
-+----------------------------------------+-----------------------------------+
++-----------------------------------------+--------------------------------+
+| 配置文件                                | 说明                           |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_modules                | Presence、Subscription模块插件 |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_retainer               | Retain消息存储插件             |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_username.conf     | 用户名、密码认证插件           |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_clientid.conf     | ClientId认证插件               |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_http.conf         | HTTP认证插件配置               |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_mongo.conf        | MongoDB认证插件配置            |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_mysql.conf        | MySQL认证插件配置              |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_pgsql.conf        | PostgreSQL认证插件配置         |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_auth_redis.conf        | Redis认证插件                  |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_dashboard.conf         | Dashboard控制台                |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_recon.conf             | Recon调试插件                  |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_reloader.conf          | 热加载插件                     |
++-----------------------------------------+--------------------------------+
+| etc/plugins/emqx_stomp.conf             | Stomp协议插件配置              |
++-----------------------------------------+--------------------------------+
 
