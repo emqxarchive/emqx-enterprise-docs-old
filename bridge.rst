@@ -312,3 +312,145 @@ Kafka消费者订阅 emq acked消息::
 注意:: 
 
   payload被base64编码，因此kafka消费者应该做base64解码以获得原始的payload。
+
+
+.. _bridge_rabbit:
+
+---------------
+RabbitMQ消息桥接
+---------------
+*EMQX* 消息服务器支持消息桥接到RabbitMQ server::
+
+                   ---------                      ------------ 
+    Publisher -->  |  EMQX  | --Bridge Forward--> | RabbitMQ |  --> Subscriber
+                   ---------                      ------------ 
+
+配置RabbitMQ消息桥接
+-----------------------
+
+etc/plugins/emqx_bridge_rabbit.conf:
+
+.. code-block:: properties
+
+    ## Rabbit Brokers Server
+    bridge.rabbit.1.server = 127.0.0.1:5672
+
+    ## Rabbit Brokers pool_size
+    bridge.rabbit.1.pool_size = 4
+
+    ## Rabbit Brokers username
+    bridge.rabbit.1.username = guest
+
+    ## Rabbit Brokers password
+    bridge.rabbit.1.password = guest
+
+    ## Rabbit Brokers virtual_host
+    bridge.rabbit.1.virtual_host = /
+
+    ## Rabbit Brokers heartbeat
+    bridge.rabbit.1.heartbeat = 0
+
+    # bridge.rabbit.2.server = 127.0.0.1:5672
+
+    # bridge.rabbit.2.pool_size = 8
+
+    # bridge.rabbit.1.username = guest
+
+    # bridge.rabbit.1.password = guest
+
+    # bridge.rabbit.1.virtual_host = /
+
+    # bridge.rabbit.1.heartbeat = 0
+
+    ## Bridge Hooks
+    bridge.rabbit.hook.client.subscribe.1 = {"action": "on_client_subscribe", "rabbit": 1, "exchange": "direct:emq.subscription"}
+
+    bridge.rabbit.hook.client.unsubscribe.1 = {"action": "on_client_unsubscribe", "rabbit": 1, "exchange": "direct:emq.unsubscription"}
+
+    bridge.rabbit.hook.message.publish.1 = {"topic": "$SYS/#", "action": "on_message_publish", "rabbit": 1, "exchange": "topic:emq.$sys"}
+
+    bridge.rabbit.hook.message.publish.2 = {"topic": "#", "action": "on_message_publish", "rabbit": 1, "exchange": "topic:emq.pub"}
+
+    bridge.rabbit.hook.message.acked.1 = {"action": "on_message_acked", "rabbit": 1, "exchange": "topic:emq.acked"}
+
+加载RabbitMQ消息桥接插件
+----------------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_bridge_rabbit
+
+RabbitMQ EMQX客户端订阅主题(exchange, routing_key, headers, payload)
+-----------------------------------------------------
+
+.. code-block:: javascript
+
+    routing_key = subscribe
+    exchange = emq.subscription
+    headers = [{<<"x-emq-client-id">>, binary, ClientId}]
+    payload = jsx:encode([{Topic, proplists:get_value(qos, Opts)} || {Topic, Opts} <- TopicTable])
+
+RabbitMQ EMQX客户端取消订阅主题(exchange, routing_key, headers, payload)
+-----------------------------------------------------
+
+.. code-block:: javascript
+
+    routing_key = unsubscribe
+    exchange = emq.unsubscription
+    headers = [{<<"x-emq-client-id">>, binary, ClientId}]
+    payload = jsx:encode([Topic || {Topic, _Opts} <- TopicTable]),
+
+
+RabbitMQ EMQX客户端发布消息(exchange, routing_key, headers, payload)
+-----------------------------------------------------
+
+.. code-block:: javascript
+
+    routing_key = binary:replace(binary:replace(Topic, <<"/">>, <<".">>, [global]),<<"+">>, <<"*">>, [global])
+    exchange = emq.$sys | emq.pub
+    headers = [{<<"x-emq-publish-qos">>, byte, Qos},
+               {<<"x-emq-client-id">>, binary, pub_from(From)},
+               {<<"x-emq-publish-msgid">>, binary, emqx_base62:encode(Id)}]
+    payload = Payload
+
+RabbitMQ EMQX客户端发布ACK消息(exchange, routing_key, headers, payload)
+-----------------------------------------------------
+
+.. code-block:: javascript
+
+    routing_key = puback
+    exchange = emq.acked
+    headers = [{<<"x-emq-msg-acked">>, binary, ClientId}],
+    payload = emqx_base62:encode(Id)
+
+示例
+----
+
+python RabbitMQ消费者代码示例::
+
+    #!/usr/bin/env python
+    import pika
+    import sys
+
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange='direct:emq.subscription', exchange_type='direct')
+
+    result = channel.queue_declare(exclusive=True)
+    queue_name = result.method.queue
+
+    channel.queue_bind(exchange='direct:emq.subscription', queue=queue_name, routing_key= 'subscribe')
+
+    def callback(ch, method, properties, body):
+        print(" [x] %r:%r" % (method.routing_key, body))
+
+    channel.basic_consume(callback, queue=queue_name, no_ack=True)
+
+    channel.start_consuming()
+    
+
+其他语言RabbitMQ消费者代码示例请查看::
+
+    https://github.com/rabbitmq/rabbitmq-tutorials
+
