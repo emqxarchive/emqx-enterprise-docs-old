@@ -5,7 +5,7 @@
 管理命令
 ========
 
-EMQPLUS企业版提供了'./bin/emqctl'的管理命令行。
+EMQ X企业版提供了'./bin/emqx_ctl'的管理命令行。
 
 .. NOTE:: EMQ开源版本管理命令为'./bin/emqttd_ctl'
 
@@ -13,13 +13,12 @@ EMQPLUS企业版提供了'./bin/emqctl'的管理命令行。
 status命令
 ----------
 
-查询EMQ消息服务器运行状态::
+查询EMQ X服务器运行状态::
 
-    $ ./bin/emqctl status
+    $ ./bin/emqx_ctl status
 
-    Node 'emqttd@127.0.0.1' is started
-    emqttd 2.0 is running
-
+    Node 'emqx@127.0.0.1' is started
+    emqx 2.1.0 is running
 ----------
 broker命令
 ----------
