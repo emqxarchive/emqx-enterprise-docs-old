@@ -36,75 +36,80 @@ broker命令查询服务器基本信息，启动时间，统计数据与性能�
 | broker metrics | 查询MQTT报文(Packet)、消息(Message)收发统计   |
 +----------------+-----------------------------------------------+
 
-查询EMQ消息服务器基本信息包括版本、启动时间等::
+查询EMQ X服务器基本信息包括版本、启动时间等::
 
-    $ ./bin/emqctl broker
+    $ ./bin/emqx_ctl broker
 
-    sysdescr  : Erlang MQTT Broker
-    version   : 2.0
-    uptime    : 25 seconds
-    datetime  : 2016-10-18 10:42:10
+    sysdescr  : EMQ X
+    version   : 2.1.0
+    uptime    : 3 hours, 56 minutes, 48 seconds
+    datetime  : 2017-01-12 23:22:05
 
 broker stats
 ------------
 
 查询服务器客户端连接(Client)、会话(Session)、主题(Topic)、订阅(Subscription)、路由(Route)统计::
 
-    $ ./bin/emqctl broker stats
+    $ ./bin/emqx_ctl broker stats
 
-    clients/count       : 1
-    clients/max         : 1
-    queues/count        : 0
-    queues/max          : 0
-    retained/count      : 2
-    retained/max        : 2
-    routes/count        : 2
-    routes/reverse      : 2
+    clients/count       : 0
+    clients/max         : 0
+    retained/count      : 3
+    retained/max        : 3
+    routes/count        : 0
+    routes/max          : 0
     sessions/count      : 0
     sessions/max        : 0
-    subscriptions/count : 1
-    subscriptions/max   : 1
-    topics/count        : 54
-    topics/max          : 54
+    subscribers/count   : 0
+    subscribers/max     : 0
+    subscriptions/count : 0
+    subscriptions/max   : 0
+    topics/count        : 0
+    topics/max          : 0
 
 broker metrics
 --------------
 
 查询服务器流量(Bytes)、MQTT报文(Packets)、消息(Messages)收发统计::
 
-    $ ./bin/emqctl broker metrics
+    $ ./bin/emqx_ctl broker metrics
 
-    bytes/received          : 297
-    bytes/sent              : 40
-    messages/dropped        : 348
+    bytes/received          : 383
+    bytes/sent              : 108
+    messages/dropped        : 3
     messages/qos0/received  : 0
-    messages/qos0/sent      : 0
+    messages/qos0/sent      : 3
     messages/qos1/received  : 0
     messages/qos1/sent      : 0
-    messages/qos2/received  : 0
+    messages/qos2/dropped   : 0
+    messages/qos2/received  : 6
     messages/qos2/sent      : 0
-    messages/received       : 0
-    messages/retained       : 2
-    messages/sent           : 0
-    packets/connack         : 5
-    packets/connect         : 5
-    packets/disconnect      : 0
+    messages/received       : 6
+    messages/retained       : 3
+    messages/sent           : 3
+    packets/connack         : 7
+    packets/connect         : 7
+    packets/disconnect      : 6
     packets/pingreq         : 0
     packets/pingresp        : 0
+    packets/puback/missed   : 0
     packets/puback/received : 0
     packets/puback/sent     : 0
+    packets/pubcomp/missed  : 0
     packets/pubcomp/received: 0
-    packets/pubcomp/sent    : 0
-    packets/publish/received: 0
-    packets/publish/sent    : 0
+    packets/pubcomp/sent    : 6
+    packets/publish/received: 6
+    packets/publish/sent    : 3
+    packets/pubrec/missed   : 0
     packets/pubrec/received : 0
-    packets/pubrec/sent     : 0
-    packets/pubrel/received : 0
+    packets/pubrec/sent     : 6
+    packets/pubrel/missed   : 0
+    packets/pubrel/received : 6
     packets/pubrel/sent     : 0
-    packets/received        : 9
-    packets/sent            : 9
-    packets/suback          : 4
-    packets/subscribe       : 4
+    packets/received        : 26
+    packets/sent            : 23
+    packets/suback          : 1
+    packets/subscribe       : 1
     packets/unsuback        : 0
     packets/unsubscribe     : 0
 
@@ -129,47 +134,47 @@ cluster命令集群本机两个EMQ节点示例:
 +-----------+---------------------+-------------+
 | 目录      | 节点名              | MQTT端口    |
 +-----------+---------------------+-------------+
-| emqttd1   | emqttd1@127.0.0.1   | 1883        |
+| emqx1     | emqx1@127.0.0.1     | 1883        |
 +-----------+---------------------+-------------+
-| emqttd2   | emqttd2@127.0.0.1   | 2883        |
+| emqx2     | emqx2@127.0.0.1     | 2883        |
 +-----------+---------------------+-------------+
 
-启动emqttd1::
+启动emqx1::
 
-    cd emqttd1 && ./bin/emqttd start
+    cd emqx1 && ./bin/emqx start
 
-启动emqttd2::
+启动emqx2::
 
-    cd emqttd2 && ./bin/emqttd start
+    cd emqx2 && ./bin/emqx start
 
-emqttd2节点与emqttd1集群，emqttd2目录下::
+emqx2节点与emqx1集群，emqx2目录下::
 
-    $ ./bin/emqctl cluster join emqttd1@127.0.0.1
+    $ ./bin/emqx_ctl cluster join emqx1@127.0.0.1
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqttd1@127.0.0.1','emqttd2@127.0.0.1']}]
+    Cluster status: [{running_nodes,['emqx1@127.0.0.1','emqx2@127.0.0.1']}]
 
 任意节点目录下查询集群状态::
 
-    $ ./bin/emqctl cluster status
+    $ ./bin/emqx_ctl cluster status
 
-    Cluster status: [{running_nodes,['emqttd2@127.0.0.1','emqttd1@127.0.0.1']}]
+    Cluster status: [{running_nodes,['emqx2@127.0.0.1','emqx1@127.0.0.1']}]
 
 集群消息路由测试::
 
-    # emqttd1节点上订阅x
+    # emqx1节点上订阅x
     mosquitto_sub -t x -q 1 -p 1883
 
-    # emqttd2节点上向x发布消息
+    # emqx2节点上向x发布消息
     mosquitto_pub -t x -q 1 -p 2883 -m hello
 
-emqttd2节点离开集群::
+emqx2节点离开集群::
 
-    cd emqttd2 && ./bin/emqctl cluster leave
+    cd emqx2 && ./bin/emqx_ctl cluster leave
 
-emqttd1节点下删除emqttd2::
+emqx1节点下删除emqx2::
 
-    cd emqttd1 && ./bin/emqctl cluster remove emqttd2@127.0.0.1
+    cd emqx1 && ./bin/emqx_ctl cluster remove emqx2@127.0.0.1
 
 -----------
 clients命令
@@ -190,7 +195,7 @@ clients list
 
 查询全部客户端连接::
 
-    $ ./bin/emqctl clients list
+    $ ./bin/emqx_ctl clients list
 
     Client(mosqsub/43832-airlee.lo, clean_sess=true, username=test, peername=127.0.0.1:64896, connected_at=1452929113)
     Client(mosqsub/44011-airlee.lo, clean_sess=true, username=test, peername=127.0.0.1:64961, connected_at=1452929275)
@@ -213,7 +218,7 @@ clients show <ClientId>
 
 根据ClientId查询客户端::
 
-    ./bin/emqctl clients show "mosqsub/43832-airlee.lo"
+    ./bin/emqx_ctl clients show "mosqsub/43832-airlee.lo"
 
     Client(mosqsub/43832-airlee.lo, clean_sess=true, username=test, peername=127.0.0.1:64896, connected_at=1452929113)
 
@@ -222,7 +227,7 @@ clients kick <ClientId>
 
 根据ClientId踢出客户端::
 
-    ./bin/emqctl clients kick "clientid"
+    ./bin/emqx_ctl clients kick "clientid"
 
 .. _command_sessions::
 
@@ -247,7 +252,7 @@ sessions list
 
 查询全部会话::
 
-    $ ./bin/emqctl sessions list
+    $ ./bin/emqx_ctl sessions list
 
     Session(clientid, clean_sess=false, max_inflight=100, inflight_queue=0, message_queue=0, message_dropped=0, awaiting_rel=0, awaiting_ack=0, awaiting_comp=0, created_at=1452935508)
     Session(mosqsub/44101-airlee.lo, clean_sess=true, max_inflight=100, inflight_queue=0, message_queue=0, message_dropped=0, awaiting_rel=0, awaiting_ack=0, awaiting_comp=0, created_at=1452935401)
@@ -279,7 +284,7 @@ sessions list persistent
 
 查询全部持久会话::
 
-    $ ./bin/emqctl sessions list persistent
+    $ ./bin/emqx_ctl sessions list persistent
 
     Session(clientid, clean_sess=false, max_inflight=100, inflight_queue=0, message_queue=0, message_dropped=0, awaiting_rel=0, awaiting_ack=0, awaiting_comp=0, created_at=1452935508)
 
@@ -288,7 +293,7 @@ sessions list transient
 
 查询全部临时会话::
 
-    $ ./bin/emqctl sessions list transient
+    $ ./bin/emqx_ctl sessions list transient
 
     Session(mosqsub/44101-airlee.lo, clean_sess=true, max_inflight=100, inflight_queue=0, message_queue=0, message_dropped=0, awaiting_rel=0, awaiting_ack=0, awaiting_comp=0, created_at=1452935401)
 
@@ -297,7 +302,7 @@ sessions show <ClientId>
 
 根据ClientId查询会话::
 
-    $ ./bin/emqctl sessions show clientid
+    $ ./bin/emqx_ctl sessions show clientid
 
     Session(clientid, clean_sess=false, max_inflight=100, inflight_queue=0, message_queue=0, message_dropped=0, awaiting_rel=0, awaiting_ack=0, awaiting_comp=0, created_at=1452935508)
 
@@ -312,19 +317,19 @@ routes list
 
 查询全部路由::
 
-    $ ./bin/emqctl routes list
+    $ ./bin/emqx_ctl routes list
 
-    t2/# -> emqttd2@127.0.0.1
-    t/+/x -> emqttd2@127.0.0.1,emqttd@127.0.0.1
+    t2/# -> emqx2@127.0.0.1
+    t/+/x -> emqx2@127.0.0.1,emqttd@127.0.0.1
 
 routes show <Topic>
 -------------------
 
 根据Topic查询一条路由::
 
-    $ ./bin/emqctl routes show t/+/x
+    $ ./bin/emqx_ctl routes show t/+/x
 
-    t/+/x -> emqttd2@127.0.0.1,emqttd@127.0.0.1
+    t/+/x -> emqx2@127.0.0.1,emqttd@127.0.0.1
 
 ----------
 topics命令
@@ -337,11 +342,11 @@ topics list
 
 查询全部主题(Topic)::
 
-    $ ./bin/emqctl topics list
+    $ ./bin/emqx_ctl topics list
 
     $SYS/brokers/emqttd@127.0.0.1/metrics/packets/subscribe: static
     $SYS/brokers/emqttd@127.0.0.1/stats/subscriptions/max: static
-    $SYS/brokers/emqttd2@127.0.0.1/stats/subscriptions/count: static
+    $SYS/brokers/emqx2@127.0.0.1/stats/subscriptions/count: static
     ...
 
 topics show <Topic>
@@ -349,7 +354,7 @@ topics show <Topic>
 
 查询某个主题(Topic)::
 
-    $ ./bin/emqctl topics show '$SYS/brokers'
+    $ ./bin/emqx_ctl topics show '$SYS/brokers'
 
     $SYS/brokers: static
 
@@ -370,7 +375,7 @@ subscriptions list
 
 查询全部订阅::
 
-    $ ./bin/emqctl subscriptions list
+    $ ./bin/emqx_ctl subscriptions list
 
     mosqsub/91042-airlee.lo -> t/y:1
     mosqsub/90475-airlee.lo -> t/+/x:2
@@ -380,7 +385,7 @@ subscriptions show <ClientId>
 
 查询某个Client的订阅::
 
-    $ ./bin/emqctl subscriptions show 'mosqsub/90475-airlee.lo'
+    $ ./bin/emqx_ctl subscriptions show 'mosqsub/90475-airlee.lo'
 
     mosqsub/90475-airlee.lo -> t/+/x:2
 
@@ -403,15 +408,28 @@ plugins list
 
 列出全部插件::
 
-    $ ./bin/emqctl plugins list
+    $ ./bin/emqx_ctl plugins list
 
-    Plugin(emqttd_dashboard, version=0.16.0, description=emqttd web dashboard, active=true)
-    Plugin(emqttd_plugin_mysql, version=0.16.0, description=emqttd Authentication/ACL with MySQL, active=false)
-    Plugin(emqttd_plugin_pgsql, version=0.16.0, description=emqttd PostgreSQL Plugin, active=false)
-    Plugin(emqttd_plugin_redis, version=0.16.0, description=emqttd Redis Plugin, active=false)
-    Plugin(emqttd_plugin_template, version=0.16.0, description=emqttd plugin template, active=false)
-    Plugin(emqttd_recon, version=0.16.0, description=emqttd recon plugin, active=false)
-    Plugin(emqttd_stomp, version=0.16.0, description=Stomp Protocol Plugin for emqttd broker, active=false)
+    Plugin(emqx_auth_clientid, version=2.1.0, description=EMQ X Authentication with ClientId/Password, active=false)
+    Plugin(emqx_auth_http, version=2.1.0, description=EMQ X Authentication/ACL with HTTP API, active=false)
+    Plugin(emqx_auth_ldap, version=2.1.0, description=EMQ X Authentication/ACL with LDAP, active=false)
+    Plugin(emqx_auth_mongo, version=2.1.0, description=EMQ X Authentication/ACL with MongoDB, active=false)
+    Plugin(emqx_auth_mysql, version=2.1.0, description=EMQ X Authentication/ACL with MySQL, active=false)
+    Plugin(emqx_auth_pgsql, version=2.1, description=EMQ X Authentication/ACL with PostgreSQL, active=false)
+    Plugin(emqx_auth_redis, version=2.1.0, description=EMQ X Authentication/ACL with Redis, active=false)
+    Plugin(emqx_auth_username, version=2.1.0, description=EMQ X Authentication with Username/Password, active=false)
+    Plugin(emqx_backend_cassa, version=2.1.0, description=EMQ X Cassandra Backend, active=false)
+    Plugin(emqx_backend_mongo, version=2.1.0, description=EMQ X Mongodb Backend, active=false)
+    Plugin(emqx_backend_mysql, version=2.1, description=EMQ X MySQL Backend, active=false)
+    Plugin(emqx_backend_pgsql, version=2.1.0, description=EMQ X PostgreSQL Backend, active=false)
+    Plugin(emqx_backend_redis, version=2.1.0, description=EMQ X Redis Backend, active=false)
+    Plugin(emqx_bridge_kafka, version=2.1.0, description=EMQ X Kafka Bridge, active=false)
+    Plugin(emqx_bridge_rabbit, version=2.1.0, description=EMQ X Bridge RabbitMQ, active=false)
+    Plugin(emqx_dashboard, version=2.1.0, description=EMQ X Dashboard, active=true)
+    Plugin(emqx_modules, version=2.1.0, description=EMQ X Modules, active=true)
+    Plugin(emqx_recon, version=2.1.0, description=Recon Plugin, active=true)
+    Plugin(emqx_reloader, version=2.1, description=Reloader Plugin, active=false)
+    Plugin(emqx_retainer, version=2.1, description=EMQ X Retainer, active=true)
 
 插件属性:
 
@@ -428,19 +446,19 @@ load <Plugin>
 
 加载插件::
 
-    $ ./bin/emqctl plugins load emq_recon
+    $ ./bin/emqx_ctl plugins load emqx_recon
 
-    Start apps: [recon,emq_recon]
-    Plugin emqttd_recon loaded successfully.
+    Start apps: [emqx_recon]
+    Plugin emqx_recon loaded successfully.
 
 unload <Plugin>
 ---------------
 
 卸载插件::
 
-    $ ./bin/emqctl plugins unload emq_recon
+    $ ./bin/emqx_ctl plugins unload emqx_recon
 
-    Plugin emq_recon unloaded successfully.
+    Plugin emqx_recon unloaded successfully.
 
 -----------
 bridges命令
@@ -448,9 +466,9 @@ bridges命令
 
 bridges命令用于在多台EMQ服务器节点间创建桥接::
 
-              ---------                     ---------
-Publisher --> | node1 | --Bridge Forward--> | node2 | --> Subscriber
-              ---------                     ---------
+                  ---------             ---------
+    Publisher --> | node1 | --Bridge--> | node2 | --> Subscriber
+                  ---------             ---------
 
 +----------------------------------------+---------------------------+
 | bridges list                           | 查询全部桥接              |
@@ -464,23 +482,23 @@ Publisher --> | node1 | --Bridge Forward--> | node2 | --> Subscriber
 | bridges stop <Node> <Topic>            | 删除桥接                  |
 +----------------------------------------+---------------------------+
 
-创建一条emqttd1 -> emqttd2节点的桥接，转发传感器主题(Topic)消息到emqttd2::
+创建一条emqx1 -> emqx2节点的桥接，转发传感器主题(Topic)消息到emqx2::
 
-    $ ./bin/emqctl bridges start emqttd2@127.0.0.1 sensor/#
+    $ ./bin/emqx_ctl bridges start emqx2@127.0.0.1 sensor/#
 
     bridge is started.
 
-    $ ./bin/emqctl bridges list
+    $ ./bin/emqx_ctl bridges list
 
-    bridge: emqttd1@127.0.0.1--sensor/#-->emqttd2@127.0.0.1
+    bridge: emqx1@127.0.0.1--sensor/#-->emqx2@127.0.0.1
 
-测试emqttd1--sensor/#-->emqttd2的桥接::
+测试emqx1--sensor/#-->emqx2的桥接::
 
-    #emqttd2节点上
+    #emqx2节点上
 
     mosquitto_sub -t sensor/# -p 2883 -d
 
-    #emqttd1节点上
+    #emqx1节点上
 
     mosquitto_pub -t sensor/1/temperature -m "37.5" -d
 
@@ -489,7 +507,7 @@ bridge options
 
 查询bridge创建选项设置::
 
-    $ ./bin/emqctl bridges options
+    $ ./bin/emqx_ctl bridges options
 
     Options:
       qos     = 0 | 1 | 2
@@ -502,9 +520,9 @@ bridge options
 bridges stop <Node> <Topic>
 ---------------------------
 
-删除emqttd1--sensor/#-->emqttd2的桥接::
+删除emqx1--sensor/#-->emqx2的桥接::
 
-    $ ./bin/emqctl bridges stop emqttd2@127.0.0.1 sensor/#
+    $ ./bin/emqx_ctl bridges stop emqx2@127.0.0.1 sensor/#
 
     bridge is stopped.
 
@@ -531,7 +549,7 @@ vm load
 
 查询VM负载::
 
-    $ ./bin/emqctl vm load
+    $ ./bin/emqx_ctl vm load
 
     cpu/load1               : 2.21
     cpu/load5               : 2.60
@@ -542,7 +560,7 @@ vm memory
 
 查询VM内存::
 
-    $ ./bin/emqctl vm memory
+    $ ./bin/emqx_ctl vm memory
 
     memory/total            : 23967736
     memory/processes        : 3594216
@@ -559,7 +577,7 @@ vm process
 
 查询Erlang进程数量::
 
-    $ ./bin/emqctl vm process
+    $ ./bin/emqx_ctl vm process
 
     process/limit           : 8192
     process/count           : 221
@@ -569,7 +587,7 @@ vm io
 
 查询IO最大句柄数::
 
-    $ ./bin/emqctl vm io
+    $ ./bin/emqx_ctl vm io
 
     io/max_fds              : 2560
     io/active_fds           : 1
@@ -597,7 +615,7 @@ trace client <ClientId> <LogFile>
 
 开启Client追踪::
 
-    $ ./bin/emqctl trace client clientid log/clientid_trace.log
+    $ ./bin/emqx_ctl trace client clientid log/clientid_trace.log
 
     trace client clientid successfully.
 
@@ -607,7 +625,7 @@ trace client <ClientId> off
 
 关闭Client追踪::
 
-    $ ./bin/emqctl trace client clientid off
+    $ ./bin/emqx_ctl trace client clientid off
 
     stop to trace client clientid successfully.
 
@@ -616,7 +634,7 @@ trace topic <Topic> <LogFile>
 
 开启Topic追踪::
 
-    $ ./bin/emqctl trace topic topic log/topic_trace.log
+    $ ./bin/emqx_ctl trace topic topic log/topic_trace.log
 
     trace topic topic successfully.
 
@@ -625,7 +643,7 @@ trace topic <Topic> off
 
 关闭Topic追踪::
 
-    $ ./bin/emqctl trace topic topic off
+    $ ./bin/emqx_ctl trace topic topic off
 
     stop to trace topic topic successfully.
 
@@ -634,7 +652,7 @@ trace list
 
 查询全部开启的追踪::
 
-    $ ./bin/emqctl trace list
+    $ ./bin/emqx_ctl trace list
 
     trace client clientid -> log/clientid_trace.log
     trace topic topic -> log/topic_trace.log
@@ -645,23 +663,33 @@ listeners
 
 listeners命令用于查询开启的TCP服务监听器::
 
-    $ ./bin/emqctl listeners
+    $ ./bin/emqx_ctl listeners
 
-    listener on mqtt:ws:8083
+    listener on mqtt:wss:8084
       acceptors       : 4
       max_clients     : 64
       current_clients : 0
       shutdown_count  : []
     listener on mqtt:ssl:8883
       acceptors       : 4
-      max_clients     : 512
+      max_clients     : 1024
       current_clients : 0
       shutdown_count  : []
-    listener on mqtt:tcp:1883
+    listener on mqtt:ws:8083
+      acceptors       : 4
+      max_clients     : 64
+      current_clients : 0
+      shutdown_count  : []
+    listener on mqtt:tcp:0.0.0.0:1883
       acceptors       : 8
       max_clients     : 1024
       current_clients : 1
       shutdown_count  : [{closed,2}]
+    listener on mqtt:tcp:127.0.0.1:11883
+      acceptors       : 4
+      max_clients     : 1024
+      current_clients : 0
+      shutdown_count  : []
     listener on dashboard:http:18083
       acceptors       : 2
       max_clients     : 512
@@ -705,7 +733,7 @@ admins add
 
 创建admin账户::
 
-    $ ./bin/emqctl admins add root public
+    $ ./bin/emqx_ctl admins add root public
     ok
 
 admins passwd
@@ -713,7 +741,7 @@ admins passwd
 
 重置admin账户密码::
 
-    $ ./bin/emqctl admins passwd root private
+    $ ./bin/emqx_ctl admins passwd root private
     ok
 
 admins del
@@ -721,6 +749,6 @@ admins del
 
 删除admin账户::
 
-    $ ./bin/emqctl admins del root
+    $ ./bin/emqx_ctl admins del root
     ok
 

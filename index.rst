@@ -19,13 +19,9 @@ EMQ X企业版R2中文文档:
    bridges
 
    getstarted
-   backends
-   install
-   config
    guide
    advanced
    cluster
-   bridge
    design
    cli
    plugins
