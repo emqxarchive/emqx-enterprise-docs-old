@@ -9,9 +9,9 @@ EMQ X企业版R2版本MQTT连接压力测试到100万，在一台8核心、32G�
 
 100万连接测试所需的Linux内核参数，网络协议栈参数，Erlang虚拟机参数，EMQ X参数设置如下:
 
------------------
-Linux操作系统参数
------------------
+-------------
+Linux内核参数
+-------------
 
 系统全局允许分配的最大文件句柄数::
 
@@ -39,9 +39,9 @@ Linux操作系统参数
     *      soft   nofile      1048576
     *      hard   nofile      1048576
 
------------------
-TCP协议栈网络参数
------------------
+-------------
+TCP协议栈参数
+-------------
 
 并发连接backlog设置::
 
@@ -97,9 +97,9 @@ Erlang虚拟机参数
     ## Sets the maximum number of simultaneously existing ports for this system
     node.max_ports = 1048576
 
-----------
-EMQ X参数
-----------
+---------------
+EMQ X服务器参数
+---------------
 
 设置TCP监听器的Acceptor池大小，最大允许连接数。配置文件etc/emqx.conf:
 
