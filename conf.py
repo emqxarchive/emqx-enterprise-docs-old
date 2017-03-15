@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# EMQ X 企业版documentation build configuration file, created by
+# EMQ X Enterprise documentation build configuration file, created by
 # sphinx-quickstart on Thu Dec  8 18:06:27 2016.
 #
 # This file is execfile()d with the current directory set to its
