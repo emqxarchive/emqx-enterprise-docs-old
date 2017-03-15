@@ -74,19 +74,19 @@ Erlang节点Cookie设置::
 
 本节内容来自: http://erlang.org/doc/reference_manual/distributed.html
 
-.. _cluster_emqttd:
+.. _cluster_emqx:
 
--------------------
-EMQ 2.0分布集群设计
--------------------
+-----------------
+EMQ X分布集群设计
+-----------------
 
-EMQ消息服务器集群基于Erlang/OTP分布式设计，集群原理可简述为下述两条规则:
+EMQ X集群基于Erlang/OTP分布式设计，集群原理可简述为下述两条规则:
 
 1. MQTT客户端订阅主题时，所在节点订阅成功后广播通知其他节点：某个主题(Topic)被本节点订阅。
 
 2. MQTT客户端发布消息时，所在节点会根据消息主题(Topic)，检索订阅并路由消息到相关节点。
 
-EMQ消息服务器同一集群的所有节点，都会复制一份主题(Topic) -> 节点(Node)映射的路由表，例如::
+EMQ X同一集群的所有节点，都会复制一份主题(Topic) -> 节点(Node)映射的路由表，例如::
 
     topic1 -> node1, node2
     topic2 -> node3
@@ -95,7 +95,7 @@ EMQ消息服务器同一集群的所有节点，都会复制一份主题(Topic) 
 主题树(Topic Trie)与路由表(Route Table)
 ---------------------------------------
 
-EMQ消息服务器每个集群节点，都保存一份主题树(Topic Trie)和路由表。
+EMQ X同一集群内每个节点，都保存一份主题树(Topic Trie)和路由表。
 
 例如下述主题订阅关系:
 
@@ -141,28 +141,28 @@ EMQ消息服务器每个集群节点，都保存一份主题树(Topic Trie)和�
 
 .. image:: ./_static/images/route.png
 
--------------------
-EMQ 2.0集群配置管理
--------------------
+-----------------
+EMQ X集群配置管理
+-----------------
 
 假设部署两台服务器s1.emqtt.io, s2.emqtt.io上部署集群:
 
 +----------------------+-----------------+---------------------+
 | 节点名               | 主机名(FQDN)    |    IP地址           |
 +----------------------+-----------------+---------------------+
-| emq@s1.emqtt.io 或   | s1.emqtt.io     | 192.168.0.10        |
-| emq@192.168.0.10     |                 |                     |
+| emqx@s1.emqtt.io 或  | s1.emqtt.io     | 192.168.0.10        |
+| emqx@192.168.0.10    |                 |                     |
 +----------------------+-----------------+---------------------+
-| emq@s2.emqtt.io 或   | s2.emqtt.io     | 192.168.0.20        |
-| emq@192.168.0.20     |                 |                     |
+| emqx@s2.emqtt.io 或  | s2.emqtt.io     | 192.168.0.20        |
+| emqx@192.168.0.20    |                 |                     |
 +----------------------+-----------------+---------------------+
 
 .. WARNING:: 节点名格式: Name@Host, Host必须是IP地址或FQDN(主机名.域名)
 
-emq@s1.emqtt.io节点设置
------------------------
+emqx@s1.emqtt.io节点设置
+------------------------
 
-emqttd/etc/emq.conf::
+.. code-block:: properties
 
     node.name = emq@s1.emqtt.io
 
@@ -172,14 +172,14 @@ emqttd/etc/emq.conf::
 
 也可通过环境变量::
 
-    export EMQ_NODE_NAME=emq@s1.emqtt.io && ./bin/emqttd start
+    export EMQX_NODE_NAME=emqx@s1.emqtt.io && ./bin/emqx start
 
 .. WARNING:: 节点启动加入集群后，节点名称不能变更。
 
-emq@s2.emqtt.io节点设置
------------------------
+emqx@s2.emqtt.io节点设置
+------------------------
 
-emqttd/etc/emq.conf::
+.. code-block:: properties
 
     node.name = emq@s2.emqtt.io
 
@@ -190,25 +190,25 @@ emqttd/etc/emq.conf::
 节点加入集群
 ------------
 
-启动两台节点后，emq@s2.emqtt.io上执行::
+启动两台节点后，emqx@s2.emqtt.io上执行::
 
-    $ ./bin/emqctl cluster join emq@s1.emqtt.io
-
-    Join the cluster successfully.
-    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
-
-或，emq@s1.emqtt.io上执行::
-
-    $ ./bin/emqctl cluster join emq@s2.emqtt.io
+    $ ./bin/emqx_ctl cluster join emqx@s1.emqtt.io
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
+
+或，emqx@s1.emqtt.io上执行::
+
+    $ ./bin/emqx_ctl cluster join emqx@s2.emqtt.io
+
+    Join the cluster successfully.
+    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
 
 任意节点上查询集群状态::
 
-    $ ./bin/emqctl cluster status
+    $ ./bin/emqx_ctl cluster status
 
-    Cluster status: [{running_nodes,['emq@s1.emqtt.io','emq@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
 
 节点退出集群
 ------------
@@ -219,13 +219,13 @@ emqttd/etc/emq.conf::
 
 2. remove: 从集群删除其他节点
 
-emq@s2.emqtt.io主动退出集群::
+emqx@s2.emqtt.io主动退出集群::
 
-    $ ./bin/emqctl cluster leave
+    $ ./bin/emqx_ctl cluster leave
 
-或emq@s1.emqtt.io节点上，从集群删除emqttd@s2.emqtt.io节点::
+或emqx@s1.emqtt.io节点上，从集群删除emqx@s2.emqtt.io节点::
 
-    $ ./bin/emqctl cluster remove emq@s2.emqtt.io
+    $ ./bin/emqx_ctl cluster remove emqx@s2.emqtt.io
 
 .. _cluster_session:
 
@@ -233,7 +233,7 @@ emq@s2.emqtt.io主动退出集群::
 跨节点会话(Session)
 -------------------
 
-EMQ消息服务器集群模式下，MQTT连接的持久会话(Session)跨节点。
+EMQ X消息服务器集群模式下，MQTT连接的持久会话(Session)跨节点。
 
 例如负载均衡的两台集群节点:node1与node2，同一MQTT客户端先连接node1，node1节点会创建持久会话；客户端断线重连到node2时，MQTT的连接在node2节点，持久会话仍在node1节点::
 
@@ -266,7 +266,9 @@ EMQ消息服务器集群模式下，MQTT连接的持久会话(Session)跨节点�
 | 6369         | 节点间集群通道        | 
 +--------------+-----------------------+
 
-防火墙设置后，emq.conf需要配置相同的端口段::
+防火墙设置后，emqx.conf需要配置相同的端口段:
+
+.. code-block:: properties
 
     ## Distributed node port range
     node.dist_listen_min = 6369
@@ -278,9 +280,9 @@ EMQ消息服务器集群模式下，MQTT连接的持久会话(Session)跨节点�
 注意事项: NetSplit
 ------------------
 
-EMQ消息服务器集群需要稳定网络连接以避免发生NetSplit故障。集群设计上默认不自动处理NetSplit，如集群节点间发生NetSplit，需手工重启某个分片上的相关节点。
+EMQ X集群需要稳定网络连接以避免发生NetSplit故障。集群设计上默认不自动处理NetSplit，如集群节点间发生NetSplit，需手工重启某个分片上的相关节点。
 
-.. NOTE:: NetSplit是指节点运行正常但因网络断开互相认为对方宕机。EMQ 2.1版本将支持NetSplit自动恢复。
+.. NOTE:: NetSplit是指节点运行正常但因网络断开互相认为对方宕机。EMQ 2.2版本将支持NetSplit自动恢复。
 
 .. _cluster_hash:
 

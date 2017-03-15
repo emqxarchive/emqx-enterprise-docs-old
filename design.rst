@@ -7,20 +7,25 @@
 
 .. _intro:
 
-----
-前言
-----
+--------
+设计简介
+--------
 
-*EMQ* 2.0消息服务器设计，在1.x版本的基础上，首先分离了前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在1.x版本支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进::
+EMQ 2.0开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进::
+
 
               Control Plane
            --------------------
               |            |
-  FrontEnd -> | Flow Plane | -> BackEnd
+  Frontend -> | Flow Plane | -> Backend
               |            |
             Session      Router
            ---------------------
                Monitor Plane
+
+EMQ X在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
+
+EMQ X企业版在Backend端支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发MQTT消息到Kafka、RabbitMQ企业消息中间件。
 
 100万连接
 ---------
@@ -34,7 +39,7 @@ EMQ消息服务器在业务和应用层面，解决了承载100万连接的各�
 
 EMQ消息服务器是基于Erlang/OTP平台的全异步的架构：异步TCP连接处理、异步主题(Topic)订阅、异步消息发布。只有在资源负载限制部分采用同步设计，比如TCP连接创建和Mnesia数据库事务执行。
 
-一条MQTT消息从发布者(Publisher)到订阅者(Subscriber)，在emqttd消息服务器内部异步流过一系列Erlang进程Mailbox::
+一条MQTT消息从发布者(Publisher)到订阅者(Subscriber)，在emqx消息服务器内部异步流过一系列Erlang进程Mailbox::
 
                       ----------          -----------          ----------
     Publisher --Msg-->| Client | --Msg--> | Session | --Msg--> | Client | --Msg--> Subscriber
@@ -53,7 +58,7 @@ EMQ 1.0版本不支持服务器内部消息持久化，这是一个架构设计�
 
 Kafka在上述问题上，做出了正确的设计：一个完全基于磁盘分布式commit log的消息服务器。
 
-EMQ 2.0版本将发布Plus平台产品，支持消息持久化到Redis、Kafka、Cassandra、PostgreSQL等数据库。
+EMQ X企业版本支持消息持久化到Redis、MySQL、PostgreSQL、MongoDb、Cassandra等数据库或Kafka。
 
 设计上分离消息路由与消息存储职责后，数据复制容灾备份甚至应用集成，可以在数据层面灵活实现。
 
@@ -62,11 +67,11 @@ NetSplit问题
 
 EMQ 1.0消息服务器集群，基于Mnesia数据库设计。NetSplit发生时，节点间状态是：Erlang节点间可以连通，互相询问自己是否宕机，对方回答你已经宕机:(
 
-NetSplit故障发生时，emqttd消息服务器的log/emqttd_error.log日志，会打印critical级别日志::
+NetSplit故障发生时，emqx消息服务器的log/emqx_error.log日志，会打印critical级别日志::
 
-    Mnesia inconsistent_database event: running_partitioned_network, emqttd@host
+    Mnesia inconsistent_database event: running_partitioned_network, emqx@host
 
-EMQ集群部署在同一IDC网络下，NetSplit发生的几率很低，一旦发生又很难自动处理。所以emqttd1.0版本设计选择是，集群不自动化处理NetSplit，需要人工重启部分节点。
+EMQ集群部署在同一IDC网络下，NetSplit发生的几率很低，一旦发生又很难自动处理。所以EMQ .0版本设计选择是，集群不自动化处理NetSplit，需要人工重启部分节点。
 
 .. _architecture:
 
@@ -77,14 +82,14 @@ EMQ集群部署在同一IDC网络下，NetSplit发生的几率很低，一旦发
 概念模型
 --------
 
-EMQ消息服务器概念上更像一台网络路由器(Router)或交换机(Switch)，而不是传统的企业级消息服务器(MQ)。相比网络路由器按IP地址或MPLS标签路由报文，emqttd按主题树(Topic Trie)发布订阅模式在集群节点间路由MQTT消息:
+EMQ X消息服务器概念上更像一台网络路由器(Router)或交换机(Switch)，而不是传统的企业级消息服务器(MQ)。相比网络路由器按IP地址或MPLS标签路由报文，EMQ X按主题树(Topic Trie)发布订阅模式在集群节点间路由MQTT消息:
 
 .. image:: ./_static/images/concept.png
 
 设计原则
 --------
 
-1. emqttd消息服务器核心解决的问题：处理海量的并发MQTT连接与路由消息。
+1. EMQ X消息服务器核心解决的问题：处理海量的并发MQTT连接与路由消息。
 
 2. 充分利用Erlang/OTP平台软实时、低延时、高并发、分布容错的优势。
 
@@ -184,9 +189,9 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 路由层设计
 ----------
 
-路由层维护订阅者(subscriber)与订阅关系表(subscription)，并在本节点发布订阅模式派发(Dispatch)消息:
+路由层维护订阅者(Subscriber)与订阅关系表(Subscription)，并在本节点发布订阅模式派发(Dispatch)消息:
 
-.. image:: ./_static/images/dispatch.png
+.. image:: ./_static/images/dispatch.jpg
 
 消息派发到会话(Session)后，由会话负责按不同QoS送达消息。
 
@@ -221,9 +226,9 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 认证与访问控制设计
 ------------------
 
-*EMQ* 消息服务器支持可扩展的认证与访问控制，由emqttd_access_control、emqttd_auth_mod和emqttd_acl_mod模块实现。
+EMQ X消息服务器支持可扩展的认证与访问控制，由emqx_access_control、emqx_auth_mod和emqx_acl_mod模块实现。
 
-emqttd_access_control模块提供了注册认证扩展接口::
+emqx_access_control模块提供了注册认证扩展接口::
 
     register_mod(auth | acl, atom(), list()) -> ok | {error, any()}.
 
@@ -232,9 +237,9 @@ emqttd_access_control模块提供了注册认证扩展接口::
 认证扩展模块
 ------------
 
-emqttd_auth_mod定义认证扩展模块Behavihour::
+emqx_auth_mod定义认证扩展模块Behavihour::
 
-    -module(emqttd_auth_mod).
+    -module(emqx_auth_mod).
 
     -ifdef(use_specs).
 
@@ -258,24 +263,14 @@ emqttd_auth_mod定义认证扩展模块Behavihour::
 
     -endif.
 
-*EMQ* 消息服务器自身实现的认证模块/插件包括:
-
-+-----------------------+--------------------------------+
-| 模块/插件             | 认证方式                       |
-+-----------------------+--------------------------------+
-| emq_auth_username     | 用户名、密码认证插件           |
-+-----------------------+--------------------------------+
-| emq_auth_clientid     | ClientID、密码认证插件         |
-+-----------------------+--------------------------------+
-
 访问控制(ACL)
 -------------
 
-emqttd_acl_mod模块定义访问控制Behavihour::
+emqx_acl_mod模块定义访问控制Behavihour::
 
-    -module(emqttd_acl_mod).
+    -module(emqx_acl_mod).
 
-    -include("emqttd.hrl").
+    -include("emqx.hrl").
 
     -ifdef(use_specs).
 
@@ -301,7 +296,7 @@ emqttd_acl_mod模块定义访问控制Behavihour::
 
     -endif.
 
-emqttd_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
+emqx_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
 
     %%%-----------------------------------------------------------------------------
     %%%
@@ -338,7 +333,7 @@ emqttd_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制:
 钩子(Hook)定义
 --------------
 
-*EMQ* 消息服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
+EMQ X服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
 
 +------------------------+----------------------------------+
 | 钩子                   | 说明                             |
@@ -370,7 +365,7 @@ emqttd_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制:
                         |                             |                             |
                    stop | {stop, NewAcc}         stop | {stop, NewAcc}         stop | {stop, NewAcc}
 
-不同钩子的回调函数输入参数不同，用户可参考插件模版的 `emqttd_plugin_template`_ 模块，每个回调函数应该返回:
+不同钩子的回调函数输入参数不同，用户可参考插件模版的emqx_plugin_template模块，每个回调函数应该返回:
 
 +-----------------+------------------------+
 | 返回            | 说明                   |
@@ -387,11 +382,11 @@ emqttd_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制:
 钩子(Hook)实现
 --------------
 
-emqttd模块封装了Hook接口:
+emqx模块封装了Hook接口:
 
 .. code-block:: erlang
 
-    -module(emqttd).
+    -module(emqx).
 
     %% Hooks API
     -export([hook/4, hook/3, unhook/2, run_hooks/3]).
@@ -403,11 +398,11 @@ emqttd模块封装了Hook接口:
 
     run_hooks(Hook :: atom(), Args :: list(any()), Acc :: any()) -> {ok | stop, any()}.
 
-emqttd_hook模块实现Hook机制:
+emqx_hook模块实现Hook机制:
 
 .. code-block:: erlang
 
-    -module(emqttd_hook).
+    -module(emqx_hook).
 
     %% Hooks API
     -export([add/3, add/4, delete/2, run/3, lookup/1]).
@@ -425,7 +420,7 @@ emqttd_hook模块实现Hook机制:
 钩子(Hook)使用
 --------------
 
-`emq_plugin_template`_ 提供了全部钩子的使用示例，例如端到端的消息处理回调:
+emq_plugin_template 提供了全部钩子的使用示例，例如端到端的消息处理回调:
 
 .. code-block:: erlang
 
@@ -436,26 +431,26 @@ emqttd_hook模块实现Hook机制:
     -export([on_message_publish/2, on_message_delivered/4, on_message_acked/4]).
 
     load(Env) ->
-        emqttd:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
-        emqttd:hook('message.delivered', fun ?MODULE:on_message_delivered/4, [Env]),
-        emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
+        emqx:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
+        emqx:hook('message.delivered', fun ?MODULE:on_message_delivered/4, [Env]),
+        emqx:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
     on_message_publish(Message, _Env) ->
-        io:format("publish ~s~n", [emqttd_message:format(Message)]),
+        io:format("publish ~s~n", [emqx_message:format(Message)]),
         {ok, Message}.
 
     on_message_delivered(ClientId, _Username, Message, _Env) ->
-        io:format("delivered to client ~s: ~s~n", [ClientId, emqttd_message:format(Message)]),
+        io:format("delivered to client ~s: ~s~n", [ClientId, emqx_message:format(Message)]),
         {ok, Message}.
 
     on_message_acked(ClientId, _Username, Message, _Env) ->
-        io:format("client ~s acked: ~s~n", [ClientId, emqttd_message:format(Message)]),
+        io:format("client ~s acked: ~s~n", [ClientId, emqx_message:format(Message)]),
         {ok, Message}.
 
     unload() ->
-        emqttd:unhook('message.publish', fun ?MODULE:on_message_publish/2),
-        emqttd:unhook('message.acked', fun ?MODULE:on_message_acked/4),
-        emqttd:unhook('message.delivered', fun ?MODULE:on_message_delivered/4).
+        emqx:unhook('message.publish', fun ?MODULE:on_message_publish/2),
+        emqx:unhook('message.acked', fun ?MODULE:on_message_acked/4),
+        emqx:unhook('message.delivered', fun ?MODULE:on_message_delivered/4).
 
 .. _plugin:
 
@@ -465,9 +460,9 @@ emqttd_hook模块实现Hook机制:
 
 插件是一个可以被动态加载的普通Erlang应用(Application)。插件主要通过钩子(Hook)机制扩展服务器功能，或通过注册扩展模块方式集成认证访问控制。
 
-emqttd_plugins模块实现插件机制，提供加载卸载插件API::
+emqx_plugins模块实现插件机制，提供加载卸载插件API::
 
-    -module(emqttd_plugins).
+    -module(emqx_plugins).
 
     -export([load/1, unload/1]).
 
@@ -477,13 +472,13 @@ emqttd_plugins模块实现插件机制，提供加载卸载插件API::
     %% @doc UnLoad a Plugin
     unload(PluginName :: atom()) -> ok | {error, any()}.
 
-用户可通过'./bin/emqttd_ctl'命令行加载卸载插件::
+用户可通过'./bin/emqx_ctl'命令行加载卸载插件::
 
-    ./bin/emqttd_ctl plugins load emq_auth_redis
+    ./bin/emqx_ctl plugins load emq_auth_redis
 
-    ./bin/emqttd_ctl plugins unload emq_auth_redis
+    ./bin/emqx_ctl plugins unload emq_auth_redis
 
-开发者请参考模版插件: http://github.com/emqtt/emqttd_plugin_template
+开发者请参考模版插件: http://github.com/emqtt/emqx_plugin_template
 
 -----------------
 Mnesia/ETS 表设计
@@ -545,5 +540,4 @@ Erlang设计相关
 
 .. _eSockd: https://github.com/emqtt/esockd
 .. _Chain-of-responsibility_pattern: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
-.. _emq_plugin_template: https://github.com/emqtt/emqttd_plugin_template/blob/master/src/emqttd_plugin_template.erl
 

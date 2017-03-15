@@ -1,9 +1,13 @@
 
-# EMQPLUS企业版中文文档(R2)
+# EMQ X企业版中文文档(R2)
 
-EMQPLUS企业版是基于EMQ开源消息服务器开发设计的商业服务版本。EMQPLUS企业版支持更稳定的节点集群与更高性能的消息路由，支持消息数据存储Redis、MySQL、PostgreSQL与MongoDB等多种数据库，并由专业团队提供技术支持与咨询服务。EMQPLUS企业版可帮助客户快速开发基于MQTT协议的物联网、车联网、智能硬件和移动消息应用。
+EMQ X是开源EMQ消息服务器的企业版本。EMQ X改进系统设计架构，采用Scalable RPC机制，支持更稳定节点集群和更高性能消息路由。
 
-![emqplus-enterprise](./_static/images/emqplus_enterprise.png)
+EMQ X 支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持MQTT消息桥接转发Kafka、RabbitMQ企业消息中间件。
+
+EMQ X可以作为智能硬件、智能家居、物联网、车联网应用的百万级设备接入平台。
+
+![emqx-enterprise](./_static/images/emqx_enterprise.png)
 
 ## 版权
 

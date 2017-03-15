@@ -1,32 +1,28 @@
-.. EMQPLUS企业版中文文档 documentation master file, created by
+.. EMQ X Enterprise documentation master file, created by
    sphinx-quickstart on Thu Dec  8 18:06:27 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=================
-EMQ企业版中文文档
-=================
-
-EMQ企业版R2中文产品文档:
+============
+EMQ X 企业版
+============
 
 .. toctree::
    :maxdepth: 2
 
    overview
-   getstarted
-   backends
    install
    config
+   auth
+   backends
+   bridges
    guide
-   advanced
    cluster
-   bridge
    design
    cli
    plugins
    tune
    mqtt
-   supports
 
 支持与联系:
 

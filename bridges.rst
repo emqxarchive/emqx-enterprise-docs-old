@@ -2,132 +2,27 @@
 .. _bridge:
 
 ========
-节点桥接
+桥接转发
 ========
 
-.. _bridge_emq:
+EMQ X企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。同时支持mosquitto、rsmb以普通MQTT连接方式桥接到EMQ X。
 
--------------
-EMQ节点间桥接
--------------
+.. _kafka_bridge:
 
-*EMQ* 消息服务器支持多节点桥接模式互联::
+---------
+Kafka桥接
+---------
 
-                  ---------                     ---------                     ---------
-    Publisher --> | Node1 | --Bridge Forward--> | Node2 | --Bridge Forward--> | Node3 | --> Subscriber
-                  ---------                     ---------                     ---------
+EMQ X桥接转发MQTT消息到Kafka集群::
 
-节点间桥接与集群不同，不复制主题树与路由表，只按桥接规则转发MQTT消息。
+                  ---------             ---------
+    Publisher --> | EMQ X | --Bridge--> | Kafka | --> Subscriber
+                  ---------             ---------
 
-EMQ节点桥接配置
----------------
+Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
-假设在本机创建两个EMQ节点，并创建一条桥接转发全部传感器(sensor)主题消息:
-
-+---------+------------------+----------+
-| 目录    | 节点             | MQTT端口 |
-+---------+------------------+----------+
-| emqttd1 | emq1@127.0.0.1   | 1883     |
-+---------+------------------+----------+
-| emqttd2 | emq2@127.0.0.1   | 2883     |
-+---------+------------------+----------+
-
-启动emq1, emq2节点:
-
-.. code-block:: bash
-
-    cd emqttd1/ && ./bin/emqttd start
-    cd emqttd2/ && ./bin/emqttd start
-
-emq1节点上创建到emq2桥接:
-
-.. code-block:: bash
-
-    $ ./bin/emqctl bridges start emq2@127.0.0.1 sensor/#
-
-    bridge is started.
-
-    $ ./bin/emqctl bridges list
-
-    bridge: emq1@127.0.0.1--sensor/#-->emq2@127.0.0.1
-
-测试emq1--sensor/#-->emq2的桥接:
-
-.. code-block:: bash
-
-    #emqttd2节点上
-
-    mosquitto_sub -t sensor/# -p 2883 -d
-
-    #emqttd1节点上
-
-    mosquitto_pub -t sensor/1/temperature -m "37.5" -d
-
-删除桥接:
-
-.. code-block:: bash
-
-    ./bin/emqctl bridges stop emq2@127.0.0.1 sensor/#
-
-.. _bridge_mosquitto:
-
--------------
-mosquitto桥接
--------------
-
-mosquitto可以普通MQTT连接方式，桥接到 *EMQ* 消息服务器::
-
-                 -------------             -----------------
-    Sensor ----> | mosquitto | --Bridge--> |               |
-                 -------------             |      EMQ      |
-                 -------------             |    Cluster    |
-    Sensor ----> | mosquitto | --Bridge--> |               |
-                 -------------             -----------------
-
-mosquitto.conf
---------------
-
-本机2883端口启动emqttd消息服务器，1883端口启动mosquitto并创建桥接。
-
-mosquitto.conf配置::
-
-    connection emqttd
-    address 127.0.0.1:2883
-    topic sensor/# out 2
-
-    # Set the version of the MQTT protocol to use with for this bridge. Can be one
-    # of mqttv31 or mqttv311. Defaults to mqttv31.
-    bridge_protocol_version mqttv311
-
-.. _bridge_rsmb:
-
---------
-rsmb桥接
---------
-
-本机2883端口启动emqttd消息服务器，1883端口启动rsmb并创建桥接。
-
-broker.cfg桥接配置::
-
-    connection emqttd
-    addresses 127.0.0.1:2883
-    topic sensor/#
-
-.. _bridge_kafka:
-
-------------
-Kafka消息桥接
-------------
-*EMQX* 消息服务器支持消息桥接到Kafka server::
-
-                   ---------                      --------- 
-    Publisher -->  |  EMQX  | --Bridge Forward--> | Kafka  |  --> Subscriber
-                   ---------                      --------- 
-
-配置Kafka消息桥接
------------------------
-
-etc/plugins/emqx_bridge_kafka.conf:
+配置Kafka集群地址
+-----------------
 
 .. code-block:: properties
 
@@ -139,6 +34,11 @@ etc/plugins/emqx_bridge_kafka.conf:
     
     ## Kafka Parition Strategy
     bridge.kafka.parition_strategy = random
+
+配置Kafka桥接规则
+-----------------
+
+.. code-block:: properties
     
     ## Client Connected Record Hook
     bridge.kafka.hook.client.connected.1 = {"action": "on_client_connected", "pool": "pool1", "topic": "client_connected"}
@@ -161,7 +61,8 @@ etc/plugins/emqx_bridge_kafka.conf:
     ## Message Acked Record Hook
     bridge.kafka.hook.message.acked.1 = {"action": "on_message_acked", "filter": "#", "pool": "pool1", "topic": "message_acked"}
 
-*bridge* 消息桥接规则包括:
+Kafka桥接规则说明
+-----------------
 
 +------------------------+----------------------------------+
 | action                 | 说明                             |
@@ -181,154 +82,164 @@ etc/plugins/emqx_bridge_kafka.conf:
 | on_message_acked       | ACK消息                          |
 +------------------------+----------------------------------+
 
-加载Kafka消息桥接插件
+客户端上下线事件转发Kafka
+-------------------------
+
+设备上线 EMQ X转发上线事件消息到Kafka:
+
+.. code-block:: javascript
+    
+    topic = "client_connected",
+    value = {
+             "client_id": ${clientid}, 
+             "node": ${node}, 
+             "ts": ${ts}
+            }
+
+设备下线 EMQ X转发下线事件消息到Kafka:
+
+.. code-block:: javascript
+
+    topic = "client_disconnected",
+    value = {
+            "client_id": ${clientid},
+            "reason": ${reason},
+            "node": ${node},
+            "ts": ${ts}
+            }
+
+客户端订阅主题事件转发Kafka
+---------------------------
+
+.. code-block:: javascript
+    
+    topic = session_subscribed
+
+    value = {
+             "client_id": ${clientid},
+             "topic": ${topic},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+客户端取消订阅主题事件转发Kafka
+--------------------------------
+
+.. code-block:: javascript
+    
+    topic = session_unsubscribed
+
+    value = {
+             "client_id": ${clientid},
+             "topic": ${topic},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+MQTT消息转发到Kafka
 -------------------
+
+.. code-block:: javascript
+
+    topic = message_publish
+
+    value = {
+             "client_id": ${clientid},
+             "username": ${username},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node}, 
+             "ts": ${timestamp}
+            }
+
+MQTT消息派发(Deliver)事件转发Kafka
+----------------------------------
+
+.. code-block:: javascript
+    
+    topic = message_delivered
+
+    value = {"client_id": ${clientid},
+             "username": ${username},
+             "from": ${fromClientId},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+MQTT消息确认(Ack)事件转发Kafka
+-------------------------------
+
+.. code-block:: javascript
+    
+    topic = message_acked
+
+    value = {
+             "client_id": ${clientid},
+             "username": ${username},
+             "from": ${fromClientId},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+Kafka消费示例
+-------------
+
+Kafka读取MQTT客户端上下线事件消息::
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_connected --from-beginning
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_disconnected --from-beginning
+
+Kafka读取MQTT主题订阅事件消息::
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_subscribed --from-beginning
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_unsubscribed --from-beginning
+
+Kafka读取MQTT发布消息::
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_publish --from-beginning
+    
+Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
+
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_delivered --from-beginning
+    
+    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_acked --from-beginning
+    
+.. NOTE:: payload为base64编码
+
+启用Kafka桥接插件
+-----------------
 
 .. code-block:: bash
 
     ./bin/emqx_ctl plugins load emqx_bridge_kafka
 
-Kafka EMQ客户端连接消息(topic, json)
----------------------------------
+.. _rabbit_bridge:
 
-.. code-block:: javascript
-    
-    topic = "client_connected",
-    value = {"client_id": ClientId, 
-             "node": node(), 
-             "ts": emqx_time:now_secs()}
+------------
+RabbitMQ桥接
+------------
 
-Kafka EMQ客户端断开连接消息(topic, json)
----------------------------------
+EMQ X桥接转发MQTT消息到RabbitMQ集群::
 
-.. code-block:: javascript
-    
-    topic = "client_disconnected",
-    value = {"client_id": ClientId, 
-     "reason": Reason, 
-     "node": node(), 
-     "ts": emqx_time:now_secs()}
+                  ----------             ------------ 
+    Publisher --> | EMQ X  | --Bridge--> | RabbitMQ |  --> Subscriber
+                  ----------             ------------ 
 
-Kafka EMQ订阅主题消息(topic, json)
----------------------------------
+RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
-.. code-block:: javascript
-    
-    topic = session_subscribed
-    value = {"client_id": ClientId, 
-     "topic": Topic, 
-     "qos": Qos,
-     "node": node(), 
-     "ts": emqx_time:now_secs()}
-
-Kafka EMQ取消订阅主题消息(topic, json)
----------------------------------
-
-.. code-block:: javascript
-    
-    topic = session_unsubscribed
-    value = {"client_id": ClientId, 
-             "topic": Topic, 
-             "qos": Qos,
-             "node": node(), 
-             "ts": emqx_time:now_secs()}
-
-Kafka EMQ发布消息(topic, json)
----------------------------------
-
-.. code-block:: javascript
-
-    topic = message_publish
-    value = {"client_id": ClientId, 
-             "username": Username, 
-             "topic": Topic, 
-             "payload": Payload, 
-             "qos": Qos,
-             "node": node(), 
-             "ts": emqx_time:now_secs()}
-
-Kafka EMQ Delivered消息(topic, json)
----------------------------------
-
-.. code-block:: javascript
-    
-    topic = message_delivered
-    value = {"client_id": ClientId, 
-             "username": Username, 
-             "from": FromClientId,
-             "topic": Topic, 
-             "payload": Payload, 
-             "qos": Qos,
-             "node": node(), 
-             "ts": emqx_time:now_secs()}
-
-
-Kafka EMQ Acked消息(json)
----------------------------------
-
-.. code-block:: javascript
-    
-    topic = message_acked
-    value = {"client_id": ClientId, 
-             "username": Username,
-             "from": FromClientId, 
-             "topic": Topic, 
-             "payload": Payload, 
-             "qos": Qos,
-             "node": node(), 
-             "ts": emqx_time:now_secs()}
-     
-示例
-----
-    
-Kafka消费者订 emq阅客户端连接消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_connected --from-beginning
-    
-Kafka消费者订 emq阅客户端断开连接消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_disconnected --from-beginning
-    
-Kafka消费者订阅 emq订阅主题消息消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_subscribed --from-beginning
-    
-Kafka消费者订阅 emq取消订阅主题消息消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_unsubscribed --from-beginning
-    
-Kafka消费者订阅 emq发布消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_publish --from-beginning
-    
-Kafka消费者订阅 emq delivered消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_delivered --from-beginning
-    
-Kafka消费者订阅 emq acked消息::
-
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_acked --from-beginning
-    
-注意:: 
-
-  payload被base64编码，因此kafka消费者应该做base64解码以获得原始的payload。
-
-
-.. _bridge_rabbit:
-
----------------
-RabbitMQ消息桥接
----------------
-*EMQX* 消息服务器支持消息桥接到RabbitMQ server::
-
-                   ---------                      ------------ 
-    Publisher -->  |  EMQX  | --Bridge Forward--> | RabbitMQ |  --> Subscriber
-                   ---------                      ------------ 
-
-配置RabbitMQ消息桥接
------------------------
-
-etc/plugins/emqx_bridge_rabbit.conf:
+配置RabbitMQ集群地址
+--------------------
 
 .. code-block:: properties
 
@@ -362,6 +273,11 @@ etc/plugins/emqx_bridge_rabbit.conf:
 
     # bridge.rabbit.1.heartbeat = 0
 
+配置RabbitMQ桥接规则
+--------------------
+
+.. code-block:: properties
+
     ## Bridge Hooks
     bridge.rabbit.hook.client.subscribe.1 = {"action": "on_client_subscribe", "rabbit": 1, "exchange": "direct:emq.subscription"}
 
@@ -373,15 +289,8 @@ etc/plugins/emqx_bridge_rabbit.conf:
 
     bridge.rabbit.hook.message.acked.1 = {"action": "on_message_acked", "rabbit": 1, "exchange": "topic:emq.acked"}
 
-加载RabbitMQ消息桥接插件
-----------------------
-
-.. code-block:: bash
-
-    ./bin/emqx_ctl plugins load emqx_bridge_rabbit
-
-RabbitMQ EMQX客户端订阅主题(exchange, routing_key, headers, payload)
------------------------------------------------------
+客户端订阅主题事件转发RabbitMQ
+------------------------------
 
 .. code-block:: javascript
 
@@ -390,8 +299,8 @@ RabbitMQ EMQX客户端订阅主题(exchange, routing_key, headers, payload)
     headers = [{<<"x-emq-client-id">>, binary, ClientId}]
     payload = jsx:encode([{Topic, proplists:get_value(qos, Opts)} || {Topic, Opts} <- TopicTable])
 
-RabbitMQ EMQX客户端取消订阅主题(exchange, routing_key, headers, payload)
------------------------------------------------------
+客户端取消订阅事件转发RabbitMQ
+------------------------------
 
 .. code-block:: javascript
 
@@ -400,9 +309,8 @@ RabbitMQ EMQX客户端取消订阅主题(exchange, routing_key, headers, payload
     headers = [{<<"x-emq-client-id">>, binary, ClientId}]
     payload = jsx:encode([Topic || {Topic, _Opts} <- TopicTable]),
 
-
-RabbitMQ EMQX客户端发布消息(exchange, routing_key, headers, payload)
------------------------------------------------------
+MQTT消息转发RabbitMQ
+--------------------
 
 .. code-block:: javascript
 
@@ -413,8 +321,8 @@ RabbitMQ EMQX客户端发布消息(exchange, routing_key, headers, payload)
                {<<"x-emq-publish-msgid">>, binary, emqx_base62:encode(Id)}]
     payload = Payload
 
-RabbitMQ EMQX客户端发布ACK消息(exchange, routing_key, headers, payload)
------------------------------------------------------
+MQTT消息确认(Ack)事件转发RabbitMQ
+---------------------------------
 
 .. code-block:: javascript
 
@@ -423,10 +331,12 @@ RabbitMQ EMQX客户端发布ACK消息(exchange, routing_key, headers, payload)
     headers = [{<<"x-emq-msg-acked">>, binary, ClientId}],
     payload = emqx_base62:encode(Id)
 
-示例
-----
+RabbitMQ订阅消费MQTT消息示例
+----------------------------
 
-python RabbitMQ消费者代码示例::
+Python RabbitMQ消费者代码示例:
+
+.. code-block:: javascript
 
     #!/usr/bin/env python
     import pika
@@ -448,9 +358,106 @@ python RabbitMQ消费者代码示例::
     channel.basic_consume(callback, queue=queue_name, no_ack=True)
 
     channel.start_consuming()
-    
 
-其他语言RabbitMQ消费者代码示例请查看::
+其他语言RabbitMQ客户端代码示例::
 
     https://github.com/rabbitmq/rabbitmq-tutorials
+    
+启用RabbitMQ桥接插件
+--------------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_bridge_rabbit
+
+.. _emqx_bridge:
+
+-------------
+EMQ X节点桥接
+-------------
+
+EMQ X支持多节点间桥接模式互联::
+
+                  ---------             ---------
+    Publisher --> | EMQ X | --Bridge--> | EMQ X | --> Subscriber
+                  ---------             --------- 
+
+假设创建emqx1, emqx2两个节点:
+
++---------+--------------------+
+| 目录    | 节点               |
++---------+--------------------+
+| emqx1   | emqx1@192.168.1.10 |
++---------+--------------------+
+| emqx2   | emqx2@192.168.1.20 |
++---------+--------------------+
+
+启用emqx1, emqx2节点后，emqx1节点创建到emqx2桥接，转发全部'sensor/#'主题消息到emqx2:
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges start emqx2@192.168.1.20 sensor/#
+
+    bridge is started.
+
+    $ ./bin/emqx_ctl bridges list
+
+    bridge: emqx1@127.0.0.1--sensor/#-->emqx2@127.0.0.1
+
+测试emqx1--sensor/#-->emqx2的桥接:
+
+.. code-block:: bash
+
+    #emqx2节点上
+
+    mosquitto_sub -t sensor/# -p 2883 -d
+
+    #emqx1节点上
+
+    mosquitto_pub -t sensor/1/temperature -m "37.5" -d
+
+删除桥接:
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl bridges stop emqx2@127.0.0.1 sensor/#
+
+.. _mosquitto_bridge:
+
+-------------
+mosquitto桥接
+-------------
+
+mosquitto可以普通MQTT连接方式，桥接到EMQ X服务器集群::
+
+                 -------------             -----------------
+    Sensor ----> | mosquitto | --Bridge--> |               |
+                 -------------             |     EMQ X     |
+                 -------------             |    Cluster    |
+    Sensor ----> | mosquitto | --Bridge--> |               |
+                 -------------             -----------------
+
+mosquitto.conf桥接配置示例::
+
+    connection emqx
+    address 192.168.0.10:1883
+    topic sensor/# out 2
+
+    # Set the version of the MQTT protocol to use with for this bridge. Can be one
+    # of mqttv31 or mqttv311. Defaults to mqttv31.
+    bridge_protocol_version mqttv311
+
+.. _rsmb_bridge:
+
+--------
+rsmb桥接
+--------
+
+rsmb以普通MQTT连接方式，桥接到 EMQ X服务器集群。
+
+rsmb broker.cfg示例配置::
+
+    connection emqx
+    addresses 127.0.0.1:2883
+    topic sensor/#
 
