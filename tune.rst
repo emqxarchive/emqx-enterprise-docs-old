@@ -1,11 +1,13 @@
 
+.. _tune:
+
 ========
 测试调优
 ========
 
-*EMQ* 消息服务器1.x版本MQTT连接压力测试到130万，在一台12核心、32G内存的CentOS服务器上。
+EMQ X企业版R2版本MQTT连接压力测试到100万，在一台8核心、32G内存的CentOS服务器上。
 
-100万连接测试所需的Linux内核参数，网络协议栈参数，Erlang虚拟机参数，*EMQ* 消息服务器参数设置如下:
+100万连接测试所需的Linux内核参数，网络协议栈参数，Erlang虚拟机参数，EMQ X参数设置如下:
 
 -----------------
 Linux操作系统参数
@@ -85,7 +87,7 @@ FIN-WAIT-2 Socket超时设置::
 Erlang虚拟机参数
 ----------------
 
-优化设置Erlang虚拟机启动参数，配置文件etc/emq.conf:
+优化设置Erlang虚拟机启动参数，配置文件etc/emqx.conf:
 
 .. code-block:: properties
 
@@ -95,18 +97,18 @@ Erlang虚拟机参数
     ## Sets the maximum number of simultaneously existing ports for this system
     node.max_ports = 1048576
 
------------------
-EMQ消息服务器参数
------------------
+----------
+EMQ X参数
+----------
 
-设置TCP监听器的Acceptor池大小，最大允许连接数。配置文件etc/emq.conf:
+设置TCP监听器的Acceptor池大小，最大允许连接数。配置文件etc/emqx.conf:
 
 .. code-block:: properties
 
     ## TCP Listener
-    mqtt.listener.tcp = 1883
-    mqtt.listener.tcp.acceptors = 64
-    mqtt.listener.tcp.max_clients = 1000000
+    mqtt.listener.tcp.external= 1883
+    mqtt.listener.tcp.external.acceptors = 64
+    mqtt.listener.tcp.external.max_clients = 1000000
 
 --------------
 测试客户端设置
@@ -118,8 +120,8 @@ EMQ消息服务器参数
     echo 1000000 > /proc/sys/fs/nr_open
     ulimit -n 100000
 
-emqtt_benchmark
----------------
+mqtt-jmeter
+------------
 
-并发连接测试工具: http://github.com/emqtt/emqtt_benchmark
+MQTT模拟测试工具: https://github.com/emqtt/mqtt-jmeter
 

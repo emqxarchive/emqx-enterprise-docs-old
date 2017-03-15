@@ -1,12 +1,12 @@
 
 .. _backends:
 
-============
-数据存储设计
-============
+========
+数据存储
+========
 
 ------------
-MQTT消息存储
+数据存储设计
 ------------
 
 一对一消息存储
@@ -43,52 +43,45 @@ MQTT消息存储
 
 6. Backend记录SUB1和SUB2已读消息位置，下次获取消息从该位置开始。
 
---------------
-客户端在线状态
---------------
+客户端在线状态存储
+------------------
 
 EMQ X存储支持将设备上下线状态，直接存储到Redis或数据库。
 
---------------
 客户端代理订阅
 --------------
 
 EMQ X存储支持代理订阅功能。设备客户端上线时，由存储模块直接从数据库，代理加载订阅主题。
 
-------------
 存储插件列表
 ------------
 
-EMQ X支持MQTT消息直接存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库:
+EMQ X支持MQTT消息直接存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra数据库:
 
-+--------------------------+---------------------------+
-| 存储插件                 | 说明                      |
-+==========================+===========================+
-| emqx_backend_redis       | Redis消息存储             |
-+--------------------------+---------------------------+
-| emqx_backend_mysql       | MySQL消息存储             |
-+--------------------------+---------------------------+
-| emqx_backend_pgsql       | PostgreSQL消息存储        |
-+--------------------------+---------------------------+
-| emqx_backend_mongo       | MongoDB消息存储           |
-+--------------------------+---------------------------+
-| emqx_backend_cassa       | Cassandra消息存储         |
-+--------------------------+---------------------------+
++-----------------------+--------------------------+---------------------------+
+| 存储插件              | 配置文件                 | 说明                      |
++=======================+==========================+===========================+
+| emqx_backend_redis    | emqx_backend_redis.conf  | Redis消息存储             |
++-----------------------+--------------------------+---------------------------+
+| emqx_backend_mysql    | emqx_backend_mysql.conf  | MySQL消息存储             |
++-----------------------+--------------------------+---------------------------+
+| emqx_backend_pgsql    | emqx_backend_pgsql.conf  | PostgreSQL消息存储        |
++-----------------------+--------------------------+---------------------------+
+| emqx_backend_mongo    | emqx_backend_mongo.conf  | MongoDB消息存储           |
++-----------------------+--------------------------+---------------------------+
+| emqx_backend_cassa    | emqx_backend_cassa.conf  | Cassandra消息存储         |
++-----------------------+--------------------------+---------------------------+
 
 .. _redis_backend:
 
-=============
+-------------
 Redis数据存储
-=============
-
--------------
-Redis存储配置
 -------------
 
-配置文件: etc/plugins/emqx_backend_redis.conf
+配置文件: emqx_backend_redis.conf
 
 配置Redis服务器
-----------------
+---------------
 
 支持配置多台Redis服务器连接池:
 
@@ -147,7 +140,6 @@ Redis存储配置
     ## Store Ack for many
     backend.redis.hook.message.acked.2       = {"topic": "pubsub/#", "action": {"function": "on_message_acked_for_pubsub"}, "pool": "pool1"}
 
------------------
 Redis存储规则说明
 -----------------
 
@@ -177,7 +169,6 @@ Redis存储规则说明
 | message.acked          | pubsub/#               | on_message_acked_for_pubsub | 一对多消息ACK处理                |
 +------------------------+------------------------+-----------------------------+----------------------------------+
 
---------------------
 Redis 命令行参数说明
 --------------------
 
@@ -199,7 +190,6 @@ Redis 命令行参数说明
 | message.delivered    | msgid, topic, clientid                        | HSET delivered:${clientid} topic msgid  |
 +----------------------+-----------------------------------------------+-----------------------------------------+
 
-------------------------
 Redis 命令行配置Action
 ------------------------
 
@@ -211,7 +201,6 @@ Redis存储支持用户采用Redis Commands语句配置Action，例如:
     backend.redis.hook.client.connected.3 = {"action": {"commands": ["SET conn:${clientid} clientid"]}, "pool": "pool1"}
 
 
------------------------
 Redis 设备在线状态Hash
 -----------------------
 
@@ -250,7 +239,6 @@ Redis 设备在线状态Hash
     5) "offline_at"
     6) "1481685924"
 
-------------------
 Redis 保留消息Hash
 ------------------
 
@@ -282,7 +270,6 @@ Redis 保留消息Hash
     13) "ts"
     14) "1481690659"
 
--------------------
 Redis 消息存储Hash
 -------------------
 
@@ -297,7 +284,6 @@ Redis 消息存储Hash
     field = 1
     value = ${msgid}
 
------------------
 Redis 消息确认SET
 -----------------
 
@@ -307,7 +293,6 @@ Redis 消息确认SET
     key = mqtt:acked:${clientid}:${topic}
     value = ${msgid}
 
--------------------
 Redis 订阅存储Hash
 -------------------
 
@@ -335,7 +320,6 @@ Redis 订阅存储Hash
     3) "topic2"
     4) "2"
  
------------------------
 Redis SUB/UNSUB事件发布
 -----------------------
 
@@ -354,7 +338,6 @@ Redis SUB/UNSUB事件发布
 
     PUBLISH "mqtt_channel" "{\"type\": \"unsubscribe\", \"topic\": \"test_topic0\", \"clientid\": \"test\"}"
 
------------------
 启用Redis存储插件
 -----------------
 
@@ -364,15 +347,11 @@ Redis SUB/UNSUB事件发布
 
 .. _mysql_backend:
 
-=============
+-------------
 MySQL数据存储
-=============
-
--------------
-MySQL存储配置
 -------------
 
-配置文件: etc/plugins/emqx_backend_mysql.conf:
+配置文件: emqx_backend_mysql.conf
 
 配置MySQL服务器
 ----------------
@@ -428,7 +407,6 @@ MySQL存储配置
     ## Store Ack
     backend.mysql.hook.message.acked.1       = {"topic": "#", "action": {"function": "on_message_acked"}, "pool": "pool1"}
 
-------------------
 MySQL 存储规则说明
 ------------------
 
@@ -454,7 +432,6 @@ MySQL 存储规则说明
 | message.acked          | #                      | on_message_acked        | 消息ACK处理                      |
 +------------------------+------------------------+-------------------------+----------------------------------+
 
----------------
 SQL语句参数说明
 ---------------
 
@@ -476,18 +453,16 @@ SQL语句参数说明
 | message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 
-------------------
 SQL语句配置Action
 ------------------
 
-MySQL存储支持用户采用SQL语句配置Action，例如:
+MySQL存储支持用户采用SQL语句配置Action:
 
 .. code-block:: properties
 
     ## 在客户端连接到EMQ服务器后，执行一条sql语句(支持多条sql语句) 
     backend.mysql.hook.client.connected.3 = {"action": {"sql": ["insert into conn(clientid) values(${clientid})"]}, "pool": "pool1"}
 
------------------
 创建MySQL数据库表
 -----------------
 
@@ -504,7 +479,6 @@ MySQL存储支持用户采用SQL语句配置Action，例如:
 
 .. NOTE:: 数据库名称可自定义
 
---------------------
 MySQL 设备在线状态表
 --------------------
 
@@ -558,11 +532,10 @@ MySQL 设备在线状态表
     +----+----------+-------+------------------+---------------------+---------------------+---------------------+
     1 rows in set (0.00 sec)
 
-----------------
-MySQL 代理订阅表
+MySQL 主题订阅表
 ----------------
 
-*mqtt_sub* 存储订阅关系:
+*mqtt_sub* 存储设备的主题订阅关系:
 
 .. code-block:: sql
 
@@ -605,7 +578,6 @@ MySQL 代理订阅表
     +----+--------------+-------------+------+---------------------+
     2 rows in set (0.00 sec)
 
-----------------
 MySQL 消息存储表
 ----------------
 
@@ -647,7 +619,6 @@ MySQL 消息存储表
     +----+-------------------------------+----------+--------+------+-----+--------+---------+---------------------+
     2 rows in set (0.00 sec)
 
-----------------
 MySQL 保留消息表
 ----------------
 
@@ -688,7 +659,6 @@ mqtt_retain 存储Retain消息:
     +----+----------+-------------------------------+---------+------+------+---------+---------------------+
     1 rows in set (0.00 sec)
 
-----------------
 MySQL 消息确认表
 ----------------
 
@@ -707,7 +677,6 @@ MySQL 消息确认表
       UNIQUE KEY `mqtt_acked_key` (`clientid`,`topic`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
------------------
 启用MySQL数据存储
 -----------------
 
@@ -718,17 +687,12 @@ MySQL 消息确认表
 
 .. _postgre_backend:
 
-===================
-PostgreSQL 数据存储
-===================
-
-------------------
-PostgreSQL存储配置
-------------------
-
-配置文件: etc/plugins/emqx_backend_pgsql.conf:
-
 --------------------
+PostgreSQL 数据存储
+--------------------
+
+配置文件: emqx_backend_pgsql.conf
+
 配置PostgreSQL服务器
 --------------------
 
@@ -754,7 +718,6 @@ PostgreSQL存储配置
     ## Pgsql Ssl
     backend.pgsql.pool1.ssl = false  
 
-----------------------
 配置PostgreSQL存储规则
 ----------------------
 
@@ -787,7 +750,6 @@ PostgreSQL存储配置
     ## Store Ack
     backend.pgsql.hook.message.acked.1       = {"topic": "#", "action": {"function": "on_message_acked"}, "pool": "pool1"}
 
------------------------
 PostgreSQL 存储规则说明
 -----------------------
 
@@ -813,7 +775,6 @@ PostgreSQL 存储规则说明
 | message.acked          | #                      | on_message_acked        | 消息ACK处理                      |
 +------------------------+------------------------+-------------------------+----------------------------------+
 
----------------
 SQL语句参数说明
 ---------------
 
@@ -835,7 +796,6 @@ SQL语句参数说明
 | message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |
 +----------------------+---------------------------------------+----------------------------------------------------------------+
 
-------------------
 SQL语句配置Action
 ------------------
 
@@ -846,7 +806,6 @@ PostgreSQL存储支持用户采用SQL语句配置Action，例如:
     ## 在客户端连接到EMQ服务器后，执行一条sql语句(支持多条sql语句) 
     backend.pgsql.hook.client.connected.3 = {"action": {"sql": ["insert into conn(clientid) values(${clientid})"]}, "pool": "pool1"}
 
---------------------
 创建PostgreSQL数据库
 --------------------
     
@@ -863,7 +822,6 @@ PostgreSQL存储支持用户采用SQL语句配置Action，例如:
 
 .. NOTE:: 数据库名称可自定义
 
--------------------------
 PostgreSQL 设备在线状态表
 -------------------------
 
@@ -902,7 +860,6 @@ PostgreSQL 设备在线状态表
       1 | test     | 0     | emqttd@127.0.0.1 | 2016-11-15 09:40:40 | 2016-11-15 09:46:10 | 2016-12-24 09:40:22 
     (1 rows)
 
----------------------
 PostgreSQL 代理订阅表
 ---------------------
     
@@ -938,7 +895,6 @@ PostgreSQL 代理订阅表
       2 | test         | test_topic2 |    2 | 2016-12-24 17:12:51
     (2 rows) 
 
----------------------
 PostgreSQL 消息存储表
 ---------------------
 
@@ -971,11 +927,10 @@ PostgreSQL 消息存储表
      2  | 53F98F9FE42AD7005000004A60004 | world    | test   | NULL |   1 |      0 | world   | 2016-12-24 17:25:45 
     (2 rows)
 
----------------------
 PostgreSQL 保留消息表
 ---------------------
 
-mqtt_retain 存储Retain消息:
+*mqtt_retain* 存储Retain消息:
 
 .. code-block:: sql
 
@@ -1003,7 +958,6 @@ mqtt_retain 存储Retain消息:
       1 | retain   | 53F33F7E4741E7007000004B70001 | test    | NULL |    1 | www     | 2016-12-24 16:55:18 
     (1 rows)
     
----------------------
 PostgreSQL 消息确认表
 ---------------------
 
@@ -1020,7 +974,6 @@ PostgreSQL 消息确认表
       UNIQUE (clientid, topic)
     );
 
-----------------------
 启用PostgreSQL存储插件
 ----------------------
 
@@ -1032,15 +985,11 @@ PostgreSQL 消息确认表
 
 .. _mongodb_backend:
 
-===============
+---------------
 MongoDB数据存储
-===============
-
----------------
-MongoDB存储配置
 ---------------
 
-配置文件: etc/plugins/emqx_backend_mongo.conf
+配置文件: emqx_backend_mongo.conf
 
 配置MongoDB服务器
 -----------------
@@ -1090,7 +1039,6 @@ MongoDB存储配置
     ## Store Ack
     backend.mongo.hook.message.acked.1       = {"topic": "#", "action": {"function": "on_message_acked"}, "pool": "pool1"}
 
--------------------
 MongoDB存储规则说明
 -------------------
 
@@ -1116,7 +1064,6 @@ MongoDB存储规则说明
 | message.acked          | #                      | on_message_acked        | 消息ACK处理                      |
 +------------------------+------------------------+-------------------------+----------------------------------+
 
----------------------
 创建MongoDB数据库集合
 ---------------------
 
@@ -1136,9 +1083,8 @@ MongoDB存储规则说明
 
 .. NOTE:: 数据库名称可自定义
 
---------------------------
-MongoDB 客户端在线状态集合
---------------------------
+MongoDB 设备在线状态集合
+------------------------
 
 *mqtt_client* 存储设备在线状态:
 
@@ -1188,9 +1134,8 @@ MongoDB 客户端在线状态集合
         "offline_at" : 1482976501
     }
 
----------------------
-MongoDB 代理订阅集合
----------------------
+MongoDB 主题订阅集合
+--------------------
 
 *mqtt_sub* 存储订阅关系:
 
@@ -1218,7 +1163,6 @@ MongoDB 代理订阅集合
     { "_id" : ObjectId("58646d90c65dff6ac9668ca1"), "clientid" : "test", "topic" : "test_topic1", "qos" : 1 }
     { "_id" : ObjectId("58646d96c65dff6ac9668ca2"), "clientid" : "test", "topic" : "test_topic2", "qos" : 2 }
 
---------------------
 MongoDB 消息存储集合
 --------------------
 
@@ -1259,7 +1203,6 @@ MongoDB 消息存储集合
         "arrived" : 1482976729 
     }
 
---------------------
 MongoDB 保留消息集合
 --------------------
 
@@ -1297,7 +1240,6 @@ MongoDB 保留消息集合
         "arrived" : 1482976729
     }
 
---------------------
 MongoDB 消息确认集合
 --------------------
 
@@ -1311,7 +1253,6 @@ MongoDB 消息确认集合
         mongo_id: int
     }
 
--------------------
 启用MongoDB数据存储
 -------------------
 
@@ -1321,15 +1262,11 @@ MongoDB 消息确认集合
 
 .. _cassandra_backend:
 
-=================
+-----------------
 Cassandra数据存储
-=================
-
------------------
-Cassandra存储配置
 -----------------
 
-配置文件: etc/plugins/emqx_backend_cassa.conf:
+配置文件: etc/plugins/emqx_backend_cassa.conf
 
 配置Cassandra集群地址
 ---------------------
@@ -1394,7 +1331,6 @@ Cassandra存储配置
     ## Store Ack
     backend.cassa.hook.message.acked.1       = {"topic": "#", "action": {"function": "on_message_acked"}, "pool": "pool1"}
 
----------------------
 Cassandra存储规则说明
 ---------------------
 
@@ -1420,7 +1356,6 @@ Cassandra存储规则说明
 | message.acked          | #                      | on_message_acked        | 消息ACK处理                      |
 +------------------------+------------------------+-------------------------+----------------------------------+
 
----------------
 CQL语句参数说明
 ---------------
 
@@ -1444,7 +1379,6 @@ CQL语句参数说明
 | message.delivered    | msgid, topic, clientid                | insert into delivered(msgid, topic) values(${msgid}, ${topic}) |		
 +----------------------+---------------------------------------+----------------------------------------------------------------+		
 
----------------------
 CQL语句方式配置Action
 ---------------------
 
@@ -1455,7 +1389,6 @@ Cassandra存储支持用户采用CQL语句配置规则Action，例如:
     ## 在客户端连接到EMQ服务器后，执行一条cql语句(支持多条cql语句) 
     backend.cassa.hook.client.connected.3 = {"action": {"cql": ["insert into conn(clientid) values(${clientid})"]}, "pool": "pool1"}
 
----------------
 Cassandra初始化
 ---------------
 
@@ -1474,7 +1407,6 @@ Cassandra初始化
 
 .. NOTE:: 数据库名称可自定义
 
-------------------------
 Cassandra 设备在线状态表
 ------------------------
 
@@ -1509,11 +1441,10 @@ Cassandra 设备在线状态表
     -----------+---------------------------------+---------------------------------+-----------------+-------
           test | 2017-02-14 08:27:29.872000+0000 | 2017-02-14 08:27:35.872000+0000 | emqttd@127.0.0.1|     0
 
---------------------
-Cassandra 代理订阅表
+Cassandra 主题订阅表
 --------------------
 
-*mqtt.sub* 存储订阅关系::
+*mqtt.sub* 存储设备订阅关系::
 
     CREATE TABLE mqtt.sub (
         client_id text,
@@ -1540,8 +1471,7 @@ Cassandra 代理订阅表
           test | test_topic1 |   1
           test | test_topic2 |   2
     
---------------------
-Cassandra 发布消息表
+Cassandra 消息存储表
 --------------------
 
 *mqtt.msg* 存储MQTT消息::
@@ -1570,7 +1500,6 @@ Cassandra 发布消息表
      hello | 2PguFrHsrzEvIIBdctmb | 2017-02-14 09:07:13.785000+0000 | Hello world! |   1 |      0 |   test
      world | 2PguFrHsrzEvIIBdctmb | 2017-02-14 09:07:13.785000+0000 | Hello world! |   1 |      0 |   test
 
---------------------
 Cassandra 保留消息表
 --------------------
 
@@ -1594,7 +1523,6 @@ Cassandra 保留消息表
     --------+----------------------
      retain | 2PguFrHsrzEvIIBdctmb 
 
---------------------
 Cassandra 消息确认表
 --------------------
 
@@ -1607,7 +1535,6 @@ Cassandra 消息确认表
         PRIMARY KEY(client_id, topic)
       );
 
----------------------
 启用Cassandra存储插件
 ---------------------
 

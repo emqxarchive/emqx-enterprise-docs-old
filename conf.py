@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# EMQ X企业版中文文档 documentation build configuration file, created by
+# EMQ X 企业版documentation build configuration file, created by
 # sphinx-quickstart on Thu Dec  8 18:06:27 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -52,9 +52,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'EMQ X企业版中文文档'
+project = u'EMQ X 企业版'
 copyright = u'2017, 杭州小莉科技有限公司'
-author = u'杭州小莉科技有限公司<contact@emqtt.io>'
+author = u'EMQ X产品团队<contact@emqtt.io>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -114,7 +114,7 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -214,7 +214,7 @@ latex_elements = {
     #'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
+    'pointsize': '11pt',
 
     # Additional stuff for the LaTeX preamble.
     'preamble': r'''
@@ -253,8 +253,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'EMQX.tex', u'EMQ X企业版中文文档',
-     u'李枫\\textless{}feng@emqtt.io\\textgreater{}', 'manual'),
+    (master_doc, 'EMQX.tex', u'EMQ X 企业版',
+     u'EMQ X产品团队\\textless{}contact@emqtt.io\\textgreater{}', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -277,13 +277,12 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'emqx', u'EMQ X企业版',
+    (master_doc, 'emqx', u'EMQ X 企业版',
      [author], 1)
 ]
 
@@ -297,8 +296,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'EMQX', u'EMQ X企业版',
-     author, 'EMQX', 'EMQ X企业版',
+    (master_doc, 'EMQX', u'EMQ X 企业版',
+     author, 'EMQX', 'EMQ X 企业版',
      'Miscellaneous'),
 ]
 
@@ -318,9 +317,9 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'EMQ X企业版中文文档'
-epub_author = u'李枫<feng@emqtt.io>'
-epub_publisher = u'李枫<feng@emqtt.io>'
+epub_title = u'EMQ X 企业版'
+epub_author = u'EMQ X产品团队<contact@emqtt.io>'
+epub_publisher = u'EMQ X产品团队<contact@emqtt.io>'
 epub_copyright = u'2016-2017,杭州小莉科技有限公司'
 
 # The basename for the epub file. It defaults to the project name.
@@ -383,7 +382,6 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
-
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}

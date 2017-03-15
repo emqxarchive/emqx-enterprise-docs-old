@@ -19,6 +19,7 @@ status命令
 
     Node 'emqx@127.0.0.1' is started
     emqx 2.1.0 is running
+
 ----------
 broker命令
 ----------
@@ -228,8 +229,6 @@ clients kick <ClientId>
 根据ClientId踢出客户端::
 
     ./bin/emqx_ctl clients kick "clientid"
-
-.. _command_sessions::
 
 ------------
 sessions命令
