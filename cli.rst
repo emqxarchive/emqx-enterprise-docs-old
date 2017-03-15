@@ -7,8 +7,6 @@
 
 EMQ X企业版提供了'./bin/emqx_ctl'的管理命令行。
 
-.. NOTE:: EMQ开源版本管理命令为'./bin/emqttd_ctl'
-
 ----------
 status命令
 ----------
@@ -234,7 +232,7 @@ clients kick <ClientId>
 sessions命令
 ------------
 
-sessions命令查询MQTT连接会话。emqttd消息服务器会为每个连接创建会话，clean_session标记true，创建临时(transient)会话；clean_session标记为false，创建持久会话(persistent)。
+sessions命令查询MQTT连接会话。EMQ X会为每个连接创建会话，clean_session标记true，创建临时(transient)会话；clean_session标记为false，创建持久会话(persistent)。
 
 +--------------------------+-----------------------------+
 | sessions list            | 查询全部会话                |
@@ -319,7 +317,7 @@ routes list
     $ ./bin/emqx_ctl routes list
 
     t2/# -> emqx2@127.0.0.1
-    t/+/x -> emqx2@127.0.0.1,emqttd@127.0.0.1
+    t/+/x -> emqx2@127.0.0.1,emq1@127.0.0.1
 
 routes show <Topic>
 -------------------
@@ -328,7 +326,7 @@ routes show <Topic>
 
     $ ./bin/emqx_ctl routes show t/+/x
 
-    t/+/x -> emqx2@127.0.0.1,emqttd@127.0.0.1
+    t/+/x -> emqx2@127.0.0.1,emqx1@127.0.0.1
 
 ----------
 topics命令
@@ -343,8 +341,8 @@ topics list
 
     $ ./bin/emqx_ctl topics list
 
-    $SYS/brokers/emqttd@127.0.0.1/metrics/packets/subscribe: static
-    $SYS/brokers/emqttd@127.0.0.1/stats/subscriptions/max: static
+    $SYS/brokers/emqx@127.0.0.1/metrics/packets/subscribe: static
+    $SYS/brokers/emqx@127.0.0.1/stats/subscriptions/max: static
     $SYS/brokers/emqx2@127.0.0.1/stats/subscriptions/count: static
     ...
 

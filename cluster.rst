@@ -74,7 +74,7 @@ Erlang节点Cookie设置::
 
 本节内容来自: http://erlang.org/doc/reference_manual/distributed.html
 
-.. _cluster_emqttd:
+.. _cluster_emqx:
 
 -----------------
 EMQ X分布集群设计

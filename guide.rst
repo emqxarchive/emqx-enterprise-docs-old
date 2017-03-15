@@ -208,13 +208,13 @@ $SYS系统消息发布周期，通过etc/emq.conf配置:
 +================================+=======================+
 | $SYS/brokers                   | 集群节点列表          |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/version   | emqttd版本            |
+| $SYS/brokers/${node}/version   | EMQ X版本             |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/uptime    | emqttd启动时间        |
+| $SYS/brokers/${node}/uptime    | EMQ X启动时间         |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/datetime  | emqttd服务器时间      |
+| $SYS/brokers/${node}/datetime  | EMQ X服务器时间       |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/sysdescr  | emqttd描述            |
+| $SYS/brokers/${node}/sysdescr  | EMQ X版本描述         |
 +--------------------------------+-----------------------+
 
 .. _sys_clients:
