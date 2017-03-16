@@ -357,19 +357,9 @@ EMQ X服务器在客户端上下线、主题订阅、消息收发位置设计了
 | client.disconnected    | 客户端连接断开                   |
 +------------------------+----------------------------------+
 
-钩子(Hook)采用职责链设计模式(`Chain-of-responsibility_pattern`_)，扩展模块或插件向钩子注册回调函数，系统在客户端上下线、主题订阅或消息发布确认时，触发钩子顺序执行回调函数::
+钩子(Hook)采用职责链设计模式(`Chain-of-responsibility_pattern`_)，扩展模块或插件向钩子注册回调函数，系统在客户端上下线、主题订阅或消息发布确认时，触发钩子顺序执行回调函数:
 
-                     --------  ok | {ok, NewAcc}   --------
-     (Args, Acc) --> | Fun1 | -------------------> | Fun2 |
-                     --------                      --------
-                        |                             |
-                   stop | {stop, NewAcc}         stop | {stop, NewAcc}
-
-     ok | {ok, NewAcc}   --------
-    -------------------> | Fun3 | --> {ok, Acc} | {stop, Acc}
-                         --------
-                            |
-                       stop | {stop, NewAcc}
+.. image:: ./_static/images/hooks_chain.jpg
 
 不同钩子的回调函数输入参数不同，用户可参考插件模版的emqx_plugin_template模块，每个回调函数应该返回:
 

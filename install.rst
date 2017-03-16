@@ -226,7 +226,7 @@ NGINX Plus -> EMQ X
 
 NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
 
-1. 注册NGINX PLUS试用版，Ubuntu下安装: https://cs.nginx.com/repo_setup
+1. 注册NGINX Plus试用版，Ubuntu下安装: https://cs.nginx.com/repo_setup
 
 2. 创建EMQ X节点集群，例如: 
 
@@ -274,7 +274,7 @@ NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
 
 EMQ X采用Erlang/OTP语言平台开发，可跨平台运行在Linux、FreeBSD、Mac OS X、Windows服务器。
 
-产品环境推荐部署在64-bit Linux或FreeBSD云主机或服务器。
+产品环境推荐部署在64-bit Linux云主机或服务器。
 
 CPU/内存
 --------
