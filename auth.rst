@@ -11,14 +11,9 @@ MQTT认证设计
 
 EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP集成认证。
 
-系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
+系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链:
 
-               ----------------           ----------------           ------------
-    Client --> | Username认证 | -ignore-> | ClientID认证 | -ignore-> | 匿名认证 |
-               ----------------           ----------------           ------------
-                      |                         |                         |
-                     \|/                       \|/                       \|/
-                allow | deny              allow | deny              allow | deny
+.. image:: _static/images/7.png
 
 ------------
 匿名认证设置
@@ -41,15 +36,9 @@ ACL访问控制规则定义::
 
     允许(Allow)|拒绝(Deny) 谁(Who) 订阅(Subscribe)|发布(Publish) 主题列表(Topics)
 
-MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止::
+MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止:
 
-              ---------              ---------              ---------
-    Client -> | Rule1 | --nomatch--> | Rule2 | --nomatch--> | Rule3 | --> Default
-              ---------              ---------              ---------
-                  |                      |                      |
-                match                  match                  match
-                 \|/                    \|/                    \|/
-            allow | deny           allow | deny           allow | deny
+.. image:: _static/images/6.png
 
 ----------------
 默认访问控制设置
