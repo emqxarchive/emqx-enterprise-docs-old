@@ -868,8 +868,39 @@ REST API
 
 发布消息::
 
+    method   : POST
+    URL      : api/v2/mqtt/publish
+    #除topic参数是必填，其他参数都可以选填，默认值payload空字符串，qos为0，retain为false，client_id为http字符串
+    请求参数  : {
+                    "topic"    : "test",
+                    "payload"  : "hello",
+                    "qos"      : 1,
+                    "retain"   : false,
+                    "client_id": "C_1492145414740"
+                }
+    请求试例  : api/v2/mqtt/publish
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
 
 代理订阅::
+
+    method   : POST
+    URL      : api/v2/mqtt/subscribe
+    #参数qos选填，默认qos为0
+    请求参数  : {
+                    "topic"    : "test",
+                    "qos"      : 1,
+                    "client_id": "C_1492145414740"
+                }
+    请求试例  : api/v2/mqtt/subscribe
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
 
 
 用户管理 API
@@ -878,14 +909,162 @@ REST API
 
 登录::
 
+    method   : POST
+    URL      : /api/v2/auth
+    #参数qos选填，默认qos为0
+    请求参数  : {
+                    "username": "admin",
+                    "password": "public"
+                }
+    请求试例  : api/v2/mqtt/auth
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
+
 新增用户::
+
+    method   : POST
+    URL      : /api/v2/users/
+    #参数qos选填，默认qos为0
+    请求参数  : {
+                    "username": "admin",
+                    "password": "public",
+                    "email"   : "admin@emqtt.io",
+                    "role"    : "administrator",
+                    "remark"  : "admin"
+                }
+    请求试例  : api/v2/mqtt/users/
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
 
 查询某个用户::
 
+    method   : GET
+    URL      : /api/v2/users/{username}
+    #参数qos选填，默认qos为0
+    请求参数  :
+    请求试例  : /api/v2/users/admin
+    返回数据  :
+    {
+        "code": 0,
+        "result": {
+            "username"  : "root",
+            "email"     : "admin@emqtt.io",
+            "role"      : "administrator",
+            "remark"    : "123",
+            "created_at": "2017-04-14 13:51:43"
+        }
+    }
+
 查询用户列表::
+
+    method   : GET
+    URL      : /api/v2/users/
+    #参数qos选填，默认qos为0
+    请求参数  :
+    请求试例  : /api/v2/users/
+    返回数据  :
+    {
+        "code": 0,
+        "result": [
+            {
+                "username": "admin",
+                "email": "admin@emqtt.io",
+                "role": "administrator",
+                "remark": "administrator",
+                "created_at": "2017-04-07 10:30:01"
+            },
+            {
+                "username": "root",
+                "email": "admin@emqtt.io",
+                "role": "administrator",
+                "remark": "123",
+                "created_at": "2017-04-14 13:51:43"
+            }
+        ]
+    }
+
 
 更新用户::
 
+    method   : PUT
+    URL      : /api/v2/users/{username}
+    请求参数  : {
+                    "email"   : "admin@emqtt.io",
+                    "role"    : "administrator",
+                    "remark"  : "admin"
+                }
+    请求试例  : api/v2/mqtt/users/admin
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
+
+
 删除用户::
 
+    method   : DELETE
+    URL      : /api/v2/users/{username}
+    请求参数  :
+    请求试例  : api/v2/mqtt/users/root
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
+
 修改用户密码::
+
+    method   : PUT
+    URL      : /api/v2/users/change_pwd
+    请求参数  : {
+                    "username"   : "root",
+                    "old_pwd"    : "xxxxxx",
+                    "new_pwd"    : "xxxxxx",
+                    "confirm_pwd": "xxxxxx"
+                }
+    请求试例  : api/v2/mqtt/users/change_pwd
+    返回数据  :
+    {
+        "code": 0,
+        "result": []
+    }
+
+
+----------
+返回错误码
+----------
+
++-------+-----------------------------------------+
+| 错误码| 备注                                    |
++=======+=========================================+
+| 0     | 成功                                    |
++-------+-----------------------------------------+
+| 101   | badrpc                                  |
++-------+-----------------------------------------+
+| 102   | 未知错误                                |
++-------+-----------------------------------------+
+| 103   | 用户名密码错误                          |
++-------+-----------------------------------------+
+| 104   | 用户名密码不能为空                      |
++-------+-----------------------------------------+
+| 105   | 删除的用户不存在                        |
++-------+-----------------------------------------+
+| 106   | admin用户不能删除                       |
++-------+-----------------------------------------+
+| 107   | 请求参数缺失                            |
++-------+-----------------------------------------+
+| 108   | 请求参数类型错误                        |
++-------+-----------------------------------------+
+| 109   | 请求参数不是json类型                    |
++-------+-----------------------------------------+
+| 110   | 插件已经加载，不能重复加载              |
++-------+-----------------------------------------+
+| 111   | 插件已经卸载，不能重复卸载              |
++-------+-----------------------------------------+
