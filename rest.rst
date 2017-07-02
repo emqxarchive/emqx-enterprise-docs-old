@@ -594,10 +594,101 @@ REST API
 
 获取指定节点的信息::
 
+    method   : GET
+    URL      : api/v2/management/nodes/{node_name}
+    请求参数  :
+    请求试例  : api/v2/management/nodes/emqx@127.0.0.1
+    返回数据  :
+    {
+        "code": 0,
+        "result":
+        {
+            "version": "2.1.1",
+            "sysdescr": "EMQ X",
+            "uptime": "1 hours, 17 minutes, 18 seconds",
+            "datetime": "2017-04-14 14 (tel:2017041414):11:55",
+            "otp_release": "R19/8.3",
+            "node_status": "Running"
+        }
+    }
+
 获取集群下节点的信息::
 
-获取集群下管理的节点列表::
+    method   : GET
+    URL      : api/v2/management/nodes
+    请求参数  :
+    请求试例  : api/v2/management/nodes
+    返回数据  :
+    {
+        "code": 0,
+        "result":
+        [
+            {
+                "name": "emqx@127.0.0.1",
+                "version": "2.1.1",
+                "sysdescr": "EMQ X",
+                "uptime": "1 hours, 17 minutes, 1 seconds",
+                "datetime": "2017-04-14 14 (tel:2017041414):11:38",
+                "otp_release": "R19/8.3",
+                "node_status": "Running"
+            }
+        ]
+    }
 
+获取集群下监控的节点信息列表::
+
+    method   : GET
+    URL      : api/v2/monitoring/nodes
+    请求参数  :
+    请求试例  : api/v2/monitoring/nodes
+    返回数据  :
+    {
+        "code": 0,
+        "result":
+        [
+            {
+                "name": "emqx@127.0.0.1",
+                "otp_release": "R19/8.3",
+                "memory_total": "69.19M",
+                "memory_used": "49.28M",
+                "process_available": 262144,
+                "process_used": 303,
+                "max_fds": 256,
+                "clients": 1,
+                "node_status": "Running",
+                "load1": "1.93",
+                "load5": "1.93",
+                "load15": "1.89"
+            }
+        ]
+    }
+
+
+获取指定节点的监控信息::
+
+    method   : GET
+    URL      : api/v2/monitoring/nodes/{node_name}
+    请求参数  :
+    请求试例  : api/v2/monitoring/nodes/emqx@127.0.0.1
+    返回数据  :
+    {
+        "code": 0,
+        "result":
+        {
+            "name": "emqx@127.0.0.1",
+            "otp_release": "R19/8.3",
+            "memory_total": "69.19M",
+            "memory_used": "49.24M",
+            "process_available": 262144,
+            "process_used": 303,
+            "max_fds": 256,
+            "clients": 1,
+            "node_status": "Running",
+            "load1": "2.21",
+            "load5": "2.00",
+            "load15": "1.92"
+        }
+    }
 
 
 指标
@@ -605,14 +696,171 @@ REST API
 
 获取集群下节点的指标信息::
 
+    method   : GET
+    URL      : api/v2/monitoring/metrics/
+    请求参数  :
+    请求试例  : api/v2/monitoring/metrics/
+    返回数据  :
+    {
+        "code": 0,
+        "result": {
+            "emqx@127.0.0.1":
+            {
+                "packets/disconnect":0,
+                "messages/dropped":0,
+                "messages/qos2/received":0,
+                "packets/suback":0,
+                "packets/pubcomp/received":0,
+                "packets/unsuback":0,
+                "packets/pingresp":0,
+                "packets/puback/missed":0,
+                "packets/pingreq":0,
+                "messages/retained":3,
+                "packets/sent":0,
+                "messages/qos2/dropped":0,
+                "packets/unsubscribe":0,
+                "packets/pubrec/missed":0,
+                "packets/connack":0,
+                "messages/received":0,
+                "packets/pubrec/sent":0,
+                "packets/publish/received":0,
+                "packets/pubcomp/sent":0,
+                "bytes/received":0,
+                "packets/connect":0,
+                "packets/puback/received":0,
+                "messages/sent":0,
+                "packets/publish/sent":0,
+                "bytes/sent":0,
+                "packets/pubrel/missed":0,
+                "packets/puback/sent":0,
+                "messages/qos0/received":0,
+                "packets/subscribe":0,
+                "packets/pubrel/sent":0,
+                "messages/forward":0,
+                "messages/qos2/sent":0,
+                "packets/received":0,
+                "packets/pubrel/received":0,
+                "messages/qos1/received":0,
+                "messages/qos1/sent":0,
+                "packets/pubrec/received":0,
+                "packets/pubcomp/missed":0,
+                "messages/qos0/sent":0
+            }
+        }
+    }
+
 获取指定节点的指标信息::
+
+    method   : GET
+    URL      : api/v2/monitoring/metrics/{node_name}
+    请求参数  :
+    请求试例  : api/v2/monitoring/metrics/emqx@127.0.0.1
+    返回数据  :
+    {
+        "code": 0,
+        "result": {
+            "packets/disconnect":0,
+            "messages/dropped":0,
+            "messages/qos2/received":0,
+            "packets/suback":0,
+            "packets/pubcomp/received":0,
+            "packets/unsuback":0,
+            "packets/pingresp":0,
+            "packets/puback/missed":0,
+            "packets/pingreq":0,
+            "messages/retained":3,
+            "packets/sent":0,
+            "messages/qos2/dropped":0,
+            "packets/unsubscribe":0,
+            "packets/pubrec/missed":0,
+            "packets/connack":0,
+            "messages/received":0,
+            "packets/pubrec/sent":0,
+            "packets/publish/received":0,
+            "packets/pubcomp/sent":0,
+            "bytes/received":0,
+            "packets/connect":0,
+            "packets/puback/received":0,
+            "messages/sent":0,
+            "packets/publish/sent":0,
+            "bytes/sent":0,
+            "packets/pubrel/missed":0,
+            "packets/puback/sent":0,
+            "messages/qos0/received":0,
+            "packets/subscribe":0,
+            "packets/pubrel/sent":0,
+            "messages/forward":0,
+            "messages/qos2/sent":0,
+            "packets/received":0,
+            "packets/pubrel/received":0,
+            "messages/qos1/received":0,
+            "messages/qos1/sent":0,
+            "packets/pubrec/received":0,
+            "packets/pubcomp/missed":0,
+            "messages/qos0/sent":0
+        }
+    }
 
 统计
 ----
 
 获取集群下节点的统计信息::
 
+    method   : GET
+    URL      : api/v2/monitoring/stats
+    请求参数  :
+    请求试例  : api/v2/monitoring/stats
+    返回数据  :
+    {
+        "code": 0,
+        "result": {
+            "emqx@127.0.0.1":
+            {
+                "clients/count":0,
+                "clients/max":0,
+                "retained/count":0,
+                "retained/max":0,
+                "routes/count":0,
+                "routes/max":0,
+                "sessions/count":0,
+                "sessions/max":0,
+                "subscribers/count":0,
+                "subscribers/max":0,
+                "subscriptions/count":0,
+                "subscriptions/max":0,
+                "topics/count":0,
+                "topics/max":0
+            }
+        }
+    }
+
+
 获取指定节点的统计信息::
+
+    method   : GET
+    URL      : api/v2/monitoring/stats/{node_name}
+    请求参数  :
+    请求试例  : api/v2/monitoring/stats/emqx@127.0.0.1
+    返回数据  :
+    {
+        "code": 0,
+        "result": {
+            "clients/count":0,
+            "clients/max":0,
+            "retained/count":0,
+            "retained/max":0,
+            "routes/count":0,
+            "routes/max":0,
+            "sessions/count":0,
+            "sessions/max":0,
+            "subscribers/count":0,
+            "subscribers/max":0,
+            "subscriptions/count":0,
+            "subscriptions/max":0,
+            "topics/count":0,
+            "topics/max":0
+        }
+    }
 
 
 发布/订阅
