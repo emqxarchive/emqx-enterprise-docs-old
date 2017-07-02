@@ -911,7 +911,6 @@ REST API
 
     method   : POST
     URL      : /api/v2/auth
-    #参数qos选填，默认qos为0
     请求参数  : {
                     "username": "admin",
                     "password": "public"
@@ -927,7 +926,6 @@ REST API
 
     method   : POST
     URL      : /api/v2/users/
-    #参数qos选填，默认qos为0
     请求参数  : {
                     "username": "admin",
                     "password": "public",
@@ -946,7 +944,6 @@ REST API
 
     method   : GET
     URL      : /api/v2/users/{username}
-    #参数qos选填，默认qos为0
     请求参数  :
     请求试例  : /api/v2/users/admin
     返回数据  :
@@ -965,7 +962,6 @@ REST API
 
     method   : GET
     URL      : /api/v2/users/
-    #参数qos选填，默认qos为0
     请求参数  :
     请求试例  : /api/v2/users/
     返回数据  :
