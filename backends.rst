@@ -374,6 +374,16 @@ MySQL数据存储
 
     ## Mysql Database
     backend.mysql.pool1.database = mqtt
+    
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mysql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mysql.time_range = 2h
 
 配置MySQL存储规则
 -----------------
@@ -716,7 +726,17 @@ PostgreSQL 数据存储
     backend.pgsql.pool1.database = mqtt
 
     ## Pgsql Ssl
-    backend.pgsql.pool1.ssl = false  
+    backend.pgsql.pool1.ssl = false
+
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.pgsql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.pgsql.time_range = 2h
 
 配置PostgreSQL存储规则
 ----------------------
@@ -1007,6 +1027,16 @@ MongoDB数据存储
     ## MongoDB Database
     backend.mongo.pool1.database = mqtt
 
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mongo.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mongo.time_range = 2h
+
 配置MongoDB存储规则
 -------------------
 
@@ -1295,6 +1325,16 @@ Cassandra数据存储
 
     ## Cassandra Logger type
     backend.ecql.pool1.logger = info
+
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.cassa.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.cassa.time_range = 2h
 
 配置Cassandra存储规则
 ---------------------

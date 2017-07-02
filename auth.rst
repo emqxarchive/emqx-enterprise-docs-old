@@ -47,6 +47,9 @@ MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制�
 EMQ X消息服务器默认访问控制，通过acl.conf配置文件设置:
 
 .. code-block:: properties
+    
+    ## ACL nomatch
+    mqtt.acl_nomatch = allow
 
     ## Default ACL File
     mqtt.acl_file = etc/acl.conf
@@ -64,8 +67,6 @@ ACL规则定义在etc/acl.conf，EMQ X启动时加载到内存:
     %% Deny clients to subscribe '$SYS#' and '#'
     {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
 
-    %% Allow all by default
-    {allow, all}.
 
 ACL规则修改后可通过命令行重新加载:
 
@@ -223,8 +224,6 @@ HTTP认证插件配置
     auth.http.acl_req.method = get
     auth.http.acl_req.params = access=%A,username=%u,clientid=%c,ipaddr=%a,topic=%t
 
-    auth.http.acl_nomatch = deny
-
 HTTP认证/访问控制(ACL)服务器API设计::
 
     认证/ACL成功，API返回200
@@ -252,7 +251,7 @@ MQTT认证用户表
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `username` varchar(100) DEFAULT NULL,
       `password` varchar(100) DEFAULT NULL,
-      `salt` varchar(20) DEFAULT NULL,
+      `salt` varchar(35) DEFAULT NULL,
       `is_superuser` tinyint(1) DEFAULT 0,
       `created` datetime DEFAULT NULL,
       PRIMARY KEY (`id`),
@@ -313,10 +312,10 @@ MQTT访问控制表
 
     ## Variables: %u = username, %c = clientid
 
-    ## Authentication Query: select password only
+    ## Authentication Query: select password or password,salt
     auth.mysql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
     auth.mysql.password_hash = sha256
 
     ## sha256 with salt prefix
@@ -335,9 +334,6 @@ MQTT访问控制表
 
     ## ACL Query Command
     auth.mysql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
-
-    ## ACL nomatch
-    auth.mysql.acl_nomatch = deny
 
 加载MySQL认证插件
 -----------------
@@ -418,10 +414,10 @@ Postgre MQTT访问控制表
 
     ## Variables: %u = username, %c = clientid, %a = ipaddress
 
-    ## Authentication Query: select password only
+    ## Authentication Query: select password or password,salt
     auth.pgsql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
     auth.pgsql.password_hash = sha256
 
     ## sha256 with salt prefix
@@ -440,9 +436,6 @@ Postgre MQTT访问控制表
 
     ## ACL Query. Comment this query, the acl will be disabled.
     auth.pgsql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
-
-    ## If no rules matched, return...
-    auth.pgsql.acl_nomatch = deny
 
 加载Postgre认证插件
 -------------------
@@ -482,9 +475,10 @@ Redis认证插件配置
     ## Variables: %u = username, %c = clientid
 
     ## Authentication Query Command
+    ## HMGET mqtt_user:%u password or HMGET mqtt_user:%u password salt or HGET mqtt_user:%u password
     auth.redis.auth_cmd = HGET mqtt_user:%u password
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
     auth.redis.passwd.hash = sha256
 
     ## Superuser Query Command
@@ -497,9 +491,6 @@ Redis认证插件配置
 
     ## ACL Query Command
     auth.redis.acl_cmd = HGETALL mqtt_acl:%u
-
-    ## ACL nomatch
-    auth.redis.acl_nomatch = deny
 
 Redis认证用户Hash
 -----------------
@@ -579,9 +570,6 @@ MongoDB认证插件配置
 
     auth.mongo.acl_query.selector = username=%u
 
-    ## acl_nomatch
-    auth.mongo.acl_nomatch = deny
-
 配置ACL查询集合
 ---------------
 
@@ -592,8 +580,6 @@ MongoDB认证插件配置
 
     auth.mongo.aclquery.selector = username=%u
 
-    ## acl_nomatch
-    auth.mongo.acl_nomatch = deny
 
 MongoDB数据库
 -------------
