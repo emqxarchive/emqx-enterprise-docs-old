@@ -236,3 +236,12 @@ NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
             ssl_certificate_key /etc/emqx/certs/key.pem;
         }
     }
+
+.. _青云:    https://qingcloud.com
+.. _AWS:     https://aws.amazon.com
+.. _阿里云:  https://www.aliyun.com
+.. _UCloud:  https://ucloud.cn
+.. _QCloud:  https://www.qcloud.com
+.. _HAProxy: https://www.haproxy.org
+.. _NGINX:   https://www.nginx.com 
+
