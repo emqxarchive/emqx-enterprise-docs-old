@@ -327,7 +327,7 @@ Socket连接建立至收到CONNECT报文的最大允许间隔时间:
 MQTT会话参数
 ------------
 
-EMQ为每个MQTT连接创建会话:
+EMQ X为每个MQTT连接创建会话:
 
 .. code-block:: properties
 
@@ -384,7 +384,7 @@ EMQ为每个MQTT连接创建会话:
 MQTT消息队列参数
 ----------------
 
-EMQ为每个会话创建消息队列缓存Qos1/Qos2消息:
+EMQ X为每个会话创建消息队列缓存Qos1/Qos2消息:
 
 1. 持久会话(Session)的离线消息
 

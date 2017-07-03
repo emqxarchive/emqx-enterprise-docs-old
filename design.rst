@@ -31,7 +31,7 @@ EMQ消息服务器在业务和应用层面，解决了承载100万连接的各�
 
 EMQ消息服务器是基于Erlang/OTP平台的全异步的架构：异步TCP连接处理、异步主题(Topic)订阅、异步消息发布。只有在资源负载限制部分采用同步设计，比如TCP连接创建和Mnesia数据库事务执行。
 
-一条MQTT消息从发布者(Publisher)到订阅者(Subscriber)，在emqx消息服务器内部异步流过一系列Erlang进程Mailbox:
+一条MQTT消息从发布者(Publisher)到订阅者(Subscriber)，在EMQ X消息服务器内部异步流过一系列Erlang进程Mailbox:
 
 .. image:: _static/images/11_2.png
 
@@ -57,7 +57,7 @@ NetSplit问题
 
 EMQ 1.0消息服务器集群，基于Mnesia数据库设计。NetSplit发生时，节点间状态是：Erlang节点间可以连通，互相询问自己是否宕机，对方回答你已经宕机:(
 
-NetSplit故障发生时，emqx消息服务器的log/emqx_error.log日志，会打印critical级别日志::
+NetSplit故障发生时，EMQ X消息服务器的log/emqx_error.log日志，会打印critical级别日志::
 
     Mnesia inconsistent_database event: running_partitioned_network, emqx@host
 
@@ -460,9 +460,9 @@ emqx_plugins模块实现插件机制，提供加载卸载插件API::
 
 用户可通过'./bin/emqx_ctl'命令行加载卸载插件::
 
-    ./bin/emqx_ctl plugins load emq_auth_redis
+    ./bin/emqx_ctl plugins load emqx_auth_redis
 
-    ./bin/emqx_ctl plugins unload emq_auth_redis
+    ./bin/emqx_ctl plugins unload emqx_auth_redis
 
 开发者请参考模版插件: http://github.com/emqtt/emqx_plugin_template
 

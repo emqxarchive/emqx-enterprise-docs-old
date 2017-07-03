@@ -1257,7 +1257,7 @@ API定义::
 
 请求示例::
 
-    POST /api/v2/users/admin
+    PUT /api/v2/users/admin
 
 返回数据:
 

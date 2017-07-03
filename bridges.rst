@@ -228,13 +228,13 @@ Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 RabbitMQ桥接
 ------------
 
-EMQ X桥接转发MQTT消息到RabbitMQ集群:
+EMQ X桥接转发MQTT消息到RabbitMQ:
 
 .. image:: _static/images/8_2.png
 
 RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
-配置RabbitMQ集群地址
+配置RabbitMQ桥接地址
 --------------------
 
 .. code-block:: properties
