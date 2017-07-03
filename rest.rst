@@ -1,23 +1,186 @@
-.. _rest:
+
+.. _rest_api:
 
 ========
 REST API
 ========
 
-------------
-数据管理 API
-------------
+用户可以通过REST API查询MQTT客户端连接(Clients)、会话(Sessions)、订阅(Subscriptions)和路由(Routes)信息，还可以检索和监控服务器的性能指标和统计数据。
 
-连接
-----
+-------
+URL地址
+-------
 
-获取指定节点的客户端信息列表::
+REST APIs访问URL地址::
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/clients
-    请求参数  : curr_page=1&page_size=20
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
-    返回数据  :
+    http(s)://host:8080/api/v2/
+
+---------
+Basic认证
+---------
+
+REST API采用HTTP Basic认证(Authentication):
+
+.. code-block:: bash
+
+    curl -v --basic -u <user>:<passwd> -k http://localhost:8080/api/v2/nodes/emqx@127.0.0.1/clients
+
+----------
+集群与节点
+----------
+
+获取集群节点的基本信息
+----------------------
+
+API定义::
+
+    GET api/v2/management/nodes
+
+请求示例::
+
+    GET api/v2/management/nodes
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result":
+        [
+            {
+                "name": "emqx@127.0.0.1",
+                "version": "2.1.1",
+                "sysdescr": "EMQ X",
+                "uptime": "1 hours, 17 minutes, 1 seconds",
+                "datetime": "2017-04-14 14 (tel:2017041414):11:38",
+                "otp_release": "R19/8.3",
+                "node_status": "Running"
+            }
+        ]
+    }
+
+获取指定节点的基本信息
+----------------------
+
+API定义::
+
+    GET api/v2/management/nodes/{node_name}
+
+请求示例::
+
+    GET api/v2/management/nodes/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result":
+        {
+            "version": "2.1.1",
+            "sysdescr": "EMQ X",
+            "uptime": "1 hours, 17 minutes, 18 seconds",
+            "datetime": "2017-04-14 14 (tel:2017041414):11:55",
+            "otp_release": "R19/8.3",
+            "node_status": "Running"
+        }
+    }
+
+获取集群节点的监控数据
+----------------------
+
+API定义::
+
+    GET api/v2/monitoring/nodes
+
+请求示例::
+
+    GET api/v2/monitoring/nodes
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result":
+        [
+            {
+                "name": "emqx@127.0.0.1",
+                "otp_release": "R19/8.3",
+                "memory_total": "69.19M",
+                "memory_used": "49.28M",
+                "process_available": 262144,
+                "process_used": 303,
+                "max_fds": 256,
+                "clients": 1,
+                "node_status": "Running",
+                "load1": "1.93",
+                "load5": "1.93",
+                "load15": "1.89"
+            }
+        ]
+    }
+
+获取指定节点的监控数据
+----------------------
+
+API定义::
+
+    GET api/v2/monitoring/nodes/{node_name}
+
+请求示例::
+
+    GET api/v2/monitoring/nodes/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result":
+        {
+            "name": "emqx@127.0.0.1",
+            "otp_release": "R19/8.3",
+            "memory_total": "69.19M",
+            "memory_used": "49.24M",
+            "process_available": 262144,
+            "process_used": 303,
+            "max_fds": 256,
+            "clients": 1,
+            "node_status": "Running",
+            "load1": "2.21",
+            "load5": "2.00",
+            "load15": "1.92"
+        }
+    }
+
+-------------------
+客户端连接(Clients)
+-------------------
+
+获取节点上的客户端连接列表
+--------------------------
+
+API定义::
+
+    GET api/v2/nodes/{node_name}/clients
+ 
+请求参数:: 
+
+    curr_page={page_no}&page_size={page_size}
+
+请求示例::
+
+    api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -42,13 +205,21 @@ REST API
         }   
     }
 
-获取指定节点的指定客户端的信息::
+获取节点上指定客户端的信息
+--------------------------
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/clients/{clientid}
-    请求参数  :
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/clients/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/nodes/{node_name}/clients/{clientid}
+ 
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/clients/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": {
@@ -67,13 +238,21 @@ REST API
         }
     }
 
-获取集群下指定客户端的信息::
+获取集群内指定客户端的信息
+--------------------------
 
-    method   : GET
-    URL      : api/v2/clients/{clientid}
-    请求参数  : 
-    请求试例  : api/v2/clients/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/clients/{clientid}
+ 
+请求示例::
+
+    GET api/v2/clients/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": {
@@ -93,16 +272,29 @@ REST API
     }
 
 
-会话
-----
+--------------
+会话(Sessions)
+--------------
 
-获取指定节点的会话信息列表::
+获取指定节点的会话列表
+----------------------
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/sessions
-    请求参数  : curr_page=1&page_size=20
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/sessions?curr_page=1&page_size=20
-    返回数据  :
+API定义::
+
+    GET api/v2/nodes/{node_name}/sessions
+ 
+请求参数::
+
+    curr_page={page_no}&page_size={page_size}
+
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/sessions?curr_page=1&page_size=20
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -129,13 +321,21 @@ REST API
         }
     }
 
-获取指定节点的指定客户端的会话信息::
+获取节点上指定客户端的会话信息
+------------------------------
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/sessions/{clientid}
-    请求参数  :
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/sessions/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/nodes/{node_name}/sessions/{clientid}
+ 
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/sessions/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -162,13 +362,21 @@ REST API
         }
     }
 
-获取指定集群下指定客户端的会话信息::
+获取集群内指定客户端的会话信息
+------------------------------
 
-    method   : GET
-    URL      : api/v2/sessions/{clientid}
-    请求参数  :
-    请求试例  : api/v2/sessions/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/sessions/{clientid}
+ 
+请求示例::
+
+    GET api/v2/sessions/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -195,16 +403,26 @@ REST API
         }
     }
 
-订阅
-----
+-------------------
+订阅(Subscriptions)
+-------------------
 
-获取指定节点的订阅信息列表::
+API定义::
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/subscriptions
-    请求参数  : curr_page=1&page_size=20
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/subscriptions?curr_page=1&page_size=20
-    返回数据  :
+    GET api/v2/nodes/{node_name}/subscriptions
+
+请求参数::
+
+    curr_page={page_no}&page_size={page_size}
+ 
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/subscriptions?curr_page=1&page_size=20
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -224,13 +442,21 @@ REST API
         }
     }
 
-获取指定节点的指定客户端的订阅信息::
+获取节点上指定客户端的订阅信息
+------------------------------
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/subscriptions/{clientid}
-    请求参数  :
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/subscriptions/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/nodes/{node_name}/subscriptions/{clientid}
+
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/subscriptions/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -246,13 +472,21 @@ REST API
         }
     }
 
-获取集群下的指定客户端的订阅信息::
+获取集群内指定客户端的订阅信息
+------------------------------
 
-    method   : GET
-    URL      : api/v2/subscriptions/{clientid}
-    请求参数  :
-    请求试例  : api/v2/subscriptions/C_1492145414740
-    返回数据  :
+API定义::
+
+    GET api/v2/subscriptions/{clientid}
+
+请求示例::
+
+    GET api/v2/subscriptions/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -269,16 +503,29 @@ REST API
     }
 
 
-路由
-----
+------------
+路由(Routes)
+------------
 
-获取集群下路由信息::
+获取集群路由信息
+----------------
 
-    method   : GET
-    URL      : api/v2/routers
-    请求参数  : curr_page=1&page_size=20
-    请求试例  : api/v2/routers?curr_page=1&page_size=20
-    返回数据  :
+API定义::
+
+    GET api/v2/routes
+
+请求参数::
+
+    curr_page={page_no}&page_size={page_size}
+
+请求示例::
+
+    GET api/v2/routes
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -297,13 +544,21 @@ REST API
         }
     }
 
-获取集群下指定主题的路由信息::
+获取集群指定主题的路由信息
+--------------------------
 
-    method   : GET
-    URL      : api/v2/routers/{topic}
-    请求参数  :
-    请求试例  : api/v2/routers/test_topic
-    返回数据  :
+API定义::
+
+    GET api/v2/routes/{topic}
+
+请求示例::
+
+    GET api/v2/routes
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -319,16 +574,89 @@ REST API
     }
 
 
-插件
-----
+----------
+发布/订阅
+----------
 
-获取指定节点的插件列表::
+发布消息
+--------
 
-    method   : GET
-    URL      : api/v2/nodes/{node_name}/plugins
-    请求参数  :
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/plugins
-    返回数据  :
+API定义::
+
+    POST api/v2/mqtt/publish
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "topic"    : "test",
+        "payload"  : "hello",
+        "qos"      : 1,
+        "retain"   : false,
+        "client_id": "C_1492145414740"
+    }
+
+.. NOTE:: 除topic参数是必填，其他参数都可以选填，默认值payload空字符串，qos为0，retain为false，client_id为'http'字符串。
+
+请求示例::
+
+    POST api/v2/mqtt/publish
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": []
+    }
+
+创建订阅
+--------
+
+API定义::
+
+    POST api/v2/mqtt/subscribe
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "topic"    : "test",
+        "qos"      : 1,
+        "client_id": "C_1492145414740"
+    }
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": []
+    }
+
+-------------
+插件(Plugins)
+-------------
+
+获取节点的插件列表
+------------------
+
+API定义::
+
+    GET api/v2/nodes/{node_name}/plugins
+
+请求示例::
+
+    GET api/v2/nodes/emqx@127.0.0.1/plugins
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -462,28 +790,53 @@ REST API
         ]
     }
 
-开启/关闭指定节点的指定插件::
+开启/关闭节点的指定插件
+-----------------------
 
-    method   : PUT
-    URL      : /api/v2/nodes/{node_name}/plugins/{name}
-    请求参数  : {"active": true/false}
-    请求试例  : api/v2/nodes/emqx@127.0.0.1/plugins/emqx_recon
-    返回数据  :
+API定义::
+
+    PUT /api/v2/nodes/{node_name}/plugins/{name}
+
+请求参数::
+
+    {"active": true | false}
+
+请求示例::
+
+    PUT api/v2/nodes/emqx@127.0.0.1/plugins/emqx_recon
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": []
     }
 
-监听器
------
+------------------
+监听器(Listeners)
+------------------
 
-获取集群下的监听端口信息::
+获取集群节点的监听器列表
+------------------------
 
-    method   : GET
-    URL      : api/v2/monitoring/listeners
-    请求参数  :
-    请求试例  : api/v2/monitoring/listeners
-    返回数据  :
+API定义::
+
+    GET api/v2/monitoring/listeners
+
+请求参数::
+
+    {"active": true | false}
+
+请求示例::
+
+    GET api/v2/monitoring/listeners
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -534,13 +887,21 @@ REST API
         }
     }
 
-获取指定节点的监听端口信息::
+获取指定节点的监听器列表
+------------------------
 
-    method   : GET
-    URL      : api/v2/monitoring/listeners/{node_name}
-    请求参数  :
-    请求试例  : api/v2/monitoring/listeners/emqx@127.0.0.1
-    返回数据  :
+API定义::
+
+    GET api/v2/monitoring/listeners/{node_name}
+
+请求示例::
+
+    GET api/v2/monitoring/listeners/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result":
@@ -588,119 +949,21 @@ REST API
         ]
     }
 
+------------
+收发报文统计
+------------
 
-集群
-----
+获取全部节点的收发报文统计
+--------------------------
 
-获取指定节点的信息::
+API定义::
 
-    method   : GET
-    URL      : api/v2/management/nodes/{node_name}
-    请求参数  :
-    请求试例  : api/v2/management/nodes/emqx@127.0.0.1
-    返回数据  :
-    {
-        "code": 0,
-        "result":
-        {
-            "version": "2.1.1",
-            "sysdescr": "EMQ X",
-            "uptime": "1 hours, 17 minutes, 18 seconds",
-            "datetime": "2017-04-14 14 (tel:2017041414):11:55",
-            "otp_release": "R19/8.3",
-            "node_status": "Running"
-        }
-    }
+    GET api/v2/monitoring/metrics/
 
-获取集群下节点的信息::
+返回数据:
 
-    method   : GET
-    URL      : api/v2/management/nodes
-    请求参数  :
-    请求试例  : api/v2/management/nodes
-    返回数据  :
-    {
-        "code": 0,
-        "result":
-        [
-            {
-                "name": "emqx@127.0.0.1",
-                "version": "2.1.1",
-                "sysdescr": "EMQ X",
-                "uptime": "1 hours, 17 minutes, 1 seconds",
-                "datetime": "2017-04-14 14 (tel:2017041414):11:38",
-                "otp_release": "R19/8.3",
-                "node_status": "Running"
-            }
-        ]
-    }
+.. code-block:: json
 
-获取集群下监控的节点信息列表::
-
-    method   : GET
-    URL      : api/v2/monitoring/nodes
-    请求参数  :
-    请求试例  : api/v2/monitoring/nodes
-    返回数据  :
-    {
-        "code": 0,
-        "result":
-        [
-            {
-                "name": "emqx@127.0.0.1",
-                "otp_release": "R19/8.3",
-                "memory_total": "69.19M",
-                "memory_used": "49.28M",
-                "process_available": 262144,
-                "process_used": 303,
-                "max_fds": 256,
-                "clients": 1,
-                "node_status": "Running",
-                "load1": "1.93",
-                "load5": "1.93",
-                "load15": "1.89"
-            }
-        ]
-    }
-
-
-获取指定节点的监控信息::
-
-    method   : GET
-    URL      : api/v2/monitoring/nodes/{node_name}
-    请求参数  :
-    请求试例  : api/v2/monitoring/nodes/emqx@127.0.0.1
-    返回数据  :
-    {
-        "code": 0,
-        "result":
-        {
-            "name": "emqx@127.0.0.1",
-            "otp_release": "R19/8.3",
-            "memory_total": "69.19M",
-            "memory_used": "49.24M",
-            "process_available": 262144,
-            "process_used": 303,
-            "max_fds": 256,
-            "clients": 1,
-            "node_status": "Running",
-            "load1": "2.21",
-            "load5": "2.00",
-            "load15": "1.92"
-        }
-    }
-
-
-指标
-----
-
-获取集群下节点的指标信息::
-
-    method   : GET
-    URL      : api/v2/monitoring/metrics/
-    请求参数  :
-    请求试例  : api/v2/monitoring/metrics/
-    返回数据  :
     {
         "code": 0,
         "result": {
@@ -749,13 +1012,21 @@ REST API
         }
     }
 
-获取指定节点的指标信息::
+获取指定节点的收发报文统计
+--------------------------
 
-    method   : GET
-    URL      : api/v2/monitoring/metrics/{node_name}
-    请求参数  :
-    请求试例  : api/v2/monitoring/metrics/emqx@127.0.0.1
-    返回数据  :
+API定义::
+
+    GET api/v2/monitoring/metrics/{node_name}
+
+请求示例::
+
+    GET api/v2/monitoring/metrics/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": {
@@ -801,16 +1072,25 @@ REST API
         }
     }
 
-统计
-----
+-------------
+连接会话统计
+-------------
 
-获取集群下节点的统计信息::
+获取集群全部节点的连接会话统计
+------------------------------
 
-    method   : GET
-    URL      : api/v2/monitoring/stats
-    请求参数  :
-    请求试例  : api/v2/monitoring/stats
-    返回数据  :
+API定义::
+
+    GET api/v2/monitoring/stats
+
+请求示例::
+
+    GET api/v2/monitoring/stats
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": {
@@ -834,14 +1114,21 @@ REST API
         }
     }
 
+获取指定节点的连接会话统计
+--------------------------
 
-获取指定节点的统计信息::
+API定义::
 
-    method   : GET
-    URL      : api/v2/monitoring/stats/{node_name}
-    请求参数  :
-    请求试例  : api/v2/monitoring/stats/emqx@127.0.0.1
-    返回数据  :
+    GET api/v2/monitoring/stats/{node_name}
+
+请求示例::
+
+    GET api/v2/monitoring/stats/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": {
@@ -862,109 +1149,82 @@ REST API
         }
     }
 
-
-发布/订阅
---------
-
-发布消息::
-
-    method   : POST
-    URL      : api/v2/mqtt/publish
-    #除topic参数是必填，其他参数都可以选填，默认值payload空字符串，qos为0，retain为false，client_id为http字符串
-    请求参数  : {
-                    "topic"    : "test",
-                    "payload"  : "hello",
-                    "qos"      : 1,
-                    "retain"   : false,
-                    "client_id": "C_1492145414740"
-                }
-    请求试例  : api/v2/mqtt/publish
-    返回数据  :
-    {
-        "code": 0,
-        "result": []
-    }
-
-代理订阅::
-
-    method   : POST
-    URL      : api/v2/mqtt/subscribe
-    #参数qos选填，默认qos为0
-    请求参数  : {
-                    "topic"    : "test",
-                    "qos"      : 1,
-                    "client_id": "C_1492145414740"
-                }
-    请求试例  : api/v2/mqtt/subscribe
-    返回数据  :
-    {
-        "code": 0,
-        "result": []
-    }
-
-
-用户管理 API
+------------
+用户(Users)
 ------------
 
+用户登录
+--------
 
-登录::
+API定义::
 
-    method   : POST
-    URL      : /api/v2/auth
-    请求参数  : {
-                    "username": "admin",
-                    "password": "public"
-                }
-    请求试例  : api/v2/mqtt/auth
-    返回数据  :
+    POST /api/v2/auth
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "username": "admin",
+        "password": "public"
+    }
+
+请求示例::
+
+    GET api/v2/mqtt/auth
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": []
     }
 
-新增用户::
+新增用户
+--------
 
-    method   : POST
-    URL      : /api/v2/users/
-    请求参数  : {
-                    "username": "admin",
-                    "password": "public",
-                    "email"   : "admin@emqtt.io",
-                    "role"    : "administrator",
-                    "remark"  : "admin"
-                }
-    请求试例  : api/v2/mqtt/users/
-    返回数据  :
+API定义::
+
+    POST /api/v2/users/
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "username": "admin",
+        "password": "public",
+        "email"   : "admin@emqtt.io",
+        "role"    : "administrator",
+        "remark"  : "admin"
+    }
+
+请求示例::
+
+    POST api/v2/mqtt/users/
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": []
     }
 
-查询某个用户::
+查询用户列表
+------------
 
-    method   : GET
-    URL      : /api/v2/users/{username}
-    请求参数  :
-    请求试例  : /api/v2/users/admin
-    返回数据  :
-    {
-        "code": 0,
-        "result": {
-            "username"  : "root",
-            "email"     : "admin@emqtt.io",
-            "role"      : "administrator",
-            "remark"    : "123",
-            "created_at": "2017-04-14 13:51:43"
-        }
-    }
+API定义::
 
-查询用户列表::
+    GET /api/v2/users/
 
-    method   : GET
-    URL      : /api/v2/users/
-    请求参数  :
-    请求试例  : /api/v2/users/
-    返回数据  :
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": [
@@ -986,52 +1246,112 @@ REST API
     }
 
 
-更新用户::
+查询指定用户
+------------
 
-    method   : PUT
-    URL      : /api/v2/users/{username}
-    请求参数  : {
-                    "email"   : "admin@emqtt.io",
-                    "role"    : "administrator",
-                    "remark"  : "admin"
-                }
-    请求试例  : api/v2/mqtt/users/admin
-    返回数据  :
+API定义::
+
+    GET /api/v2/users/{username}
+
+请求示例::
+
+    POST /api/v2/users/admin
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": {
+            "username"  : "root",
+            "email"     : "admin@emqtt.io",
+            "role"      : "administrator",
+            "remark"    : "123",
+            "created_at": "2017-04-14 13:51:43"
+        }
+    }
+
+更新用户
+--------
+
+API定义::
+
+    PUT /api/v2/users/{username}
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "email"   : "admin@emqtt.io",
+        "role"    : "administrator",
+        "remark"  : "admin"
+    }
+
+请求示例::
+
+    POST /api/v2/users/admin
+
+返回数据:
+
+.. code-block:: json
+    
     {
         "code": 0,
         "result": []
     }
 
+删除用户
+--------
 
-删除用户::
+API定义::
 
-    method   : DELETE
-    URL      : /api/v2/users/{username}
-    请求参数  :
-    请求试例  : api/v2/mqtt/users/root
-    返回数据  :
+    DELETE /api/v2/users/{username}
+
+请求示例::
+
+    DELETE /api/v2/users/test
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": []
     }
 
-修改用户密码::
+修改用户密码
+------------
 
-    method   : PUT
-    URL      : /api/v2/users/change_pwd
-    请求参数  : {
-                    "username"   : "root",
-                    "old_pwd"    : "xxxxxx",
-                    "new_pwd"    : "xxxxxx",
-                    "confirm_pwd": "xxxxxx"
-                }
-    请求试例  : api/v2/mqtt/users/change_pwd
-    返回数据  :
+API定义::
+
+    PUT /api/v2/users/change_pwd
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "username"   : "root",
+        "old_pwd"    : "xxxxxx",
+        "new_pwd"    : "xxxxxx",
+        "confirm_pwd": "xxxxxx"
+    }
+
+请求示例::
+
+    PUT api/v2/mqtt/users/change_pwd
+
+返回数据:
+
+.. code-block:: json
+
     {
         "code": 0,
         "result": []
     }
-
 
 ----------
 返回错误码
