@@ -251,7 +251,7 @@ MQTT认证用户表
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `username` varchar(100) DEFAULT NULL,
       `password` varchar(100) DEFAULT NULL,
-      `salt` varchar(35) DEFAULT NULL,
+      `salt` varchar(100) DEFAULT NULL,
       `is_superuser` tinyint(1) DEFAULT 0,
       `created` datetime DEFAULT NULL,
       PRIMARY KEY (`id`),
@@ -343,7 +343,7 @@ MQTT访问控制表
     ./bin/emqx_ctl plugins load emqx_auth_mysql
 
 ---------------------
-Postgre认证制插件配置
+Postgre认证插件配置
 ---------------------
 
 配置文件emqx_auth_pgsql.conf, 默认的MQTT用户、ACL库表和认证设置:
@@ -358,7 +358,7 @@ Postgre MQTT用户表
       is_superuser boolean,
       username character varying(100),
       password character varying(100),
-      salt character varying(40)
+      salt character varying(100)
     );
 
 .. NOTE:: 用户可自定义认证用户表，通过'authquery'配置查询语句。

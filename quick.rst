@@ -10,7 +10,7 @@
 +---------------------+---------------------+
 | emqx1@192.168.0.10  | 192.168.0.10        |
 +---------------------+---------------------+
-| emqx@192.168.0.20   | 192.168.0.20        |
+| emqx2@192.168.0.20  | 192.168.0.20        |
 +---------------------+---------------------+
 
 ------------
@@ -97,20 +97,20 @@ EMQ X 节点集群
     $ ./bin/emqx_ctl cluster join emqx2@192.168.0.20
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx@192.168.0.20']}]
+    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx2@192.168.0.20']}]
 
 或，emqx2@192.168.0.20上执行::
 
     $ ./bin/emqx_ctl cluster join emqx1@192.168.0.10
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx@192.168.0.20']}]
+    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx2@192.168.0.20']}]
 
 任意节点上查询集群状态::
 
     $ ./bin/emqx_ctl cluster status
 
-    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx@192.168.0.20']}]
+    Cluster status: [{running_nodes,['emqx1@192.168.0.10','emqx2@192.168.0.20']}]
 
 --------------
 Web 管理控制台

@@ -37,7 +37,7 @@ EMQ X每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台�
 RPM包安装
 ---------
 
-CentOS、RedHat操作系统下，推荐RPM包安装。RPM包安装后可通过操作系统，直接管理启停EMQ服务。
+CentOS、RedHat操作系统下，推荐RPM包安装。RPM包安装后可通过操作系统，直接管理启停EMQ X服务。
 
 RPM安装
 -------
@@ -80,7 +80,7 @@ EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\
 DEB包安装
 ---------
 
-Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过操作系统，直接管理启停EMQ服务。
+Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过操作系统，直接管理启停EMQ X服务。
 
 .. code-block:: console
 
