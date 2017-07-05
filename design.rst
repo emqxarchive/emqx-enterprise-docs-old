@@ -334,7 +334,7 @@ EMQ X服务器在客户端上下线、主题订阅、消息收发位置设计了
 
 钩子(Hook)采用职责链设计模式(`Chain-of-responsibility_pattern`_)，扩展模块或插件向钩子注册回调函数，系统在客户端上下线、主题订阅或消息发布确认时，触发钩子顺序执行回调函数:
 
-.. image:: ./_static/images/11_6.png
+.. image:: ./_static/images/design_10.png
 
 不同钩子的回调函数输入参数不同，用户可参考插件模版的emqx_plugin_template模块，每个回调函数应该返回:
 

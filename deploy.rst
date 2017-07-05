@@ -103,7 +103,7 @@ EMQ X节点集群使用的TCP端口:
 
 .. image:: _static/images/deploy_2.png
  
-   或创建SSL监听器，并终结SSL在LB:
+或创建SSL监听器，并终结SSL在LB:
 
 .. image:: _static/images/deploy_3.png
   
@@ -135,7 +135,7 @@ EMQ X节点集群使用的TCP端口:
 
 .. image:: _static/images/deploy_4.png
 
-   或创建SSL监听器，并终结SSL在LB:
+或创建SSL监听器，并终结SSL在LB:
 
 .. image:: _static/images/deploy_5.png
 
