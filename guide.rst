@@ -56,13 +56,9 @@ MQTT(SSL) TCP监听器，缺省端口8883:
 共享订阅
 --------
 
-共享订阅(Shared Subscription)支持在多订阅者间采用分组负载平衡方式派发消息::
+共享订阅(Shared Subscription)支持在多订阅者间采用分组负载平衡方式派发消息:
 
-                                ---------
-                                |       | --Msg1--> Subscriber1
-    Publisher--Msg1,Msg2,Msg3-->| EMQ X | --Msg2--> Subscriber2
-                                |       | --Msg3--> Subscriber3
-                                ---------
+.. image:: ./_static/images/guide_2.png
 
 共享订阅支持两种使用方式:
 

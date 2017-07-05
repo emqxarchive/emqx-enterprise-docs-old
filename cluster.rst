@@ -118,7 +118,7 @@ EMQ X同一集群内每个节点，都保存一份主题树(Topic Trie)和路由
     node2-->client2: Deliver[t/#]
     node3-->client3: Deliver[t/a]
 
-.. image:: ./_static/images/clustering_3.png
+.. image:: ./_static/images/design_9.png
 
 -----------------
 EMQ X集群配置管理

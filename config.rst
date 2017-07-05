@@ -242,7 +242,7 @@ acl.conf访问控制规则定义::
 
 访问控制规则采用Erlang元组格式，访问控制模块逐条匹配规则:
 
-.. image:: _static/images/6.png
+.. image:: _static/images/authn_2.png
 
 acl.conf默认访问规则设置:
 
