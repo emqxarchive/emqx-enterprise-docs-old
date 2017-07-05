@@ -160,14 +160,16 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 
 全局唯一时间序列消息ID结构：
 
+.. image:: _static/images/design_5.png
+
 1. 64bits时间戳: erlang:system_time if Erlang >= R18, otherwise os:timestamp
 2. Erlang节点ID: 编码为2字节
 3. Erlang进程PID: 编码为4字节
 4. 进程内部序列号: 2字节的进程内部序列号
 
-端到端消息发布订阅(Pub/Sub)过程中，发布报文ID与报文QoS终结在会话层，由唯一ID标识的MQTT消息对象在节点间路由::
+端到端消息发布订阅(Pub/Sub)过程中，发布报文ID与报文QoS终结在会话层，由唯一ID标识的MQTT消息对象在节点间路由:
 
-    PktId <-- Session --> MsgId <-- Router --> MsgId <-- Session --> PktId
+.. image:: _static/images/design_6.png
 
 .. _route_layer:
 
