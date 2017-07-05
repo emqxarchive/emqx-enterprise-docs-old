@@ -15,7 +15,7 @@ Erlang/OTP最初是爱立信为开发电信设备系统设计的编程语言平�
 
 Erlang/OTP语言平台的分布式程序，由分布互联的Erlang运行系统组成，每个Erlang运行系统被称为节点(Node)，节点(Node)间通过TCP互联，消息传递的方式通信:
 
-.. image:: _static/images/10_1.png
+.. image:: _static/images/clustering_1.png
 
 节点(Node)
 ----------
@@ -101,7 +101,7 @@ EMQ X同一集群内每个节点，都保存一份主题树(Topic Trie)和路由
 
 最终会生成如下主题树(Topic Trie)和路由表(Route Table):
 
-.. image:: _static/images/10_2.png
+.. image:: _static/images/clustering_2.png
 
 订阅(Subscription)与消息派发
 ----------------------------
@@ -118,7 +118,7 @@ EMQ X同一集群内每个节点，都保存一份主题树(Topic Trie)和路由
     node2-->client2: Deliver[t/#]
     node3-->client3: Deliver[t/a]
 
-.. image:: ./_static/images/route.png
+.. image:: ./_static/images/clustering_3.png
 
 -----------------
 EMQ X集群配置管理
@@ -216,7 +216,7 @@ EMQ X消息服务器集群模式下，MQTT连接的持久会话(Session)跨节�
 
 例如负载均衡的两台集群节点:node1与node2，同一MQTT客户端先连接node1，node1节点会创建持久会话；客户端断线重连到node2时，MQTT的连接在node2节点，持久会话仍在node1节点:
 
-.. image:: _static/images/10_3.png
+.. image:: _static/images/clustering_4.png
 
 .. _cluster_firewall:
 

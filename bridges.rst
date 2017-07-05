@@ -15,7 +15,7 @@ Kafka桥接
 
 EMQ X桥接转发MQTT消息到Kafka集群:
 
-.. image:: _static/images/8_1.png
+.. image:: _static/images/bridges_1.png
 
 Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
@@ -230,7 +230,7 @@ RabbitMQ桥接
 
 EMQ X桥接转发MQTT消息到RabbitMQ:
 
-.. image:: _static/images/8_2.png
+.. image:: _static/images/bridges_2.png
 
 RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
@@ -374,7 +374,7 @@ EMQ X桥接
 
 EMQ X支持多节点间桥接模式互联:
 
-.. image:: _static/images/8_3.png
+.. image:: _static/images/bridges_3.png
 
 假设创建emqx1, emqx2两个节点:
 
@@ -424,7 +424,7 @@ mosquitto桥接
 
 mosquitto可以普通MQTT连接方式，桥接到EMQ X服务器集群:
 
-.. image:: _static/images/8_4.png
+.. image:: _static/images/bridges_4.png
 
 mosquitto.conf桥接配置示例::
 

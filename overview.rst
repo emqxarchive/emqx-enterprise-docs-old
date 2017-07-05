@@ -102,7 +102,7 @@ Fastlane订阅
 
 EMQ X企业版增加了快车道(Fastlane)订阅功能，大幅提高消息路由效率，非常适合数据采集类的物联网应用:
 
-.. image:: _static/images/fastlane.png
+.. image:: _static/images/overview_2.png
 
 Fastlane订阅使用方式: 主题加 *$fastlane/* 前缀。
 
@@ -113,7 +113,7 @@ Fastlane订阅限制:
 
 Fastlane订阅适合物联网传感器数据采集类应用:
 
-.. image:: _static/images/3_1.png
+.. image:: _static/images/overview_3.png
 
 --------
 代理订阅
@@ -129,7 +129,7 @@ EMQ X代理订阅功能在低功耗、低带宽网络环境下，可以节省客
 
 EMQ X企业版支持存储订阅关系、MQTT消息、设备状态到Redis、MySQL、PostgreSQL、MongoDB与Cassandra数据库:
 
-.. image:: _static/images/storage.png
+.. image:: _static/images/overview_4.png
 
 数据存储相关配置，详见"数据存储"章节。
 
@@ -139,5 +139,5 @@ EMQ X企业版支持存储订阅关系、MQTT消息、设备状态到Redis、MyS
 
 EMQ X企业版支持直接转发MQTT消息到RabbitMQ、Kafka，可作为百万级的物联网接入服务器(IoT Hub):
 
-.. image:: _static/images/iothub.png
+.. image:: _static/images/overview_5.png
 

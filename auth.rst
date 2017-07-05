@@ -13,7 +13,7 @@ EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户�
 
 系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链:
 
-.. image:: _static/images/7.png
+.. image:: _static/images/authn_1.png
 
 ------------
 匿名认证设置
@@ -38,7 +38,7 @@ ACL访问控制规则定义::
 
 MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止:
 
-.. image:: _static/images/6.png
+.. image:: _static/images/authn_2.png
 
 ----------------
 默认访问控制设置
