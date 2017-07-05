@@ -340,10 +340,6 @@ API定义::
         "code": 0,
         "result":
         {
-            "current_page": 1,
-            "page_size": 20,
-            "total_num": 1,
-            "total_page": 1,
             "objects":
             [
                 {
@@ -381,10 +377,6 @@ API定义::
         "code": 0,
         "result":
         {
-            "current_page": 1,
-            "page_size": 20,
-            "total_num": 1,
-            "total_page": 1,
             "objects":
             [
                 {
