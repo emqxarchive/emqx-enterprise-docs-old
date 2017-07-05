@@ -12,7 +12,7 @@
 一对一消息存储
 --------------
 
-.. image:: ./_static/images/backend_queue.png
+.. image:: ./_static/images/backends_1.png
 
 1. PUB端发布一条消息；
 
@@ -29,7 +29,7 @@
 一对多消息存储
 ---------------
 
-.. image:: ./_static/images/backend_pubsub.png
+.. image:: ./_static/images/backends_2.png
 
 1. PUB端发布一条消息；
 

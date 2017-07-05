@@ -13,7 +13,7 @@
 
 EMQ 2.0开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进:
 
-.. image:: _static/images/11_1.png
+.. image:: _static/images/design_1.png
 
 EMQ X在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
 
@@ -33,7 +33,7 @@ EMQ消息服务器是基于Erlang/OTP平台的全异步的架构：异步TCP连�
 
 一条MQTT消息从发布者(Publisher)到订阅者(Subscriber)，在EMQ X消息服务器内部异步流过一系列Erlang进程Mailbox:
 
-.. image:: _static/images/11_2.png
+.. image:: _static/images/design_2.png
 
 消息持久化
 ----------
@@ -74,7 +74,7 @@ EMQ集群部署在同一IDC网络下，NetSplit发生的几率很低，一旦发
 
 EMQ X消息服务器概念上更像一台网络路由器(Router)或交换机(Switch)，而不是传统的企业级消息服务器(MQ)。相比网络路由器按IP地址或MPLS标签路由报文，EMQ X按主题树(Topic Trie)发布订阅模式在集群节点间路由MQTT消息:
 
-.. image:: ./_static/images/concept.png
+.. image:: ./_static/images/design_3.png
 
 设计原则
 --------
@@ -145,13 +145,9 @@ EMQ X消息服务器概念上更像一台网络路由器(Router)或交换机(Swi
 消息队列与飞行窗口
 ------------------
 
-会话层通过一个内存消息队列和飞行窗口处理下发消息::
+会话层通过一个内存消息队列和飞行窗口处理下发消息:
 
-       |<----------------- Max Len ----------------->|
-       -----------------------------------------------
- IN -> |      Messages Queue   |  Inflight Window    | -> Out
-       -----------------------------------------------
-                               |<---   Win Size  --->|
+.. image:: _static/images/design_4.png
 
 飞行窗口(Inflight Window)保存当前正在发送未确认的Qos1/2消息。窗口值越大，吞吐越高；窗口值越小，消息顺序越严格。
 
@@ -181,7 +177,7 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 
 路由层维护订阅者(Subscriber)与订阅关系表(Subscription)，并在本节点发布订阅模式派发(Dispatch)消息:
 
-.. image:: ./_static/images/dispatch.jpg
+.. image:: ./_static/images/design_7.png
 
 消息派发到会话(Session)后，由会话负责按不同QoS送达消息。
 
@@ -191,24 +187,13 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 分布层设计
 ----------
 
-分布层维护全局主题树(Topic Trie)与路由表(Route Table)。主题树由通配主题构成，路由表映射主题到节点::
+分布层维护全局主题树(Topic Trie)与路由表(Route Table)。主题树由通配主题构成，路由表映射主题到节点:
 
-    -------------------------
-    |            t          |
-    |           / \         |
-    |          +   #        |
-    |        /  \           |
-    |      x      y         |
-    -------------------------
-    | t/+/x -> node1, node3 |
-    | t/+/y -> node1        |
-    | t/#   -> node2        |
-    | t/a   -> node3        |
-    -------------------------
+.. image:: ./_static/images/design_8.png 
 
 分布层通过匹配主题树(Topic Trie)和查找路由表(Route Table)，在集群的节点间转发路由MQTT消息:
 
-.. image:: ./_static/images/route.png
+.. image:: ./_static/images/design_9.png
 
 .. _auth_acl:
 

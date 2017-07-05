@@ -9,7 +9,7 @@ EMQ X集群作为物联网接入服务(IoT Hub)，部署在青云、AWS、阿里
 
 典型部署结构:
 
-.. image:: _static/images/emqx_deploy.png
+.. image:: _static/images/deploy_1.png
 
 ------------
 LB(负载均衡)
@@ -101,11 +101,11 @@ EMQ X节点集群使用的TCP端口:
 
 6. 在LB上创建MQTT TCP监听器:
 
-.. image:: _static/images/1_1.png
+.. image:: _static/images/deploy_2.png
  
    或创建SSL监听器，并终结SSL在LB:
 
-.. image:: _static/images/2_1.png
+.. image:: _static/images/deploy_3.png
   
 7. MQTT客户端连接LB公网地址测试。
 
@@ -133,11 +133,11 @@ EMQ X节点集群使用的TCP端口:
 
 7. 在ELB上创建MQTT TCP监听器:
 
-.. image:: _static/images/4_1.png
+.. image:: _static/images/deploy_4.png
 
    或创建SSL监听器，并终结SSL在LB:
 
-.. image:: _static/images/5_1.png
+.. image:: _static/images/deploy_5.png
 
 8. MQTT客户端连接LB公网地址测试。
 
