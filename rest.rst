@@ -624,6 +624,39 @@ API定义::
         "client_id": "C_1492145414740"
     }
 
+请求示例::
+
+    POST api/v2/mqtt/subscribe
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": []
+    }
+
+取消订阅
+--------
+
+API定义::
+
+    POST api/v2/mqtt/unsubscribe
+
+请求参数:
+
+.. code-block:: json
+
+    {
+        "topic"    : "test",
+        "client_id": "C_1492145414740"
+    }
+
+请求示例::
+
+    POST api/v2/mqtt/unsubscribe
+
 返回数据:
 
 .. code-block:: json
