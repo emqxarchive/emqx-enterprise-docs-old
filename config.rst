@@ -226,7 +226,7 @@ EMQ X默认开启匿名认证，允许任意客户端登录:
 访问控制(ACL)文件
 -----------------
 
-默认基于acl.conf文件的ACL访问控制。MySQL、PostgreSQL等认证插件加载后，该配置文件的ACL规则失效:
+默认基于acl.conf文件的ACL访问控制, 在etc/emqx.conf中设置:
 
 .. code-block:: properties
     
