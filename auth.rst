@@ -258,7 +258,7 @@ MQTT认证用户表
       UNIQUE KEY `mqtt_username` (`username`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-.. NOTE:: 用户可自定义认证用户表，通过'authquery'配置查询语句。
+.. NOTE:: 用户可自定义认证用户表，通过'auth_query'配置查询语句。
 
 MQTT访问控制表
 --------------
@@ -361,7 +361,7 @@ Postgre MQTT用户表
       salt character varying(100)
     );
 
-.. NOTE:: 用户可自定义认证用户表，通过'authquery'配置查询语句。
+.. NOTE:: 用户可自定义认证用户表，通过'auth_query'配置查询语句。
 
 Postgre MQTT访问控制表
 ----------------------
