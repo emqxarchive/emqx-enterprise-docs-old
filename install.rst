@@ -267,7 +267,7 @@ EMQ X Docker镜像获取:
 
 导入License::
 
-    导入License文件 docker cp emqx.lic emqx20:/opt/emqx/etc/
+    docker cp emqx.lic emqx20:/opt/emqx/etc/
 
 
 停止容器::
