@@ -65,12 +65,12 @@ EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\
 数据文件
 --------
 
-数据文件目录：/var/lib/emqx/
+数据文件目录: /var/lib/emqx/
 
 导入License
 -----------
 
-导入License文件 cp emqx.lic /etc/emqx/
+导入License文件: cp emqx.lic /etc/emqx/
 
 启动停止
 --------
@@ -110,12 +110,12 @@ EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\
 数据文件
 --------
 
-数据文件目录：/var/lib/emqx/
+数据文件目录: /var/lib/emqx/
 
 导入License
 -----------
 
-导入License文件 cp emqx.lic /etc/emqx/
+导入License文件: cp emqx.lic /etc/emqx/
 
 
 启动停止
