@@ -67,6 +67,11 @@ EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\
 
 数据文件目录：/var/lib/emqx/
 
+导入License
+-----------
+
+导入License文件 cp emqx.lic /etc/emqx/
+
 启动停止
 --------
 
@@ -107,6 +112,12 @@ EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\
 
 数据文件目录：/var/lib/emqx/
 
+导入License
+-----------
+
+导入License文件 cp emqx.lic /etc/emqx/
+
+
 启动停止
 --------
 
@@ -145,6 +156,12 @@ CentOS平台为例，下载安装过程:
 .. code-block:: bash
 
     unzip emqx-enterprise-centos7-v2.1.0.zip
+
+导入License
+-----------
+
+导入License文件 cp emqx.lic etc/
+
 
 控制台调试模式启动，检查EMQ X是否可正常启动:
 
@@ -247,6 +264,11 @@ EMQ X Docker镜像获取:
 启动容器::
 
     docker run -itd --net='host' --name emqx20 emqx-enterprise-docker-v2.1.0
+
+导入License::
+
+    导入License文件 docker cp emqx.lic emqx20:/opt/emqx/etc/
+
 
 停止容器::
 
