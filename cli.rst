@@ -705,6 +705,26 @@ listener参数说明:
 | shutdown_count  | Socket关闭原因统计                |
 +-----------------+-----------------------------------+
 
+
+-----------
+license命令
+-----------
+
+查询license信息::
+
+    $ ./bin/emqx_ctl license info
+
+    vendor      : EMQ Enterprise, Inc
+    product     : EMQ X Enterprise
+    expiry      : {{2017,6,30},{0,0,0}}
+    customer    : Free Trial
+    userdata    : [{max_clients,100}]
+
+重新加载license::
+
+    $ ./bin/emqx_ctl license reload <File>
+    ok.
+
 ----------
 mnesia命令
 ----------
