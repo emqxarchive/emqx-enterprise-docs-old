@@ -553,7 +553,7 @@ MySQL 主题订阅表
     CREATE TABLE `mqtt_sub` (
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `clientid` varchar(64) DEFAULT NULL,
-      `topic` varchar(256) DEFAULT NULL,
+      `topic` varchar(255) DEFAULT NULL,
       `qos` int(3) DEFAULT NULL,
       `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`id`),
