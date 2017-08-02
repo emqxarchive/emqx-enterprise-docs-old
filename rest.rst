@@ -271,6 +271,25 @@ API定义::
         }
     }
 
+强制将指定客户端踢下线
+----------------------
+
+API定义::
+
+    PUT api/v2/kick_client/{clientid}
+
+请求示例::
+
+    PUT api/v2/kick_client/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": []
+    }
 
 --------------
 会话(Sessions)
