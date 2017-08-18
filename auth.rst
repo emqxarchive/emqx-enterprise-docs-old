@@ -458,6 +458,12 @@ Redis认证插件配置
     ## Redis Server
     auth.redis.server = 127.0.0.1:6379
 
+    ## Redis Sentinel
+    ## auth.redis.server = 127.0.0.1:26379
+
+    ## redis sentinel cluster name
+    ## auth.redis.sentinel = mymaster
+
     ## Redis Pool Size
     auth.redis.pool = 8
 
