@@ -175,7 +175,7 @@ API定义::
 
 请求示例::
 
-    api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
+    GET api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
 
 返回数据:
 
@@ -567,7 +567,7 @@ API定义::
 
 请求示例::
 
-    GET api/v2/routes
+    GET api/v2/routes/test_topic
 
 返回数据:
 
