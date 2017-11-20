@@ -90,6 +90,12 @@ Redis数据存储
     ## Redis Server
     backend.redis.pool1.server = 127.0.0.1:6379
 
+    ## Redis Sentinel
+    ## backend.redis.pool1.server = 127.0.0.1:26379
+
+    ## redis sentinel cluster name
+    ## backend.redis.pool1.sentinel = mymaster
+
     ## Redis Pool Size 
     backend.redis.pool1.pool_size = 8
 

@@ -175,7 +175,7 @@ API定义::
 
 请求示例::
 
-    api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
+    GET api/v2/nodes/emqx@127.0.0.1/clients?curr_page=1&page_size=20
 
 返回数据:
 
@@ -271,6 +271,25 @@ API定义::
         }
     }
 
+断开指定客户端连接
+------------------
+
+API定义::
+
+    DELETE api/v2/clients/{clientid}
+
+请求示例::
+
+    DELETE api/v2/clients/C_1492145414740
+
+返回数据:
+
+.. code-block:: json
+
+    {
+        "code": 0,
+        "result": []
+    }
 
 --------------
 会话(Sessions)
@@ -548,7 +567,7 @@ API定义::
 
 请求示例::
 
-    GET api/v2/routes
+    GET api/v2/routes/test_topic
 
 返回数据:
 
@@ -569,9 +588,9 @@ API定义::
     }
 
 
-----------
-发布/订阅
-----------
+------------------
+发布/订阅/取消订阅
+------------------
 
 发布消息
 --------
@@ -823,7 +842,7 @@ API定义::
 
 API定义::
 
-    PUT /api/v2/nodes/{node_name}/plugins/{name}
+    PUT /api/v2/nodes/{node_name}/plugins/{plugin_name}
 
 请求参数::
 
@@ -1169,181 +1188,6 @@ API定义::
         }
     }
 
-------------
-用户(Users)
-------------
-
-新增用户
---------
-
-API定义::
-
-    POST /api/v2/users/
-
-请求参数:
-
-.. code-block:: json
-
-    {
-        "username": "admin",
-        "password": "public",
-        "email"   : "admin@emqtt.io",
-        "role"    : "administrator",
-        "remark"  : "admin"
-    }
-
-请求示例::
-
-    POST /api/v2/users/
-
-返回数据:
-
-.. code-block:: json
-
-    {
-        "code": 0,
-        "result": []
-    }
-
-查询用户列表
-------------
-
-API定义::
-
-    GET /api/v2/users/
-
-返回数据:
-
-.. code-block:: json
-
-    {
-        "code": 0,
-        "result": [
-            {
-                "username": "admin",
-                "email": "admin@emqtt.io",
-                "role": "administrator",
-                "remark": "administrator",
-                "created_at": "2017-04-07 10:30:01"
-            },
-            {
-                "username": "root",
-                "email": "admin@emqtt.io",
-                "role": "administrator",
-                "remark": "123",
-                "created_at": "2017-04-14 13:51:43"
-            }
-        ]
-    }
-
-
-查询指定用户
-------------
-
-API定义::
-
-    GET /api/v2/users/{username}
-
-请求示例::
-
-    GET /api/v2/users/admin
-
-返回数据:
-
-.. code-block:: json
-
-    {
-        "code": 0,
-        "result": {
-            "username"  : "root",
-            "email"     : "admin@emqtt.io",
-            "role"      : "administrator",
-            "remark"    : "123",
-            "created_at": "2017-04-14 13:51:43"
-        }
-    }
-
-更新用户
---------
-
-API定义::
-
-    PUT /api/v2/users/{username}
-
-请求参数:
-
-.. code-block:: json
-
-    {
-        "email"   : "admin@emqtt.io",
-        "role"    : "administrator",
-        "remark"  : "admin"
-    }
-
-请求示例::
-
-    PUT /api/v2/users/admin
-
-返回数据:
-
-.. code-block:: json
-    
-    {
-        "code": 0,
-        "result": []
-    }
-
-删除用户
---------
-
-API定义::
-
-    DELETE /api/v2/users/{username}
-
-请求示例::
-
-    DELETE /api/v2/users/test
-
-返回数据:
-
-.. code-block:: json
-
-    {
-        "code": 0,
-        "result": []
-    }
-
-修改用户密码
-------------
-
-API定义::
-
-    PUT /api/v2/users/change_pwd
-
-请求参数:
-
-.. code-block:: json
-
-    {
-        "username"   : "root",
-        "old_pwd"    : "xxxxxx",
-        "new_pwd"    : "xxxxxx",
-        "confirm_pwd": "xxxxxx"
-    }
-
-请求示例::
-
-    PUT api/v2/mqtt/users/change_pwd
-
-返回数据:
-
-.. code-block:: json
-
-    {
-        "code": 0,
-        "result": []
-    }
-
 ----------
 返回错误码
 ----------
@@ -1376,6 +1220,4 @@ API定义::
 | 111   | 插件已经卸载，不能重复卸载              |
 +-------+-----------------------------------------+
 | 112   | 用户不在线                              |
-+-------+-----------------------------------------+
-| 113   | 新密码和确认密码不一致                  |
 +-------+-----------------------------------------+
