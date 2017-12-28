@@ -90,7 +90,7 @@ ACL规则修改后可通过命令行重新加载:
 认证插件列表
 ------------
 
-EMQ X支持ClientId、用户名、HTTP、LDAP、MySQL、Redis、Postgre、MongoDB多种认集成方式，以认证插件方式提供可同时加载多个形成认证链。
+EMQ X支持ClientId、用户名、HTTP、LDAP、MySQL、Redis、Postgre、MongoDB、JTW多种认集成方式，以认证插件方式提供可同时加载多个形成认证链。
 
 EMQ X认证插件配置文件，在/etc/emqx/plugins/(RPM/DEB安装)或etc/plugins/(独立安装)目录:
 

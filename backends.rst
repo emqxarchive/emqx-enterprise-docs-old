@@ -87,8 +87,11 @@ Redis数据存储
 
 .. code-block:: properties
 
-    ## Redis Server
+    ## Redis Server 127.0.0.1:6379, Redis Sentinel: 127.0.0.1:26379
     backend.redis.pool1.server = 127.0.0.1:6379
+
+    ## redis sentinel cluster name
+    ## backend.redis.pool1.sentinel = mymaster
 
     ## Redis Pool Size 
     backend.redis.pool1.pool_size = 8
@@ -124,6 +127,9 @@ Redis数据存储
 
     ## Lookup Retain Message 
     backend.redis.hook.session.subscribed.3  = {"action": {"function": "on_retain_lookup"}, "pool": "pool1"}
+
+    ## Delete Ack
+    backend.redis.hook.session.unsubscribed.1= {"topic": "#", "action": {"commands": ["DEL mqtt:acked:${clientid}:${topic}"]}, "pool": "pool1"}
 
     ## Store Publish Message  QOS > 0
     backend.redis.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
@@ -172,23 +178,23 @@ Redis存储规则说明
 Redis 命令行参数说明
 --------------------
 
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| hook                 | 可用参数                                      | 示例(每个字段分隔，必须是一个空格)      |
-+======================+===============================================+=========================================+
-| client.connected     | clientid                                      | SET conn:${clientid} clientid           |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| client.disconnected  | clientid                                      | SET disconn:${clientid} clientid        |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| session.subscribed   | clientid, topic, qos                          | HSET sub:${clientid} topic qos          |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| session.unsubscribed | clientid, topic                               | SET unsub:${clientid} topic             |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| message.publish      | message, msgid, topic, payload, qos, clientid | RPUSH pub:${topic} msgid                |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| message.acked        | msgid, topic, clientid                        | HSET ack:${clientid} topic msgid        |
-+----------------------+-----------------------------------------------+-----------------------------------------+
-| message.delivered    | msgid, topic, clientid                        | HSET delivered:${clientid} topic msgid  |
-+----------------------+-----------------------------------------------+-----------------------------------------+
++----------------------+-----------------------------------------------+---------------------------------------------+
+| hook                 | 可用参数                                      | 示例(每个字段分隔，必须是一个空格)          |
++======================+===============================================+=============================================+
+| client.connected     | clientid                                      | SET conn:${clientid} ${clientid}            |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| client.disconnected  | clientid                                      | SET disconn:${clientid} ${clientid}         |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| session.subscribed   | clientid, topic, qos                          | HSET sub:${clientid} ${topic} ${qos}        |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| session.unsubscribed | clientid, topic                               | SET unsub:${clientid} ${topic}              |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| message.publish      | message, msgid, topic, payload, qos, clientid | RPUSH pub:${topic} ${msgid}                 |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| message.acked        | msgid, topic, clientid                        | HSET ack:${clientid} ${topic} ${msgid}      |
++----------------------+-----------------------------------------------+---------------------------------------------+
+| message.delivered    | msgid, topic, clientid                        | HSET delivered:${clientid} ${topic} ${msgid}|
++----------------------+-----------------------------------------------+---------------------------------------------+
 
 Redis 命令行配置Action
 ------------------------
@@ -198,7 +204,7 @@ Redis存储支持用户采用Redis Commands语句配置Action，例如:
 .. code-block:: properties
     
     ## 在客户端连接到EMQ服务器后，执行一条redis命令(支持多条redis命令) 
-    backend.redis.hook.client.connected.3 = {"action": {"commands": ["SET conn:${clientid} clientid"]}, "pool": "pool1"}
+    backend.redis.hook.client.connected.3 = {"action": {"commands": ["SET conn:${clientid} ${clientid}"]}, "pool": "pool1"}
 
 
 Redis 设备在线状态Hash
@@ -380,6 +386,16 @@ MySQL数据存储
 
 .. code-block:: properties
 
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mysql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mysql.time_range = 2h
+
     ## Client Connected Record 
     backend.mysql.hook.client.connected.1    = {"action": {"function": "on_client_connected"}, "pool": "pool1"}
 
@@ -394,6 +410,9 @@ MySQL数据存储
 
     ## Lookup Retain Message 
     backend.mysql.hook.session.subscribed.2  = {"topic": "#", "action": {"function": "on_retain_lookup"}, "pool": "pool1"}
+
+    ## Delete Ack
+    backend.mysql.hook.session.unsubscribed.1= {"topic": "#", "action": {"sql": ["delete from mqtt_acked where clientid = ${clientid} and topic = ${topic}"]}, "pool": "pool1"}
 
     ## Store Publish Message  QOS > 0
     backend.mysql.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
@@ -723,6 +742,16 @@ PostgreSQL 数据存储
 
 .. code-block:: properties
 
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.pgsql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.pgsql.time_range = 2h
+
     ## Client Connected Record 
     backend.pgsql.hook.client.connected.1    = {"action": {"function": "on_client_connected"}, "pool": "pool1"}
 
@@ -737,6 +766,9 @@ PostgreSQL 数据存储
 
     ## Lookup Retain Message 
     backend.pgsql.hook.session.subscribed.2  = {"topic": "#", "action": {"function": "on_retain_lookup"}, "pool": "pool1"}
+
+    ## Delete Ack
+    backend.pgsql.hook.session.unsubscribed.1= {"topic": "#", "action": {"sql": ["delete from mqtt_acked where clientid = ${clientid} and topic = ${topic}"]}, "pool": "pool1"}
 
     ## Store Publish Message  QOS > 0
     backend.pgsql.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
@@ -1011,6 +1043,16 @@ MongoDB数据存储
 -------------------
 
 .. code-block:: properties
+
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mongo.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mongo.time_range = 2h
 
     ## Client Connected Record 
     backend.mongo.hook.client.connected.1    = {"action": {"function": "on_client_connected"}, "pool": "pool1"}
@@ -1301,6 +1343,16 @@ Cassandra数据存储
 
 .. code-block:: properties
 
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.cassa.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.cassa.time_range = 2h
+
     ## Client Connected Record 
     backend.cassa.hook.client.connected.1    = {"action": {"function": "on_client_connected"}, "pool": "pool1"}
 
@@ -1315,6 +1367,9 @@ Cassandra数据存储
 
     ## Lookup Retain Message 
     backend.cassa.hook.session.subscribed.2  = {"action": {"function": "on_retain_lookup"}, "pool": "pool1"}
+
+    ## Delete Ack
+    backend.cassa.hook.session.unsubscribed.1= {"topic": "#", "action": {"cql": ["delete from acked where client_id = ${clientid} and topic = ${topic}"]}, "pool": "pool1"}
 
     ## Store Publish Message  QOS > 0
     backend.cassa.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
