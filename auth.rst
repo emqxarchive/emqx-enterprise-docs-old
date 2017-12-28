@@ -9,7 +9,7 @@
 MQTT认证设计
 ------------
 
-EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP集成认证。
+EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP、JTW集成认证。
 
 系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
 
@@ -59,6 +59,9 @@ EMQ X消息服务器默认访问控制，通过acl.conf配置文件设置:
 
 .. code-block:: properties
 
+    ## ACL nomatch
+    mqtt.acl_nomatch = allow
+
     ## Default ACL File
     mqtt.acl_file = etc/acl.conf
 
@@ -74,9 +77,6 @@ ACL规则定义在etc/acl.conf，EMQ X启动时加载到内存:
 
     %% Deny clients to subscribe '$SYS#' and '#'
     {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
-
-    %% Allow all by default
-    {allow, all}.
 
 ACL规则修改后可通过命令行重新加载:
 
@@ -112,6 +112,8 @@ EMQ X认证插件配置文件，在/etc/emqx/plugins/(RPM/DEB安装)或etc/plugi
 | emqx_auth_redis         | emqx_auth_pgsql.conf      | Redis认证/鉴权插件        |
 +-------------------------+---------------------------+---------------------------+
 | emqx_auth_mongo         | emqx_auth_mongo.conf      | MongoDB认证/鉴权插件      |
++-------------------------+---------------------------+---------------------------+
+| emqx_auth_jwt           | emqx_auth_jwt.conf        | JWT认证/鉴权插件          |
 +-------------------------+---------------------------+---------------------------+
 
 --------------------
@@ -191,11 +193,20 @@ LDAP认证插件配置
 
     auth.ldap.port = 389
 
+    auth.ldap.bind_dn = cn=root,dc=emqtt,dc=com
+
+    auth.ldap.bind_password = public
+
     auth.ldap.timeout = 30
 
-    auth.ldap.user_dn = uid=%u,ou=People,dc=example,dc=com
-
     auth.ldap.ssl = false
+
+    ## Variables: %u = username, %c = clientid
+    auth.ldap.auth_dn = cn=%u,ou=auth,dc=emqtt,dc=com
+
+    ## Password hash: plain, md5, sha, sha256
+    auth.ldap.password_hash = sha256
+
 
 加载LDAP认证插件:
 
@@ -233,8 +244,6 @@ HTTP认证插件配置
     auth.http.acl_req = http://127.0.0.1:8080/mqtt/acl
     auth.http.acl_req.method = get
     auth.http.acl_req.params = access=%A,username=%u,clientid=%c,ipaddr=%a,topic=%t
-
-    auth.http.acl_nomatch = deny
 
 HTTP认证/访问控制(ACL)服务器API设计::
 
@@ -327,14 +336,21 @@ MQTT访问控制表
     ## Authentication Query: select password only
     auth.mysql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
     auth.mysql.password_hash = sha256
 
     ## sha256 with salt prefix
-    ## auth.mysql.password_hash = salt sha256
+    ## auth.mysql.password_hash = salt,sha256
 
     ## sha256 with salt suffix
-    ## auth.mysql.password_hash = sha256 salt
+    ## auth.mysql.password_hash = sha256,salt
+
+    ## bcrypt with salt only prefix
+    ## auth.mysql.password_hash = salt,bcrypt
+
+    ## pbkdf2 with macfun iterations dklen
+    ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
+    ## auth.mysql.password_hash = pbkdf2,sha256,1000,20
 
     ## %% Superuser Query
     auth.mysql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
@@ -346,9 +362,6 @@ MQTT访问控制表
 
     ## ACL Query Command
     auth.mysql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
-
-    ## ACL nomatch
-    auth.mysql.acl_nomatch = deny
 
 加载MySQL认证插件
 -----------------
@@ -432,14 +445,21 @@ Postgre MQTT访问控制表
     ## Authentication Query: select password only
     auth.pgsql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
     auth.pgsql.password_hash = sha256
 
     ## sha256 with salt prefix
-    ## auth.pgsql.password_hash = salt sha256
+    ## auth.pgsql.password_hash = salt,sha256
 
     ## sha256 with salt suffix
-    ## auth.pgsql.password_hash = sha256 salt
+    ## auth.pgsql.password_hash = sha256,salt
+
+    ## bcrypt with salt prefix
+    ## auth.pgsql.password_hash = salt,bcrypt
+
+    ## pbkdf2 with macfun iterations dklen
+    ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
+    ## auth.pgsql.password_hash = pbkdf2,sha256,1000,20
 
     ## Superuser Query
     auth.pgsql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
@@ -451,9 +471,6 @@ Postgre MQTT访问控制表
 
     ## ACL Query. Comment this query, the acl will be disabled.
     auth.pgsql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
-
-    ## If no rules matched, return...
-    auth.pgsql.acl_nomatch = deny
 
 加载Postgre认证插件
 -------------------
@@ -473,8 +490,11 @@ Redis认证插件配置
 
 .. code-block:: properties
 
-    ## Redis Server
+    ## Redis Server: 6379, 127.0.0.1:6379, localhost:6379, Redis Sentinel: 127.0.0.1:26379
     auth.redis.server = 127.0.0.1:6379
+
+    ## redis sentinel cluster name
+    ## auth.redis.sentinel = mymaster
 
     ## Redis Pool Size
     auth.redis.pool = 8
@@ -495,8 +515,21 @@ Redis认证插件配置
     ## Authentication Query Command
     auth.redis.auth_cmd = HGET mqtt_user:%u password
 
-    ## Password hash: plain, md5, sha, sha256, pbkdf2
-    auth.redis.passwd.hash = sha256
+    ## Password hash: plain, md5, sha, sha256, bcrypt
+    auth.redis.password_hash = plain
+
+    ## sha256 with salt prefix
+    ## auth.redis.password_hash = salt,sha256
+
+    ## sha256 with salt suffix
+    ## auth.redis.password_hash = sha256,salt
+
+    ## bcrypt with salt prefix
+    ## auth.redis.password_hash = salt,bcrypt
+
+    ## pbkdf2 with macfun iterations dklen
+    ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
+    ## auth.redis.password_hash = pbkdf2,sha256,1000,20
 
     ## Superuser Query Command
     auth.redis.super_cmd = HGET mqtt_user:%u is_superuser
@@ -508,9 +541,6 @@ Redis认证插件配置
 
     ## ACL Query Command
     auth.redis.acl_cmd = HGETALL mqtt_acl:%u
-
-    ## ACL nomatch
-    auth.redis.acl_nomatch = deny
 
 Redis认证用户Hash
 -----------------
@@ -549,6 +579,9 @@ MongoDB认证插件配置
 
 .. code-block:: properties
 
+    ## Mongo Topology Type single|unknown|sharded|rs
+    auth.mongo.type = single
+
     ## Mongo Server
     auth.mongo.server = 127.0.0.1:27017
 
@@ -569,29 +602,37 @@ MongoDB认证插件配置
 
 .. code-block:: properties
 
-    ## authquery
-    auth.mongo.authquery.collection = mqtt_user
+    ## auth_query
+    auth.mongo.auth_query.collection = mqtt_user
 
-    auth.mongo.authquery.password_field = password
+    auth.mongo.auth_query.password_field = password
 
-    auth.mongo.authquery.password_hash = sha256
+    ## Password hash: plain, md5, sha, sha256, bcrypt
+    auth.mongo.auth_query.password_hash = sha256
 
-    auth.mongo.authquery.selector = username=%u
+    ## sha256 with salt suffix
+    ## auth.mongo.auth_query.password_hash = sha256,salt
 
-    ## superquery
-    auth.mongo.superquery.collection = mqtt_user
+    ## sha256 with salt prefix
+    ## auth.mongo.auth_query.password_hash = salt,sha256
 
-    auth.mongo.superquery.super_field = is_superuser
+    ## bcrypt with salt prefix
+    ## auth.mongo.auth_query.password_hash = salt,bcrypt
 
-    auth.mongo.superquery.selector = username=%u
+    ## pbkdf2 with macfun iterations dklen
+    ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
+    ## auth.mongo.auth_query.password_hash = pbkdf2,sha256,1000,20
 
-    ## acl_query
-    auth.mongo.acl_query.collection = mqtt_user
+    auth.mongo.auth_query.selector = username=%u
 
-    auth.mongo.acl_query.selector = username=%u
+    ## super_query
+    auth.mongo.super_query = on
 
-    ## acl_nomatch
-    auth.mongo.acl_nomatch = deny
+    auth.mongo.super_query.collection = mqtt_user
+
+    auth.mongo.super_query.super_field = is_superuser
+
+    auth.mongo.super_query.selector = username=%u
 
 配置ACL查询集合
 ---------------
@@ -602,9 +643,6 @@ MongoDB认证插件配置
     auth.mongo.aclquery.collection = mqtt_acl
 
     auth.mongo.aclquery.selector = username=%u
-
-    ## acl_nomatch
-    auth.mongo.acl_nomatch = deny
 
 MongoDB数据库
 -------------
@@ -656,6 +694,27 @@ MongoDB ACL集合示例
 
     ./bin/emqx_ctl plugins load emqx_auth_mongo
 
-.. _recon: http://ferd.github.io/recon/
+--------------
+JWT认证插件配置
+--------------
+
+配置JWT认证
+-----------
+
+.. code-block:: properties
+
+    ## HMAC hash secret
+    auth.jwt.secret = emqxsecret
+
+    ## RSA or ECDSA public key file
+    ## auth.jwt.pubkey = /etc/emqx/certs/jwt_public_key.pem
+
+
+加载JWT认证插件
+--------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_auth_jwt
 
 
