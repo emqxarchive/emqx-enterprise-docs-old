@@ -27,13 +27,23 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 .. code-block:: properties
 
     ## Kafka Server
-    bridge.kafka.pool1.server = 127.0.0.1:9092
+    ## bridge.kafka.servers = 127.0.0.1:9092,127.0.0.2:9092,127.0.0.3:9092
+    bridge.kafka.servers = 127.0.0.1:9092
 
-    ## Kafka Pool Size 
-    bridge.kafka.pool1.pool_size = 8
-    
     ## Kafka Parition Strategy
     bridge.kafka.parition_strategy = random
+
+    ## Kafka Max Buffer Size
+    bridge.kafka.max_buffer_size = 10000
+
+    ## Kafka Max Buffer TTL
+    bridge.kafka.max_buffer_ttl = 1s
+
+    ## Kafka Partition Workers Size
+    bridge.kafka.per_partition_workers = 64
+
+    ## Produce writes type
+    bridge.kafka.produce = sync
 
 配置Kafka桥接规则
 -----------------
