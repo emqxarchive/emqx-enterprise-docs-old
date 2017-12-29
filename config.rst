@@ -230,6 +230,9 @@ EMQ X默认开启匿名认证，允许任意客户端登录:
 
 .. code-block:: properties
 
+    ## ACL nomatch
+    mqtt.acl_nomatch = allow
+
     ## Default ACL File
     mqtt.acl_file = etc/acl.conf
 
@@ -259,9 +262,6 @@ acl.conf默认访问规则设置:
 
     %% 拒绝用户订阅'$SYS#'与'#'主题
     {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
-
-    %% 上述规则无匹配，允许
-    {allow, all}.
 
 .. NOTE:: 默认规则只允许本机用户订阅'$SYS/#'与'#'
 

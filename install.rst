@@ -291,7 +291,7 @@ EMQ X每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台�
 
 联系EMQ公司获取程序包: http://emqtt.com/about#contacts
 
-程序包命名由平台、版本组成，例如: emqx-enterprise-centos7-v2.1.0.zip
+程序包命名由平台、版本组成，例如: emqx-enterprise-centos7-v2.4.zip
 
 .. _install_rpm:
 
@@ -306,7 +306,7 @@ RPM安装
 
 .. code-block:: console
 
-    rpm -ivh --force emqx-centos6.8-v2.1.0-1.el6.x86_64.rpm
+    rpm -ivh emqx-centos6.8-v2.4-1.el6.x86_64.rpm
 
 .. NOTE:: Erlang/OTP R19依赖lksctp-tools库
 
@@ -346,7 +346,7 @@ Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过�
 
 .. code-block:: console
 
-    sudo dpkg -i emqx-ubuntu16.04_v2.1.0_amd64.deb
+    sudo dpkg -i emqx-ubuntu16.04_v2.4_amd64.deb
 
 .. NOTE:: Erlang/OTP R19依赖lksctp-tools库
 
@@ -387,26 +387,26 @@ EMQ X Linux通用程序包:
 +---------------------+------------------------------------------+
 |  操作系统           |                程序包                    |
 +=====================+==========================================+
-| CentOS6(64-bit)     | emqx-enterprise-centos6.8-v2.1.0.zip     |
+| CentOS6(64-bit)     | emqx-enterprise-centos6.8-v2.4.zip       |
 +---------------------+------------------------------------------+
-| CentOS7(64-bit)     | emqx-enterprise-centos7-v2.1.0.zip       |
+| CentOS7(64-bit)     | emqx-enterprise-centos7-v2.4.zip         |
 +---------------------+------------------------------------------+
-| Ubuntu16.04(64-bit) | emqx-enterprise-ubuntu16.04-v2.1.0.zip   |
+| Ubuntu16.04(64-bit) | emqx-enterprise-ubuntu16.04-v2.4.zip     |
 +---------------------+------------------------------------------+
-| Ubuntu14.04(64-bit) | emqx-enterprise-ubuntu14.04-v2.1.0.zip   |
+| Ubuntu14.04(64-bit) | emqx-enterprise-ubuntu14.04-v2.4.zip     |
 +---------------------+------------------------------------------+
-| Ubuntu12.04(64-bit) | emqx-enterprise-ubuntu12.04-v2.1.0.zip   |
+| Ubuntu12.04(64-bit) | emqx-enterprise-ubuntu12.04-v2.4.zip     |
 +---------------------+------------------------------------------+
-| Debian7(64-bit)     | emqx-enterprise-debian7-v2.1.0.zip       |
+| Debian7(64-bit)     | emqx-enterprise-debian7-v2.4.zip         |
 +---------------------+------------------------------------------+
-| Debian8(64-bit)     | emqx-enterprise-debian8-v2.1.0.zip       |
+| Debian8(64-bit)     | emqx-enterprise-debian8-v2.4.zip         |
 +---------------------+------------------------------------------+
 
 CentOS平台为例，下载安装过程:
 
 .. code-block:: bash
 
-    unzip emqx-enterprise-centos7-v2.1.0.zip
+    unzip emqx-enterprise-centos7-v2.4.zip
 
 控制台调试模式启动，检查EMQ X是否可正常启动:
 
@@ -500,27 +500,27 @@ EMQ X Docker镜像获取:
 
 解压emqx-enterprise-docker镜像包::
 
-    unzip emqx-enterprise-docker-v2.1.0.zip
+    unzip emqx-enterprise-docker-v2.4.zip
 
 加载镜像::
 
-    docker load < emqplus-enterprise-docker-v2.1.0
+    docker load < emqplus-enterprise-docker-v2.4
 
 启动容器::
 
-    docker run -itd --net='host' --name emqx20 emqx-enterprise-docker-v2.1.0
+    docker run -itd --net='host' --name emqx24 emqx-enterprise-docker-v2.4
 
 停止容器::
 
-    docker stop emqx20
+    docker stop emqx24
 
 开启容器::
 
-    docker start emqx20
+    docker start emqx24
 
 进入Docker控制台::
 
-    docker exec -it emqx20 /bin/bash
+    docker exec -it emqx24 /bin/sh
 
 ========
 快速启动

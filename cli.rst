@@ -749,3 +749,60 @@ admins del
     $ ./bin/emqx_ctl admins del root
     ok
 
+------------
+retainer命令
+------------
+
+MQTT保留消息
+
++-----------------+-----------------------------+
+| retainer info   | 显示保留消息的信息          |
++-----------------+-----------------------------+
+| retainer topics | 显示全部保留消息的主题      |
++-----------------+-----------------------------+
+| retainer clean  | 清除全部的保留消息          |
++-----------------------------------------------+
+
+retainer info::
+
+    $ ./bin/emqx_ctl retainer info
+    retained/total: 3
+
+retainer topics::
+
+    $ ./bin/emqx_ctl retainer topics
+    $SYS/brokers
+    $SYS/brokers/emqx@127.0.0.1/sysdescr
+    $SYS/brokers/emqx@127.0.0.1/version
+
+retainer clean::
+
+    $ ./bin/emqx_ctl retainer clean
+    Cleaned 3 retained messages
+
+------------
+license命令
+------------
+
+EMQX License
+
++-----------------------+-----------------------------+
+| license info          | 显示license信息             |
++-----------------------+-----------------------------+
+| license reload <File> | 加载license文件             |
++-----------------------+-----------------------------+
+
+license info::
+
+    $ ./bin/emqx_ctl license info
+    vendor      : EMQ Enterprise, Inc
+    product     : EMQ X Enterprise
+    expiry      : {{2017,12,28},{0,0,0}}
+    customer    : Free Trial
+    userdata    : [{max_clients,100}]
+
+license reload::
+
+    $ ./bin/emqx_ctl license reload emqx.lic
+    ok
+
