@@ -401,6 +401,9 @@ EMQ X Linux通用程序包:
 +---------------------+------------------------------------------+
 | Debian8(64-bit)     | emqx-enterprise-debian8-v2.4.zip         |
 +---------------------+------------------------------------------+
+| Debian9(64-bit)     | emqx-enterprise-debian9-v2.4.zip         |
++---------------------+------------------------------------------+
+
 
 CentOS平台为例，下载安装过程:
 
@@ -421,13 +424,14 @@ CentOS平台为例，下载安装过程:
     Starting emqx on node emqx@127.0.0.1
     Load emqx_mod_presence module successfully.
     Load emqx_mod_subscription module successfully.
+    management:http listen on 0.0.0.0:8080 with 2 acceptors.
     dashboard:http listen on 0.0.0.0:18083 with 2 acceptors.
     mqtt:tcp listen on 127.0.0.1:11883 with 4 acceptors.
     mqtt:tcp listen on 0.0.0.0:1883 with 8 acceptors.
     mqtt:ws listen on 0.0.0.0:8083 with 4 acceptors.
     mqtt:ssl listen on 0.0.0.0:8883 with 4 acceptors.
     mqtt:wss listen on 0.0.0.0:8084 with 4 acceptors.
-    emqx 2.1.0 is running now!
+    emqx 2.4 is running now!
 
 CTRL+c关闭控制台。守护进程模式启动:
 
@@ -449,11 +453,11 @@ EMQ X服务进程状态查询:
 
     $ ./bin/emqx_ctl status
     Node 'emqx@127.0.0.1' is started
-    emqx 2.1.0 is running
+    emqx 2.4 is running
 
 EMQ X服务器提供了状态监控URL::
 
-    http://localhost:8083/status
+    http://localhost:8080/status
 
 停止服务器::
 
@@ -664,6 +668,9 @@ EMQ X 默认启用的外部MQTT服务端口包括:
 +-----------+-----------------------------------+
 | 18083     | Web管理控制台端口                 |
 +-----------+-----------------------------------+
+| 8080      | REST/API端口                      |
++-----------+-----------------------------------+
+
 
 上述占用端口可通过etc/emqx.conf配置文件的'Listeners'段落设置:
 

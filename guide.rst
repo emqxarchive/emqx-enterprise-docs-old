@@ -124,20 +124,20 @@ HTTP发布接口
 
 EMQ X提供了一个HTTP发布接口，应用服务器或Web服务器可通过该接口发布MQTT消息::
 
-    HTTP POST http://host:8083/mqtt/publish
+    HTTP POST http://host:8080/mqtt/publish
 
 Web服务器例如PHP/Java/Python/NodeJS或Ruby on Rails，可通过HTTP POST请求发布MQTT消息:
 
 .. code-block:: bash
 
-    curl -v --basic -u user:passwd -d "qos=1&retain=0&topic=/a/b/c&message=hello from http..." -k http://localhost:8083/mqtt/publish
+    curl -v --basic -u admin:public -H "Content-Type: application/json" -X POST -d '{"qos":1, "retain":false, "topic":"/a/b/c", "payload":"hello"}' -k http://127.0.0.1:8080/api/v2/mqtt/publish
 
 HTTP接口参数:
 
 +---------+----------------+
 | 参数    | 说明           |
 +=========+================+
-| client  | MQTT客户端ID   |
+| clientid| MQTT客户端ID   |
 +---------+----------------+
 | qos     | QoS: 0 | 1 | 2 |
 +---------+----------------+
@@ -145,7 +145,7 @@ HTTP接口参数:
 +---------+----------------+
 | topic   | 主题(Topic)    |
 +---------+----------------+
-| message | 消息           |
+| payload | 消息           |
 +---------+----------------+
 
 .. NOTE:: HTTP接口采用Basic认证
@@ -231,8 +231,8 @@ $SYS主题前缀: $SYS/brokers/${node}/clients/
 |                          |  session: false, version: 3, connack: 0,   |                                    |
 |                          |  ts: 1432648482}                           |                                    |
 +--------------------------+--------------------------------------------+------------------------------------+
-| ${clientid}/disconnected | {reason: "keepalive_timeout",              | Publish when a client disconnected |
-|                          |  ts: 1432749431}                           |                                    |
+| ${clientid}/disconnected | {reason: "normal", username: "test",       | Publish when a client disconnected |
+|                          |  ts: 1432648486}                           |                                    |
 +--------------------------+--------------------------------------------+------------------------------------+
 
 'connected'消息JSON数据:
