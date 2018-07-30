@@ -49,7 +49,7 @@ EMQ X设计目标是实现企业级高可靠，并支持承载海量物联网终
 
 7. Kafka桥接：EMQ X内置Bridge直接转发MQTT消息、设备上下线事件到Kafka。
 
-8. RabbitMQ桥接：EMQ X内置Bridge直接转发MQTT消息、设备上下线事件到Kafka。
+8. RabbitMQ桥接：EMQ X内置Bridge直接转发MQTT消息、设备上下线事件到RabbitMQ。
 
 .. _scalable_rpc:
 
