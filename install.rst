@@ -5,7 +5,7 @@
 部署架构
 ========
 
-EMQ X集群作为物联网接入服务(IoT Hub)，部署在青云、AWS、阿里等公有云或企业私有云平台。
+EMQ X 集群作为物联网接入服务(IoT Hub)，部署在青云、AWS、阿里等公有云或企业私有云平台。
 
 典型部署结构:
 
@@ -15,9 +15,9 @@ EMQ X集群作为物联网接入服务(IoT Hub)，部署在青云、AWS、阿里
 LB(负载均衡)
 ------------
 
-LB(负载均衡器)负责分发设备的MQTT连接与消息到EMQ X集群，LB提高EMQ X集群可用性、实现负载平衡以及动态扩容。
+LB(负载均衡器)负责分发设备的MQTT连接与消息到 EMQ X 集群，LB提高EMQ X集群可用性、实现负载平衡以及动态扩容。
 
-部署架构推荐在LB终结SSL连接。设备与LB之间SSL安全连接，LB与EMQ X之间TCP连接。这种部署模式下EMQ X单集群可轻松支持100万设备。
+部署架构推荐在LB终结SSL连接。设备与LB之间SSL安全连接，LB 与 EMQ X 之间TCP连接。这种部署模式下 EMQ X 单集群可轻松支持100万设备。
 
 公有云厂商LB产品:
 
@@ -47,13 +47,13 @@ LB(负载均衡器)负责分发设备的MQTT连接与消息到EMQ X集群，LB�
 
 国内公有云部署推荐青云(EMQ合作伙伴)，国外部署推荐AWS。私有部署推荐使用HAPRoxy作为LB。
 
----------
-EMQ X集群
----------
+----------
+EMQ X 集群
+----------
 
-EMQ X节点集群部署在LB之后，建议部署在VPC或私有网络内。公有云厂商青云、AWS、UCloud、QCloud均支持VPC网络。
+EMQ X 节点集群部署在LB之后，建议部署在VPC或私有网络内。公有云厂商青云、AWS、UCloud、QCloud均支持VPC网络。
 
-EMQ X默认开启的MQTT服务TCP端口:
+EMQ X 默认开启的MQTT服务TCP端口:
 
 +-----------+-----------------------------------+
 | 1883      | MQTT协议端口                      |
@@ -67,7 +67,7 @@ EMQ X默认开启的MQTT服务TCP端口:
 
 防火墙根据使用的MQTT接入方式，开启上述端口的访问权限。
 
-EMQ X节点集群使用的TCP端口:
+EMQ X 节点集群使用的TCP端口:
 
 +-----------+-----------------------------------+
 | 4369      | 集群节点发现端口                  |
@@ -85,9 +85,9 @@ EMQ X节点集群使用的TCP端口:
 
 1. 创建VPC网络。
 
-2. VPC网络内创建EMQ X集群'私有网络'，例如: 192.168.0.0/24
+2. VPC网络内创建 EMQ X 集群'私有网络'，例如: 192.168.0.0/24
 
-3. 私有网络内创建两台EMQ X主机，例如:
+3. 私有网络内创建两台 EMQ X 主机，例如:
 
     +-------+-------------+
     | emqx1 | 192.168.0.2 |
@@ -95,7 +95,7 @@ EMQ X节点集群使用的TCP端口:
     | emqx2 | 192.168.0.3 |
     +-------+-------------+
 
-4. 安装并集群EMQ X主机，具体配置请参考安装集群章节。
+4. 安装并集群 EMQ X 主机，具体配置请参考安装集群章节。
 
 5. 创建LB(负载均衡器)并指定公网IP地址。
 
@@ -108,7 +108,7 @@ EMQ X节点集群使用的TCP端口:
                   | B | --TCP 1883--> EMQ X
                   |   |
                   -----
- 
+
    或创建SSL监听器，并终结SSL在LB::
 
                   -----
@@ -118,7 +118,7 @@ EMQ X节点集群使用的TCP端口:
                   | B | --TCP 1883--> EMQ X
                   |   |
                   -----
-  
+
 7. MQTT客户端连接LB公网地址测试。
 
 ---------------
@@ -127,9 +127,9 @@ EMQ X节点集群使用的TCP端口:
 
 1. 创建VPC网络。
 
-2. VPC网络内创建EMQ X集群'私有网络'，例如: 192.168.0.0/24
+2. VPC网络内创建 EMQ X 集群'私有网络'，例如: 192.168.0.0/24
 
-3. 私有网络内创建两台EMQ X主机，指定上面创建的VPC网络,例如:
+3. 私有网络内创建两台 EMQ X 主机，指定上面创建的VPC网络,例如:
 
     +-------+-------------+
     | emqx1 | 192.168.0.2 |
@@ -139,7 +139,7 @@ EMQ X节点集群使用的TCP端口:
 
 4. 在安全组中，开放MQTT服务的TCP端口，比如1883, 8883。
 
-5. 安装并集群EMQ X主机，具体配置请参考安装集群章节。
+5. 安装并集群 EMQ X 主机，具体配置请参考安装集群章节。
 
 6. 创建ELB(Classic负载均衡器)，指定VPC网络，并指定公网IP地址。
 
@@ -175,25 +175,25 @@ EMQ X节点集群使用的TCP端口:
 私有网络部署
 ------------
 
-EMQ X集群直连
--------------
+EMQ X 集群直连
+--------------
 
-EMQ X集群直接挂在DNS，设备通过域名或者IP地址列表访问:
+EMQ X 集群直接挂在DNS，设备通过域名或者IP地址列表访问:
 
-1. 部署EMQ X集群，具体参考`程序包安装`与`集群配置`文档。
+1. 部署 EMQ X 集群，具体参考`程序包安装`与`集群配置`文档。
 
-2. EMQ X节点防火墙开启外部MQTT访问端口，例如1883, 8883。
+2. EMQ X 节点防火墙开启外部MQTT访问端口，例如1883, 8883。
 
-3. 设备通过IP地址列表或域名访问EMQ X集群。
+3. 设备通过IP地址列表或域名访问 EMQ X 集群。
 
 .. NOTE:: 不推荐这种部署方式。
 
 HAProxy -> EMQ X
 ----------------
 
-HAProxy作为LB部署EMQ X集群，并终结SSL连接:
+HAProxy 作为LB部署 EMQ X 集群，并终结SSL连接:
 
-1. 创建EMQ X集群节点，例如:
+1. 创建 EMQ X 集群节点，例如:
 
 +-------+-------------+
 | 节点  | IP地址      |
@@ -224,11 +224,11 @@ HAProxy作为LB部署EMQ X集群，并终结SSL连接:
 NGINX Plus -> EMQ X
 -------------------
 
-NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
+NGINX Plus 产品作为 EMQ X 集群的LB，并终结SSL连接:
 
 1. 注册NGINX PLUS试用版，Ubuntu下安装: https://cs.nginx.com/repo_setup
 
-2. 创建EMQ X节点集群，例如: 
+2. 创建 EMQ X 节点集群，例如:
 
 +-------+-------------+
 | 节点  | IP地址      |
@@ -272,14 +272,14 @@ NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
 操作系统
 --------
 
-EMQ X采用Erlang/OTP语言平台开发，可跨平台运行在Linux、FreeBSD、Mac OS X、Windows服务器。
+EMQ X 采用Erlang/OTP语言平台开发，可跨平台运行在Linux、FreeBSD、Mac OS X、Windows服务器。
 
 产品环境推荐部署在64-bit Linux或FreeBSD云主机或服务器。
 
 CPU/内存
 --------
 
-EMQ X在测试场景下，1G内存承载80K TCP连接，15K SSL安全连接。
+EMQ X 在测试场景下，1G内存承载80K TCP连接，15K SSL安全连接。
 
 产品部署环境下，建议双机集群，根据并发连接与消息吞吐，规划节点CPU/内存。
 
@@ -287,7 +287,7 @@ EMQ X在测试场景下，1G内存承载80K TCP连接，15K SSL安全连接。
 程序包命名
 ----------
 
-EMQ X每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
+EMQ X 每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台程序包与Docker镜像。
 
 联系EMQ公司获取程序包: http://emqtt.com/about#contacts
 
@@ -317,7 +317,7 @@ RPM安装
 配置文件
 --------
 
-EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\*.conf。
+EMQ X 配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\*.conf。
 
 日志文件
 --------
@@ -357,7 +357,7 @@ Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过�
 配置文件
 --------
 
-EMQ X配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\*.conf。
+EMQ X 配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/\*.conf。
 
 日志文件
 --------
@@ -411,7 +411,7 @@ CentOS平台为例，下载安装过程:
 
     unzip emqx-enterprise-centos7-v2.4.zip
 
-控制台调试模式启动，检查EMQ X是否可正常启动:
+控制台调试模式启动，检查 EMQ X 是否可正常启动:
 
 .. code-block:: bash
 
@@ -441,7 +441,7 @@ CTRL+c关闭控制台。守护进程模式启动:
 
 启动错误日志将输出在log/目录。
 
-EMQ X服务进程状态查询:
+EMQ X 服务进程状态查询:
 
 .. code-block:: bash
 
@@ -455,7 +455,7 @@ EMQ X服务进程状态查询:
     Node 'emqx@127.0.0.1' is started
     emqx 2.4 is running
 
-EMQ X服务器提供了状态监控URL::
+EMQ X 服务器提供了状态监控URL::
 
     http://localhost:8080/status
 
@@ -612,7 +612,7 @@ EMQ X 节点启动
     service emqx start
 
 如果独立zip包安装，启动节点::
-    
+
     ./bin/emqx start
 
 --------------
@@ -681,7 +681,7 @@ EMQ X 默认启用的外部MQTT服务端口包括:
 
     ## SSL Listener: 8883, 127.0.0.1:8883, ::1:8883
     listener.ssl.external = 8883
-    
+
     ## HTTP and WebSocket Listener
     listener.http.external = 8083
 
@@ -694,7 +694,7 @@ EMQ X 默认启用的外部MQTT服务端口包括:
 节点集群TCP端口
 ---------------
 
-EMQ X节点间防火墙必须开放下述端口:
+EMQ X 节点间防火墙必须开放下述端口:
 
 +-----------+-----------------------------------+
 | 4369      | 集群节点发现端口                  |
@@ -710,5 +710,5 @@ EMQ X节点间防火墙必须开放下述端口:
 .. _UCloud:  https://ucloud.cn
 .. _QCloud:  https://www.qcloud.com
 .. _HAProxy: https://www.haproxy.org
-.. _NGINX:   https://www.nginx.com 
+.. _NGINX:   https://www.nginx.com
 

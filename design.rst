@@ -23,9 +23,9 @@ EMQ 2.0开源MQTT消息服务器在1.x版本的基础上，首先分离前端协
            ---------------------
                Monitor Plane
 
-EMQ X在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
+EMQ X 在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
 
-EMQ X企业版在Backend端支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发MQTT消息到Kafka、RabbitMQ企业消息中间件。
+EMQ X 企业版在Backend端支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发MQTT消息到Kafka、RabbitMQ企业消息中间件。
 
 100万连接
 ---------
@@ -58,7 +58,7 @@ EMQ 1.0版本不支持服务器内部消息持久化，这是一个架构设计�
 
 Kafka在上述问题上，做出了正确的设计：一个完全基于磁盘分布式commit log的消息服务器。
 
-EMQ X企业版本支持消息持久化到Redis、MySQL、PostgreSQL、MongoDb、Cassandra等数据库或Kafka。
+EMQ X 企业版本支持消息持久化到Redis、MySQL、PostgreSQL、MongoDb、Cassandra等数据库或Kafka。
 
 设计上分离消息路由与消息存储职责后，数据复制容灾备份甚至应用集成，可以在数据层面灵活实现。
 
@@ -82,14 +82,14 @@ EMQ集群部署在同一IDC网络下，NetSplit发生的几率很低，一旦发
 概念模型
 --------
 
-EMQ X消息服务器概念上更像一台网络路由器(Router)或交换机(Switch)，而不是传统的企业级消息服务器(MQ)。相比网络路由器按IP地址或MPLS标签路由报文，EMQ X按主题树(Topic Trie)发布订阅模式在集群节点间路由MQTT消息:
+EMQ X 消息服务器概念上更像一台网络路由器(Router)或交换机(Switch)，而不是传统的企业级消息服务器(MQ)。相比网络路由器按IP地址或MPLS标签路由报文，EMQ X 按主题树(Topic Trie)发布订阅模式在集群节点间路由MQTT消息:
 
 .. image:: ./_static/images/concept.png
 
 设计原则
 --------
 
-1. EMQ X消息服务器核心解决的问题：处理海量的并发MQTT连接与路由消息。
+1. EMQ X 消息服务器核心解决的问题：处理海量的并发MQTT连接与路由消息。
 
 2. 充分利用Erlang/OTP平台软实时、低延时、高并发、分布容错的优势。
 
@@ -226,7 +226,7 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 认证与访问控制设计
 ------------------
 
-EMQ X消息服务器支持可扩展的认证与访问控制，由emqx_access_control、emqx_auth_mod和emqx_acl_mod模块实现。
+EMQ X 消息服务器支持可扩展的认证与访问控制，由emqx_access_control、emqx_auth_mod和emqx_acl_mod模块实现。
 
 emqx_access_control模块提供了注册认证扩展接口::
 
@@ -333,7 +333,7 @@ emqx_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
 钩子(Hook)定义
 --------------
 
-EMQ X服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
+EMQ X 服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
 
 +------------------------+----------------------------------+
 | 钩子                   | 说明                             |

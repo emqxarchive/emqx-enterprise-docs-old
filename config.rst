@@ -9,35 +9,35 @@
 配置文件
 --------
 
-Linux下RPM、DEB模式安装，或直接公有云直接创建镜像，配置文件在/etc/emqx/目录下:
+Linux下RPM、DEB模式安装，或直接公有云直接创建镜像，配置文件在 /etc/emqx/ 目录下:
 
-+----------------------------+-----------------------------------+
-| 配置文件                   | 说明                              |
-+============================+===================================+
-| /etc/emqx/emqx.conf        | EMQ X服务器配置文件               |
-+----------------------------+-----------------------------------+
-| /etc/emqx/acl.conf         | EMQ X默认ACL规则文件              |
-+----------------------------+-----------------------------------+
-| /etc/emqx/plugins/\*.conf  | EMQ X插件、存储、桥接配置文件     |
-+----------------------------+-----------------------------------+
++----------------------------+------------------------------------+
+| 配置文件                   | 说明                               |
++============================+====================================+
+| /etc/emqx/emqx.conf        | EMQ X 服务器配置文件               |
++----------------------------+------------------------------------+
+| /etc/emqx/acl.conf         | EMQ X 默认ACL规则文件              |
++----------------------------+------------------------------------+
+| /etc/emqx/plugins/\*.conf  | EMQ X 插件、存储、桥接配置文件     |
++----------------------------+------------------------------------+
 
 Linux下通用包安装，配置文件位于程序安装路径etc/目录:
 
-+----------------------------+-----------------------------------+
-| 配置文件                   | 说明                              |
-+============================+===================================+
-| etc/emqx.conf              | EMQ X服务器配置文件               |
-+----------------------------+-----------------------------------+
-| etc/acl.conf               | EMQ X默认ACL规则文件              |
-+----------------------------+-----------------------------------+
-| etc/plugins/\*.conf        | EMQ X插件、存储、桥接配置文件     |
-+----------------------------+-----------------------------------+
++----------------------------+------------------------------------+
+| 配置文件                   | 说明                               |
++============================+====================================+
+| etc/emqx.conf              | EMQ X 服务器配置文件               |
++----------------------------+------------------------------------+
+| etc/acl.conf               | EMQ X 默认ACL规则文件              |
++----------------------------+------------------------------------+
+| etc/plugins/\*.conf        | EMQ X 插件、存储、桥接配置文件     |
++----------------------------+------------------------------------+
 
 --------
 环境变量
 --------
 
-EMQ X支持通过环境变量在启动时设置系统参数:
+EMQ X 支持通过环境变量在启动时设置系统参数:
 
 +--------------------+----------------------------------------+
 | EMQX_NODE_NAME     | Erlang节点名称，例如: emqx@192.168.0.6 |
@@ -55,11 +55,11 @@ EMQ X支持通过环境变量在启动时设置系统参数:
 | EMQX_HTTPS_PORT    | HTTPS/WebSocket 监听端口，默认: 8084   |
 +--------------------+----------------------------------------+
 
--------------
-EMQ X节点名称
--------------
+--------------
+EMQ X 节点名称
+--------------
 
-EMQ X节点名称、分布节点间通信Cookie:
+EMQ X 节点名称、分布节点间通信Cookie:
 
 .. code-block:: properties
 
@@ -73,11 +73,11 @@ EMQ X节点名称、分布节点间通信Cookie:
 
     Erlang/OTP平台应用由分布的Erlang节点(进程)组成，每个Erlang节点(进程)需指配一个节点名，用于节点间通信互访。所有互连Erlang节点(进程)间通过共用的Cookie进行安全认证。
 
--------------
-Erlang VM参数
--------------
+--------------
+Erlang VM 参数
+--------------
 
-Erlang虚拟机参数，默认设置支持10万线连接:
+Erlang 虚拟机参数，默认设置支持10万线连接:
 
 .. code-block:: properties
 
@@ -133,11 +133,11 @@ Erlang虚拟机主要参数说明:
 | node.dist_listen_max    | Erlang分布节点间通信使用TCP连接端口范围。注: 节点间如有防火墙，需要配置该端口段             |
 +-------------------------+---------------------------------------------------------------------------------------------+
 
--------------
-EMQ X集群通信
--------------
+--------------
+EMQ X 集群通信
+--------------
 
-EMQ X支持Scalable RPC架构，分离节点间的消息转发通道与集群控制通道，以提高集群的稳定性和消息转发性能:
+EMQ X 支持Scalable RPC架构，分离节点间的消息转发通道与集群控制通道，以提高集群的稳定性和消息转发性能:
 
 .. code-block:: properties
 
@@ -216,7 +216,7 @@ syslog日志
 匿名认证与ACL文件
 -----------------
 
-EMQ X默认开启匿名认证，允许任意客户端登录:
+EMQ X 默认开启匿名认证，允许任意客户端登录:
 
 .. code-block:: properties
 
@@ -265,7 +265,7 @@ acl.conf默认访问规则设置:
 
 .. NOTE:: 默认规则只允许本机用户订阅'$SYS/#'与'#'
 
-EMQ X接收到MQTT客户端发布(PUBLISH)或订阅(SUBSCRIBE)请求时，会逐条匹配ACL访问控制规则，直到匹配成功返回allow或deny。
+EMQ X 接收到MQTT客户端发布(PUBLISH)或订阅(SUBSCRIBE)请求时，会逐条匹配ACL访问控制规则，直到匹配成功返回allow或deny。
 
 是否缓存访问控制(ACL)
 ---------------------
@@ -464,7 +464,7 @@ Broker心跳参数
 桥接(Bridge)参数
 ----------------
 
-EMQ X节点间可以桥接方式组网:
+EMQ X 节点间可以桥接方式组网:
 
 .. code-block:: properties
 
@@ -478,7 +478,7 @@ EMQ X节点间可以桥接方式组网:
 插件配置文件目录
 ----------------
 
-EMQ X插件配置文件的存放路径:
+EMQ X 插件配置文件的存放路径:
 
 .. code-block:: properties
 
@@ -492,7 +492,7 @@ EMQ X插件配置文件的存放路径:
 MQTT 监听器配置
 ---------------
 
-EMQ X默认启用MQTT、MQTT/SSL、MQTT/WS、MQTT/WS/SSL监听器:
+EMQ X 默认启用MQTT、MQTT/SSL、MQTT/WS、MQTT/WS/SSL监听器:
 
 +-----------+-----------------------------------+
 | 1883      | MQTT/TCP端口                      |
@@ -504,17 +504,19 @@ EMQ X默认启用MQTT、MQTT/SSL、MQTT/WS、MQTT/WS/SSL监听器:
 | 8084      | MQTT/WebSocket/SSL端口            |
 +-----------+-----------------------------------+
 
-EMQ X允许为同一服务启用多个监听器，监听器主要参数:
+EMQ X 允许为同一服务启用多个监听器，监听器主要参数:
 
-+-----------------------------------+----------------------------------------------+
-| listener.tcp.${name}.acceptors    | TCP Acceptor池                               |
-+-----------------------------------+----------------------------------------------+
-| listener.tcp.${name}.max_clients  | 最大允许TCP连接数                            |
-+-----------------------------------+----------------------------------------------+
-| listener.tcp.${name}.rate_limit   | 连接限速配置，例如限速10KB/秒:  "100,10"     |
-+-----------------------------------+----------------------------------------------+
-| listener.tcp.${name}.access.${id} | 限制客户端IP地址段                           |
-+-----------------------------------+----------------------------------------------+
++------------------------------------+----------------------------------------------------+
+| listener.tcp.${name}.acceptors     | TCP Acceptor 池                                    |
++------------------------------------+----------------------------------------------------+
+| listener.tcp.${name}.max_clients   | 最大允许 TCP 连接数                                |
++------------------------------------+----------------------------------------------------+
+| listener.tcp.${name}.max_conn_rate | 最大连接创建速率，缺省每秒 1000                    |
++------------------------------------+----------------------------------------------------+
+| listener.tcp.${name}.rate_limit    | 连接限速配置，例如限速1KB/秒，峰值10KB/秒:  "1,10" |
++------------------------------------+----------------------------------------------------+
+| listener.tcp.${name}.access.${id}  | 限制客户端IP地址段                                 |
++------------------------------------+----------------------------------------------------+
 
 ---------------------
 MQTT/TCP监听器 - 1883
@@ -522,92 +524,400 @@ MQTT/TCP监听器 - 1883
 
 .. code-block:: properties
 
-    ## External TCP Listener: 1883, 127.0.0.1:1883, ::1:1883
+    ##--------------------------------------------------------------------
+    ## MQTT/TCP - External TCP Listener for MQTT Protocol
+
+    ## listener.tcp.<name> is the IP address and port that the MQTT/TCP
+    ## listener will bind.
+    ##
+    ## Value: IP:Port | Port
+    ##
+    ## Examples: 1883, 127.0.0.1:1883, ::1:1883
     listener.tcp.external = 0.0.0.0:1883
 
-    ## Size of acceptor pool
-    listener.tcp.external.acceptors = 8
+    ## The acceptor pool for external MQTT/TCP listener.
+    ##
+    ## Value: Number
+    listener.tcp.external.acceptors = 16
 
-    ## Maximum number of concurrent clients
-    listener.tcp.external.max_clients = 1024
+    ## Maximum number of concurrent MQTT/TCP connections.
+    ##
+    ## Value: Number
+    listener.tcp.external.max_clients = 102400
 
-    #listener.tcp.external.mountpoint = external/
+    ## Maximum external connections per second.
+    ##
+    ## Value: Number
+    listener.tcp.external.max_conn_rate = 1000
 
-    ## Rate Limit. Format is 'burst,rate', Unit is KB/Sec
-    #listener.tcp.external.rate_limit = 100,10
+    ## Maximum publish rate of MQTT messages.
+    ##
+    ## Value: Number,Seconds
+    ## Default: 10 messages per minute
+    ## listener.tcp.external.max_publish_rate = 10,60
 
-    #listener.tcp.external.access.1 = allow 192.168.0.0/24
+    ## TODO: Zone of the external MQTT/TCP listener belonged to.
+    ##
+    ## Value: String
+    ## listener.tcp.external.zone = external
 
-    listener.tcp.external.access.2 = allow all
+    ## Mountpoint of the MQTT/TCP Listener. All the topics of this
+    ## listener will be prefixed with the mount point if this option
+    ## is enabled.
+    ## Notice that EMQ X supports wildcard mount:%c clientid, %u username
+    ##
+    ## Value: String
+    ## listener.tcp.external.mountpoint = external/
 
-    ## TCP Socket Options
+    ## Rate limit for the external MQTT/TCP connections. Format is 'rate,burst'.
+    ##
+    ## Value: rate,burst
+    ## Unit: Bps
+    ## listener.tcp.external.rate_limit = 1024,4096
+
+    ## The access control rules for the MQTT/TCP listener.
+    ##
+    ## See: https://github.com/emqtt/esockd#allowdeny
+    ##
+    ## Value: ACL Rule
+    ##
+    ## Example: allow 192.168.0.0/24
+    listener.tcp.external.access.1 = allow all
+
+    ## Enable the Proxy Protocol V1/2 if the EMQ cluster is deployed
+    ## behind HAProxy or Nginx.
+    ##
+    ## See: https://www.haproxy.com/blog/haproxy/proxy-protocol/
+    ##
+    ## Value: on | off
+    ## listener.tcp.external.proxy_protocol = on
+
+    ## Sets the timeout for proxy protocol. EMQ will close the TCP connection
+    ## if no proxy protocol packet recevied within the timeout.
+    ##
+    ## Value: Duration
+    ## listener.tcp.external.proxy_protocol_timeout = 3s
+
+    ## Enable the option for X.509 certificate based authentication.
+    ## EMQ will Use the PP2_SUBTYPE_SSL_CN field in Proxy Protocol V2
+    ## as MQTT username.
+    ##
+    ## Value: cn
+    ## listener.tcp.external.peer_cert_as_username = cn
+
+    ## The TCP backlog defines the maximum length that the queue of pending
+    ## connections can grow to.
+    ##
+    ## Value: Number >= 0
     listener.tcp.external.backlog = 1024
 
-    #listener.tcp.external.recbuf = 4KB
+    ## The TCP send timeout for external MQTT connections.
+    ##
+    ## Value: Duration
+    listener.tcp.external.send_timeout = 15s
 
-    #listener.tcp.external.sndbuf = 4KB
+    ## Close the TCP connection if send timeout.
+    ##
+    ## Value: on | off
+    listener.tcp.external.send_timeout_close = on
 
-    listener.tcp.external.buffer = 4KB
+    ## The TCP receive buffer(os kernel) for MQTT connections.
+    ##
+    ## See: http://erlang.org/doc/man/inet.html
+    ##
+    ## Value: Bytes
+    ## listener.tcp.external.recbuf = 4KB
 
+    ## The TCP send buffer(os kernel) for MQTT connections.
+    ##
+    ## See: http://erlang.org/doc/man/inet.html
+    ##
+    ## Value: Bytes
+    ## listener.tcp.external.sndbuf = 4KB
+
+    ## The size of the user-level software buffer used by the driver.
+    ## Not to be confused with options sndbuf and recbuf, which correspond
+    ## to the Kernel socket buffers. It is recommended to have val(buffer)
+    ## >= max(val(sndbuf),val(recbuf)) to avoid performance issues because
+    ## of unnecessary copying. val(buffer) is automatically set to the above
+    ## maximum when values sndbuf or recbuf are set.
+    ##
+    ## See: http://erlang.org/doc/man/inet.html
+    ##
+    ## Value: Bytes
+    ## listener.tcp.external.buffer = 4KB
+
+    ## Sets the 'buffer = max(sndbuf, recbuf)' if this option is enabled.
+    ##
+    ## Value: on | off
+    ## listener.tcp.external.tune_buffer = off
+
+    ## The TCP_NODELAY flag for MQTT connections. Small amounts of data are
+    ## sent immediately if the option is enabled.
+    ##
+    ## Value: true | false
     listener.tcp.external.nodelay = true
+
+    ## The SO_REUSEADDR flag for TCP listener.
+    ##
+    ## Value: true | false
+    listener.tcp.external.reuseaddr = true
 
 ---------------------
 MQTT/SSL监听器 - 8883
 ---------------------
 
-SSL安全连接监听器，默认支持SSL单向认证:
+SSL 安全连接监听器，默认支持 SSL 单向认证:
 
 .. code-block:: properties
 
-    ## SSL Listener: 8883, 127.0.0.1:8883, ::1:8883
+    ##--------------------------------------------------------------------
+    ## MQTT/SSL - External SSL Listener for MQTT Protocol
+
+    ## listener.ssl.<name> is the IP address and port that the MQTT/SSL
+    ## listener will bind.
+    ##
+    ## Value: IP:Port | Port
+    ##
+    ## Examples: 8883, 127.0.0.1:8883, ::1:8883
     listener.ssl.external = 8883
 
-    ## Size of acceptor pool
-    listener.ssl.external.acceptors = 4
-
-    ## Size of acceptor pool
+    ## The acceptor pool for external MQTT/SSL listener.
+    ##
+    ## Value: Number
     listener.ssl.external.acceptors = 16
 
-    ## Maximum number of concurrent clients
+    ## Maximum number of concurrent MQTT/SSL connections.
+    ##
+    ## Value: Number
     listener.ssl.external.max_clients = 102400
 
-    ## Authentication Zone
+    ## Maximum MQTT/SSL connections per second.
+    ##
+    ## Value: Number
+    listener.ssl.external.max_conn_rate = 500
+
+    ## Maximum publish rate of MQTT messages.
+    ##
+    ## See: listener.tcp.<name>.max_publish_rate
+    ##
+    ## Value: Number,Seconds
+    ## Default: 10 messages per minute
+    ## listener.ssl.external.max_publish_rate = 10,60
+
+    ## TODO: Zone of the external MQTT/SSL listener belonged to.
+    ##
+    ## Value: String
     ## listener.ssl.external.zone = external
 
+    ## Mountpoint of the MQTT/SSL Listener.
+    ##
+    ## Value: String
     ## listener.ssl.external.mountpoint = inbound/
 
-    ## Rate Limit. Format is 'burst,rate', Unit is KB/Sec
-    ## listener.ssl.external.rate_limit = 100,10
-
+    ## The access control rules for the MQTT/SSL listener.
+    ##
+    ## See: listener.tcp.<name>.access
+    ##
+    ## Value: ACL Rule
     listener.ssl.external.access.1 = allow all
 
-    ### TLS only for POODLE attack
+    ## Rate limit for the external MQTT/SSL connections.
+    ##
+    ## Value: rate,burst
+    ## Unit: Bps
+    ## listener.ssl.external.rate_limit = 1024,4096
+
+    ## Enable the Proxy Protocol V1/2 if the EMQ cluster is deployed behind
+    ## HAProxy or Nginx.
+    ##
+    ## See: listener.tcp.<name>.proxy_protocol
+    ##
+    ## Value: on | off
+    ## listener.ssl.external.proxy_protocol = on
+
+    ## Sets the timeout for proxy protocol.
+    ##
+    ## See: listener.tcp.<name>.proxy_protocol_timeout
+    ##
+    ## Value: Duration
+    ## listener.ssl.external.proxy_protocol_timeout = 3s
+
+    ## TLS versions only to protect from POODLE attack.
+    ##
+    ## See: http://erlang.org/doc/man/ssl.html
+    ##
+    ## Value: String, seperated by ','
     ## listener.ssl.external.tls_versions = tlsv1.2,tlsv1.1,tlsv1
 
+    ## TLS Handshake timeout.
+    ##
+    ## Value: Duration
     listener.ssl.external.handshake_timeout = 15s
 
-    listener.ssl.external.handshake_timeout = 15s
-
+    ## Path to the file containing the user's private PEM-encoded key.
+    ##
+    ## See: http://erlang.org/doc/man/ssl.html
+    ##
+    ## Value: File
     listener.ssl.external.keyfile = {{ platform_etc_dir }}/certs/key.pem
 
+    ## Path to a file containing the user certificate.
+    ##
+    ## See: http://erlang.org/doc/man/ssl.html
+    ##
+    ## Value: File
     listener.ssl.external.certfile = {{ platform_etc_dir }}/certs/cert.pem
 
+    ## Path to the file containing PEM-encoded CA certificates. The CA certificates
+    ## are used during server authentication and when building the client certificate chain.
+    ##
+    ## Value: File
     ## listener.ssl.external.cacertfile = {{ platform_etc_dir }}/certs/cacert.pem
 
+    ## The Ephemeral Diffie-Helman key exchange is a very effective way of
+    ## ensuring Forward Secrecy by exchanging a set of keys that never hit
+    ## the wire. Since the DH key is effectively signed by the private key,
+    ## it needs to be at least as strong as the private key. In addition,
+    ## the default DH groups that most of the OpenSSL installations have
+    ## are only a handful (since they are distributed with the OpenSSL
+    ## package that has been built for the operating system it’s running on)
+    ## and hence predictable (not to mention, 1024 bits only).
+    ## In order to escape this situation, first we need to generate a fresh,
+    ## strong DH group, store it in a file and then use the option above,
+    ## to force our SSL application to use the new DH group. Fortunately,
+    ## OpenSSL provides us with a tool to do that. Simply run:
+    ## openssl dhparam -out dh-params.pem 2048
+    ##
+    ## Value: File
+    ## listener.ssl.external.dhfile = {{ platform_etc_dir }}/certs/dh-params.pem
+
+    ## A server only does x509-path validation in mode verify_peer,
+    ## as it then sends a certificate request to the client (this
+    ## message is not sent if the verify option is verify_none).
+    ## You can then also want to specify option fail_if_no_peer_cert.
+    ## More information at: http://erlang.org/doc/man/ssl.html
+    ##
+    ## Value: verify_peer | verify_none
     ## listener.ssl.external.verify = verify_peer
 
+    ## Used together with {verify, verify_peer} by an SSL server. If set to true,
+    ## the server fails if the client does not have a certificate to send, that is,
+    ## sends an empty certificate.
+    ##
+    ## Value: true | false
     ## listener.ssl.external.fail_if_no_peer_cert = true
 
+    ## This is the single most important configuration option of an Erlang SSL
+    ## application. Ciphers (and their ordering) define the way the client and
+    ## server encrypt information over the wire, from the initial Diffie-Helman
+    ## key exchange, the session key encryption ## algorithm and the message
+    ## digest algorithm. Selecting a good cipher suite is critical for the
+    ## application’s data security, confidentiality and performance.
+    ##
+    ## The cipher list above offers:
+    ##
+    ## A good balance between compatibility with older browsers.
+    ## It can get stricter for Machine-To-Machine scenarios.
+    ## Perfect Forward Secrecy.
+    ## No old/insecure encryption and HMAC algorithms
+    ##
+    ## Most of it was copied from Mozilla’s Server Side TLS article
+    ##
+    ## Value: Ciphers
+    ## listener.ssl.external.ciphers = ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-RSA-AES256-GCM-SHA384,ECDHE-ECDSA-AES256-SHA384,ECDHE-RSA-AES256-SHA384,ECDHE-ECDSA-DES-CBC3-SHA,ECDH-ECDSA-AES256-GCM-SHA384,ECDH-RSA-AES256-GCM-SHA384,ECDH-ECDSA-AES256-SHA384,ECDH-RSA-AES256-SHA384,DHE-DSS-AES256-GCM-SHA384,DHE-DSS-AES256-SHA256,AES256-GCM-SHA384,AES256-SHA256,ECDHE-ECDSA-AES128-GCM-SHA256,ECDHE-RSA-AES128-GCM-SHA256,ECDHE-ECDSA-AES128-SHA256,ECDHE-RSA-AES128-SHA256,ECDH-ECDSA-AES128-GCM-SHA256,ECDH-RSA-AES128-GCM-SHA256,ECDH-ECDSA-AES128-SHA256,ECDH-RSA-AES128-SHA256,DHE-DSS-AES128-GCM-SHA256,DHE-DSS-AES128-SHA256,AES128-GCM-SHA256,AES128-SHA256,ECDHE-ECDSA-AES256-SHA,ECDHE-RSA-AES256-SHA,DHE-DSS-AES256-SHA,ECDH-ECDSA-AES256-SHA,ECDH-RSA-AES256-SHA,AES256-SHA,ECDHE-ECDSA-AES128-SHA,ECDHE-RSA-AES128-SHA,DHE-DSS-AES128-SHA,ECDH-ECDSA-AES128-SHA,ECDH-RSA-AES128-SHA,AES128-SHA
+
+    ## SSL parameter renegotiation is a feature that allows a client and a server
+    ## to renegotiate the parameters of the SSL connection on the fly.
+    ## RFC 5746 defines a more secure way of doing this. By enabling secure renegotiation,
+    ## you drop support for the insecure renegotiation, prone to MitM attacks.
+    ##
+    ## Value: on | off
     ## listener.ssl.external.secure_renegotiate = off
 
-    ### A performance optimization setting, it allows clients to reuse 
-    ### pre-existing sessions, instead of initializing new ones.
-    ### Read more about it here.
-    listener.ssl.external.reuse_sessions = on
+    ## A performance optimization setting, it allows clients to reuse
+    ## pre-existing sessions, instead of initializing new ones.
+    ## Read more about it here.
+    ##
+    ## See: http://erlang.org/doc/man/ssl.html
+    ##
+    ## Value: on | off
+    ## listener.ssl.external.reuse_sessions = on
 
-    ### Use the CN or DN value from the client certificate as a username.
-    ### Notice: 'verify' should be configured as 'verify_peer'
+    ## An important security setting, it forces the cipher to be set based
+    ## on the server-specified order instead of the client-specified order,
+    ## hence enforcing the (usually more properly configured) security
+    ## ordering of the server administrator.
+    ##
+    ## Value: on | off
+    ## listener.ssl.external.honor_cipher_order = on
+
+    ## Use the CN or DN value from the client certificate as a username.
+    ## Notice that 'verify' should be set as 'verify_peer'.
+    ##
+    ## Value: cn | dn
     ## listener.ssl.external.peer_cert_as_username = cn
+
+    ## TCP backlog for the SSL connection.
+    ##
+    ## See listener.tcp.<name>.backlog
+    ##
+    ## Value: Number >= 0
+    ## listener.ssl.external.backlog = 1024
+
+    ## The TCP send timeout for the SSL connection.
+    ##
+    ## See listener.tcp.<name>.send_timeout
+    ##
+    ## Value: Duration
+    ## listener.ssl.external.send_timeout = 15s
+
+    ## Close the SSL connection if send timeout.
+    ##
+    ## See: listener.tcp.<name>.send_timeout_close
+    ##
+    ## Value: on | off
+    ## listener.ssl.external.send_timeout_close = on
+
+    ## The TCP receive buffer(os kernel) for the SSL connections.
+    ##
+    ## See: listener.tcp.<name>.recbuf
+    ##
+    ## Value: Bytes
+    ## listener.ssl.external.recbuf = 4KB
+
+    ## The TCP send buffer(os kernel) for internal MQTT connections.
+    ##
+    ## See: listener.tcp.<name>.sndbuf
+    ##
+    ## Value: Bytes
+    ## listener.ssl.external.sndbuf = 4KB
+
+    ## The size of the user-level software buffer used by the driver.
+    ##
+    ## See: listener.tcp.<name>.buffer
+    ##
+    ## Value: Bytes
+    ## listener.ssl.external.buffer = 4KB
+
+    ## Sets the 'buffer = max(sndbuf, recbuf)' if this option is enabled.
+    ##
+    ## See: listener.tcp.<name>.tune_buffer
+    ##
+    ## Value: on | off
+    ## listener.ssl.external.tune_buffer = off
+
+    ## The TCP_NODELAY flag for SSL connections.
+    ##
+    ## See: listener.tcp.<name>.nodelay
+    ##
+    ## Value: true | false
+    ## listener.ssl.external.nodelay = true
+
+    ## The SO_REUSEADDR flag for MQTT/SSL Listener.
+    ##
+    ## Value: true | false
+    listener.ssl.external.reuseaddr = true
 
 ---------------------------
 MQTT/WebSocket监听器 - 8083

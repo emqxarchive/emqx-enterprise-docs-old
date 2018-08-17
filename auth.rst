@@ -9,7 +9,7 @@
 MQTT认证设计
 ------------
 
-EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP、JTW集成认证。
+EMQ X 认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP、JTW集成认证。
 
 系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
 
@@ -35,13 +35,13 @@ EMQ X认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户�
 访问控制(ACL)
 -------------
 
-EMQ X消息服务器通过ACL(Access Control List)实现MQTT客户端访问控制。
+EMQ X 消息服务器通过ACL(Access Control List)实现MQTT客户端访问控制。
 
 ACL访问控制规则定义::
 
     允许(Allow)|拒绝(Deny) 谁(Who) 订阅(Subscribe)|发布(Publish) 主题列表(Topics)
 
-MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止::
+MQTT客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止::
 
               ---------              ---------              ---------
     Client -> | Rule1 | --nomatch--> | Rule2 | --nomatch--> | Rule3 | --> Default
@@ -55,7 +55,7 @@ MQTT客户端发起订阅/发布请求时，EMQ X消息服务器的访问控制�
 默认访问控制设置
 ----------------
 
-EMQ X消息服务器默认访问控制，通过acl.conf配置文件设置:
+EMQ X 消息服务器默认访问控制，通过acl.conf配置文件设置:
 
 .. code-block:: properties
 
@@ -65,7 +65,7 @@ EMQ X消息服务器默认访问控制，通过acl.conf配置文件设置:
     ## Default ACL File
     mqtt.acl_file = etc/acl.conf
 
-ACL规则定义在etc/acl.conf，EMQ X启动时加载到内存:
+ACL规则定义在etc/acl.conf，EMQ X 启动时加载到内存:
 
 .. code-block:: erlang
 
@@ -90,9 +90,9 @@ ACL规则修改后可通过命令行重新加载:
 认证插件列表
 ------------
 
-EMQ X支持ClientId、用户名、HTTP、LDAP、MySQL、Redis、Postgre、MongoDB、JTW多种认集成方式，以认证插件方式提供可同时加载多个形成认证链。
+EMQ X 支持ClientId、用户名、HTTP、LDAP、MySQL、Redis、Postgre、MongoDB、JTW多种认集成方式，以认证插件方式提供可同时加载多个形成认证链。
 
-EMQ X认证插件配置文件，在/etc/emqx/plugins/(RPM/DEB安装)或etc/plugins/(独立安装)目录:
+EMQ X 认证插件配置文件，在/etc/emqx/plugins/(RPM/DEB安装)或etc/plugins/(独立安装)目录:
 
 +-------------------------+---------------------------+---------------------------+
 | 认证插件                | 配置文件                  | 说明                      |
@@ -318,10 +318,10 @@ MQTT访问控制表
     auth.mysql.pool = 8
 
     ## Mysql Username
-    ## auth.mysql.username = 
+    ## auth.mysql.username =
 
     ## Mysql Password
-    ## auth.mysql.password = 
+    ## auth.mysql.password =
 
     ## Mysql Database
     auth.mysql.database = mqtt
@@ -427,7 +427,7 @@ Postgre MQTT访问控制表
 
     auth.pgsql.username = root
 
-    #auth.pgsql.password = 
+    #auth.pgsql.password =
 
     auth.pgsql.database = mqtt
 
@@ -589,10 +589,10 @@ MongoDB认证插件配置
     auth.mongo.pool = 8
 
     ## Mongo User
-    ## auth.mongo.user = 
+    ## auth.mongo.user =
 
     ## Mongo Password
-    ## auth.mongo.password = 
+    ## auth.mongo.password =
 
     ## Mongo Database
     auth.mongo.database = mqtt
