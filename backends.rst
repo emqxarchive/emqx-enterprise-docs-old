@@ -1030,14 +1030,69 @@ MongoDB数据存储
 
 .. code-block:: properties
 
-    ## MongoDB Server
+    ## MongoDB Server Pools
+    ## Mongo Topology Type single|unknown|sharded|rs
+    backend.mongo.pool1.type = single
+
+    ## If type rs, need config setname
+    ## backend.mongo.pool1.rs_set_name = testrs
+
+    ## Mongo Server 127.0.0.1:27017,127.0.0.2:27017...
     backend.mongo.pool1.server = 127.0.0.1:27017
 
     ## MongoDB Pool Size
-    backend.mongo.pool1.pool_size = 8
+    backend.mongo.pool1.c_pool_size = 8
 
     ## MongoDB Database
     backend.mongo.pool1.database = mqtt
+
+    ## Mongo User
+    ## backend.mongo.pool1.login =  emqtt
+    ## Mongo Password
+    ## backend.mongo.pool1.password = emqtt
+
+    ## MongoDB AuthSource
+    ## Value: String
+    ## Default: mqtt
+    ## backend.mongo.pool1.auth_source = admin
+
+    ## Whether to enable SSL connection.
+    ##
+    ## Value: true | false
+    ## backend.mongo.pool1.ssl = false
+
+    ## SSL keyfile.
+    ##
+    ## Value: File
+    ## backend.mongo.pool1.keyfile =
+
+    ## SSL certfile.
+    ##
+    ## Value: File
+    ## backend.mongo.pool1.certfile =
+
+    ## SSL cacertfile.
+    ##
+    ## Value: File
+    ## backend.mongo.pool1.cacertfile =
+
+    # Value: unsafe | safe
+    ## backend.mongo.pool1.w_mode = safe
+    ## Value: master | slave_ok
+    ## backend.mongo.pool1.r_mode = slave_ok
+
+    ## Mongo Topology Options
+    ## backend.mongo.topology.pool_size = 1
+    ## backend.mongo.topology.max_overflow = 0
+    ## backend.mongo.topology.overflow_ttl = 1000
+    ## backend.mongo.topology.overflow_check_period = 1000
+    ## backend.mongo.topology.local_threshold_ms = 1000
+    ## backend.mongo.topology.connect_timeout_ms = 20000
+    ## backend.mongo.topology.socket_timeout_ms = 100
+    ## backend.mongo.topology.server_selection_timeout_ms = 30000
+    ## backend.mongo.topology.wait_queue_timeout_ms = 1000
+    ## backend.mongo.topology.heartbeat_frequency_ms = 10000
+    ## backend.mongo.topology.min_heartbeat_frequency_ms = 1000
 
 配置MongoDB存储规则
 -------------------
@@ -1069,11 +1124,11 @@ MongoDB数据存储
     ## Lookup Retain Message
     backend.mongo.hook.session.subscribed.2  = {"topic": "#", "action": {"function": "on_retain_lookup"}, "pool": "pool1"}
 
-    ## Store Publish Message  QOS > 0
-    backend.mongo.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+    ## Store Publish Message  QOS > 0, payload_format options mongo_json | plain_text
+    backend.mongo.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1", "payload_format": "mongo_json"}
 
-    ## Store Retain Message
-    backend.mongo.hook.message.publish.2     = {"topic": "#", "action": {"function": "on_message_retain"}, "pool": "pool1"}
+    ## Store Retain Message, payload_format options mongo_json | plain_text
+    backend.mongo.hook.message.publish.2     = {"topic": "#", "action": {"function": "on_message_retain"}, "pool": "pool1", "payload_format": "mongo_json"}
 
     ## Delete Retain Message
     backend.mongo.hook.message.publish.3     = {"topic": "#", "action": {"function": "on_retain_delete"}, "pool": "pool1"}
