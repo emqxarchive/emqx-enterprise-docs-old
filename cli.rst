@@ -5,13 +5,13 @@
 管理命令
 ========
 
-EMQ X企业版提供了'./bin/emqx_ctl'的管理命令行。
+EMQ X 企业版提供了'./bin/emqx_ctl'的管理命令行。
 
 ----------
 status命令
 ----------
 
-查询EMQ X服务器运行状态::
+查询EMQ X 服务器运行状态::
 
     $ ./bin/emqx_ctl status
 
@@ -35,7 +35,7 @@ broker命令查询服务器基本信息，启动时间，统计数据与性能�
 | broker metrics | 查询MQTT报文(Packet)、消息(Message)收发统计   |
 +----------------+-----------------------------------------------+
 
-查询EMQ X服务器基本信息包括版本、启动时间等::
+查询EMQ X 服务器基本信息包括版本、启动时间等::
 
     $ ./bin/emqx_ctl broker
 
@@ -232,7 +232,7 @@ clients kick <ClientId>
 sessions命令
 ------------
 
-sessions命令查询MQTT连接会话。EMQ X会为每个连接创建会话，clean_session标记true，创建临时(transient)会话；clean_session标记为false，创建持久会话(persistent)。
+sessions命令查询MQTT连接会话。EMQ X 会为每个连接创建会话，clean_session标记true，创建临时(transient)会话；clean_session标记为false，创建持久会话(persistent)。
 
 +--------------------------+-----------------------------+
 | sessions list            | 查询全部会话                |
@@ -767,5 +767,62 @@ admins del
 删除admin账户::
 
     $ ./bin/emqx_ctl admins del root
+    ok
+
+------------
+retainer命令
+------------
+
+MQTT保留消息
+
++-----------------+-----------------------------+
+| retainer info   | 显示保留消息的信息          |
++-----------------+-----------------------------+
+| retainer topics | 显示全部保留消息的主题      |
++-----------------+-----------------------------+
+| retainer clean  | 清除全部的保留消息          |
++-----------------------------------------------+
+
+retainer info::
+
+    $ ./bin/emqx_ctl retainer info
+    retained/total: 3
+
+retainer topics::
+
+    $ ./bin/emqx_ctl retainer topics
+    $SYS/brokers
+    $SYS/brokers/emqx@127.0.0.1/sysdescr
+    $SYS/brokers/emqx@127.0.0.1/version
+
+retainer clean::
+
+    $ ./bin/emqx_ctl retainer clean
+    Cleaned 3 retained messages
+
+------------
+license命令
+------------
+
+EMQX License
+
++-----------------------+-----------------------------+
+| license info          | 显示license信息             |
++-----------------------+-----------------------------+
+| license reload <File> | 加载license文件             |
++-----------------------+-----------------------------+
+
+license info::
+
+    $ ./bin/emqx_ctl license info
+    vendor      : EMQ Enterprise, Inc
+    product     : EMQ X Enterprise
+    expiry      : {{2017,12,28},{0,0,0}}
+    customer    : Free Trial
+    userdata    : [{max_clients,100}]
+
+license reload::
+
+    $ ./bin/emqx_ctl license reload emqx.lic
     ok
 

@@ -5,9 +5,9 @@
 测试调优
 ========
 
-EMQ X企业版R2版本MQTT连接压力测试到100万，在一台8核心、32G内存的CentOS服务器上。
+EMQ X 企业版R2版本MQTT连接压力测试到100万，在一台8核心、32G内存的 CentOS 服务器上。
 
-100万连接测试所需的Linux内核参数，网络协议栈参数，Erlang虚拟机参数，EMQ X参数设置如下:
+100万连接测试所需的Linux内核参数，网络协议栈参数，Erlang 虚拟机参数，EMQ X 参数设置如下:
 
 -------------
 Linux内核参数
@@ -97,9 +97,9 @@ Erlang虚拟机参数
     ## Sets the maximum number of simultaneously existing ports for this system
     node.max_ports = 1048576
 
----------------
-EMQ X服务器参数
----------------
+----------------
+EMQ X 服务器参数
+----------------
 
 设置TCP监听器的Acceptor池大小，最大允许连接数。配置文件etc/emqx.conf:
 

@@ -53,8 +53,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'EMQ X 企业版中文文档'
-copyright = u'2016-2017, 杭州小莉科技有限公司'
-author = u'<contact@emqtt.io>'
+copyright = u'2018, 杭州映云科技有限公司'
+author = u'EMQ X 产品团队<contact@emqtt.io>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -317,9 +317,9 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = u'EMQ X 企业版中文文档'
-epub_author = u'<contact@emqtt.io>'
-epub_publisher = u'<contact@emqtt.io>'
-epub_copyright = u'2016-2017,杭州小莉科技有限公司'
+epub_author = u'EMQ X 产品团队<contact@emqtt.io>'
+epub_publisher = u'EMQ X 产品团队<contact@emqtt.io>'
+epub_copyright = u'2016-2018, 杭州映云科技有限公司'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = project

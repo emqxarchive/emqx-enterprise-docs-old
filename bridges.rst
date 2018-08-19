@@ -5,7 +5,7 @@
 桥接转发
 ========
 
-EMQ X企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。同时支持mosquitto、rsmb以普通MQTT连接方式桥接到EMQ X。
+EMQ X 企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。同时支持mosquitto、rsmb以普通MQTT连接方式桥接到EMQ X。
 
 .. _kafka_bridge:
 
@@ -13,7 +13,7 @@ EMQ X企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。�
 Kafka桥接
 ---------
 
-EMQ X桥接转发MQTT消息到Kafka集群:
+EMQ X 桥接转发MQTT消息到Kafka集群:
 
 .. image:: _static/images/bridges_1.png
 
@@ -25,19 +25,29 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 .. code-block:: properties
 
     ## Kafka Server
-    bridge.kafka.pool1.server = 127.0.0.1:9092
+    ## bridge.kafka.servers = 127.0.0.1:9092,127.0.0.2:9092,127.0.0.3:9092
+    bridge.kafka.servers = 127.0.0.1:9092
 
-    ## Kafka Pool Size 
-    bridge.kafka.pool1.pool_size = 8
-    
     ## Kafka Parition Strategy
     bridge.kafka.parition_strategy = random
+
+    ## Kafka Max Buffer Size
+    bridge.kafka.max_buffer_size = 10000
+
+    ## Kafka Max Buffer TTL
+    bridge.kafka.max_buffer_ttl = 1s
+
+    ## Kafka Partition Workers Size
+    bridge.kafka.per_partition_workers = 64
+
+    ## Produce writes type
+    bridge.kafka.produce = sync
 
 配置Kafka桥接规则
 -----------------
 
 .. code-block:: properties
-    
+
     ## Client Connected Record Hook
     bridge.kafka.hook.client.connected.1 = {"action": "on_client_connected", "pool": "pool1", "topic": "client_connected"}
 
@@ -83,18 +93,18 @@ Kafka桥接规则说明
 客户端上下线事件转发Kafka
 -------------------------
 
-设备上线 EMQ X转发上线事件消息到Kafka:
+设备上线 EMQ X 转发上线事件消息到Kafka:
 
 .. code-block:: javascript
-    
+
     topic = "client_connected",
     value = {
-             "client_id": ${clientid}, 
-             "node": ${node}, 
+             "client_id": ${clientid},
+             "node": ${node},
              "ts": ${ts}
             }
 
-设备下线 EMQ X转发下线事件消息到Kafka:
+设备下线 EMQ X 转发下线事件消息到Kafka:
 
 .. code-block:: javascript
 
@@ -110,7 +120,7 @@ Kafka桥接规则说明
 ---------------------------
 
 .. code-block:: javascript
-    
+
     topic = session_subscribed
 
     value = {
@@ -125,7 +135,7 @@ Kafka桥接规则说明
 --------------------------------
 
 .. code-block:: javascript
-    
+
     topic = session_unsubscribed
 
     value = {
@@ -149,7 +159,7 @@ MQTT消息转发到Kafka
              "topic": ${topic},
              "payload": ${payload},
              "qos": ${qos},
-             "node": ${node}, 
+             "node": ${node},
              "ts": ${timestamp}
             }
 
@@ -157,7 +167,7 @@ MQTT消息派发(Deliver)事件转发Kafka
 ----------------------------------
 
 .. code-block:: javascript
-    
+
     topic = message_delivered
 
     value = {"client_id": ${clientid},
@@ -174,7 +184,7 @@ MQTT消息确认(Ack)事件转发Kafka
 -------------------------------
 
 .. code-block:: javascript
-    
+
     topic = message_acked
 
     value = {
@@ -206,13 +216,13 @@ Kafka读取MQTT主题订阅事件消息::
 Kafka读取MQTT发布消息::
 
     sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_publish --from-beginning
-    
+
 Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 
     sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_delivered --from-beginning
-    
+
     sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_acked --from-beginning
-    
+
 .. NOTE:: payload为base64编码
 
 启用Kafka桥接插件
@@ -228,7 +238,7 @@ Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 RabbitMQ桥接
 ------------
 
-EMQ X桥接转发MQTT消息到RabbitMQ:
+EMQ X 桥接转发 MQTT 消息到 RabbitMQ 集群:
 
 .. image:: _static/images/bridges_2.png
 
@@ -358,7 +368,7 @@ Python RabbitMQ消费者代码示例:
 其他语言RabbitMQ客户端代码示例::
 
     https://github.com/rabbitmq/rabbitmq-tutorials
-    
+
 启用RabbitMQ桥接插件
 --------------------
 
@@ -368,11 +378,11 @@ Python RabbitMQ消费者代码示例:
 
 .. _emqx_bridge:
 
----------
-EMQ X桥接
----------
+----------
+EMQ X 桥接
+----------
 
-EMQ X支持多节点间桥接模式互联:
+EMQ X 支持多节点间桥接模式互联:
 
 .. image:: _static/images/bridges_3.png
 
@@ -422,7 +432,7 @@ EMQ X支持多节点间桥接模式互联:
 mosquitto桥接
 -------------
 
-mosquitto可以普通MQTT连接方式，桥接到EMQ X服务器集群:
+mosquitto 可以普通 MQTT 连接方式，桥接到EMQ X 服务器集群:
 
 .. image:: _static/images/bridges_4.png
 
@@ -442,7 +452,7 @@ mosquitto.conf桥接配置示例::
 rsmb桥接
 --------
 
-rsmb以普通MQTT连接方式，桥接到 EMQ X服务器集群。
+rsmb以普通MQTT连接方式，桥接到 EMQ X 服务器集群。
 
 rsmb broker.cfg示例配置::
 

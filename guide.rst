@@ -13,7 +13,7 @@ MQTT是为移动互联网、物联网设计的轻量发布订阅模式的消息�
 
 .. image:: ./_static/images/guide_1.png
 
-EMQ X服务器安装启动后，任何设备或终端的MQTT客户端，可通过MQTT协议连接到服务器，发布订阅消息方式互通。
+EMQ X 服务器安装启动后，任何设备或终端的MQTT客户端，可通过MQTT协议连接到服务器，发布订阅消息方式互通。
 
 MQTT协议客户端库: https://github.com/mqtt/mqtt.github.io/wiki/libraries
 
@@ -24,7 +24,7 @@ MQTT协议客户端库: https://github.com/mqtt/mqtt.github.io/wiki/libraries
 
 MQTT V3.1.1版本协议规范: http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html
 
-EMQ X消息服务器的MQTT协议TCP监听器，可在emqx.conf文件中设置:
+EMQ X 消息服务器的MQTT协议TCP监听器，可在emqx.conf文件中设置:
 
 .. code-block:: properties
 
@@ -92,7 +92,7 @@ MQTT(SSL) TCP监听器，缺省端口8883:
 Fastlane订阅
 ------------
 
-EMQ X企业版支持的快车道(Fastlane)订阅功能，提高到订阅者的消息派发效率:
+EMQ X 企业版支持的快车道(Fastlane)订阅功能，提高到订阅者的消息派发效率:
 
 .. image:: _static/images/guide_3.png
 
@@ -113,22 +113,22 @@ Fastlane订阅适合物联网传感器数据采集类应用:
 HTTP发布接口
 ------------
 
-EMQ X提供了一个HTTP发布接口，应用服务器或Web服务器可通过该接口发布MQTT消息::
+EMQ X 提供了一个HTTP发布接口，应用服务器或Web服务器可通过该接口发布MQTT消息::
 
-    HTTP POST http://host:8083/mqtt/publish
+    HTTP POST http://host:8080/mqtt/publish
 
 Web服务器例如PHP/Java/Python/NodeJS或Ruby on Rails，可通过HTTP POST请求发布MQTT消息:
 
 .. code-block:: bash
 
-    curl -v --basic -u user:passwd -d "qos=1&retain=0&topic=/a/b/c&message=hello from http..." -k http://localhost:8083/mqtt/publish
+    curl -v --basic -u admin:public -H "Content-Type: application/json" -X POST -d '{"qos":1, "retain":false, "topic":"/a/b/c", "payload":"hello"}' -k http://127.0.0.1:8080/api/v2/mqtt/publish
 
 HTTP接口参数:
 
 +---------+----------------+
 | 参数    | 说明           |
 +=========+================+
-| client  | MQTT客户端ID   |
+| clientid| MQTT客户端ID   |
 +---------+----------------+
 | qos     | QoS: 0 | 1 | 2 |
 +---------+----------------+
@@ -136,7 +136,7 @@ HTTP接口参数:
 +---------+----------------+
 | topic   | 主题(Topic)    |
 +---------+----------------+
-| message | 消息           |
+| payload | 消息           |
 +---------+----------------+
 
 .. NOTE:: HTTP接口采用Basic认证
@@ -145,7 +145,7 @@ HTTP接口参数:
 MQTT WebSocket连接
 ------------------
 
-EMQ X服务器支持MQTT WebSocket连接，Web浏览器可直接通过MQTT协议连接服务器:
+EMQ X 服务器支持MQTT WebSocket连接，Web浏览器可直接通过MQTT协议连接服务器:
 
 +-------------------------+----------------------------+
 | WebSocket URI:          | ws(s)://host:8083/mqtt     |
@@ -157,7 +157,7 @@ Dashboard插件提供了一个MQTT WebSocket连接的测试页面::
 
     http://127.0.0.1:18083/websocket.html
 
-EMQ X通过内嵌的HTTP服务器，实现MQTT WebSocket与HTTP发布接口，etc/emqx.conf设置:
+EMQ X 通过内嵌的HTTP服务器，实现MQTT WebSocket与HTTP发布接口，etc/emqx.conf设置:
 
 .. code-block:: properties
 
@@ -172,7 +172,7 @@ EMQ X通过内嵌的HTTP服务器，实现MQTT WebSocket与HTTP发布接口，et
 $SYS-系统主题
 -------------
 
-EMQ X服务器周期性发布自身运行状态、MQTT协议统计、客户端上下线状态到'$SYS/'开头系统主题。
+EMQ X 服务器周期性发布自身运行状态、MQTT协议统计、客户端上下线状态到'$SYS/'开头系统主题。
 
 $SYS主题路径以"$SYS/brokers/{node}/"开头，'${node}'是Erlang节点名称::
 
@@ -199,18 +199,18 @@ $SYS系统消息发布周期，通过etc/emq.conf配置:
 +================================+=======================+
 | $SYS/brokers                   | 集群节点列表          |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/version   | EMQ X版本             |
+| $SYS/brokers/${node}/version   | EMQ X 版本            |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/uptime    | EMQ X启动时间         |
+| $SYS/brokers/${node}/uptime    | EMQ X 启动时间        |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/datetime  | EMQ X服务器时间       |
+| $SYS/brokers/${node}/datetime  | EMQ X 服务器时间      |
 +--------------------------------+-----------------------+
-| $SYS/brokers/${node}/sysdescr  | EMQ X版本描述         |
+| $SYS/brokers/${node}/sysdescr  | EMQ X 版本描述        |
 +--------------------------------+-----------------------+
 
 .. _sys_clients:
 
-MQTT客户端上下线状态消息
+MQTT 客户端上下线状态消息
 ------------------------
 
 $SYS主题前缀: $SYS/brokers/${node}/clients/
@@ -222,8 +222,8 @@ $SYS主题前缀: $SYS/brokers/${node}/clients/
 |                          |  session: false, version: 3, connack: 0,   |                                    |
 |                          |  ts: 1432648482}                           |                                    |
 +--------------------------+--------------------------------------------+------------------------------------+
-| ${clientid}/disconnected | {reason: "keepalive_timeout",              | Publish when a client disconnected |
-|                          |  ts: 1432749431}                           |                                    |
+| ${clientid}/disconnected | {reason: "normal", username: "test",       | Publish when a client disconnected |
+|                          |  ts: 1432648486}                           |                                    |
 +--------------------------+--------------------------------------------+------------------------------------+
 
 'connected'消息JSON数据:
@@ -405,7 +405,7 @@ Sysmon-系统监控
 追踪
 ----
 
-EMQ X支持追踪来自某个客户端(Client)的全部报文，或者发布到某个主题(Topic)的全部消息。
+EMQ X 支持追踪来自某个客户端(Client)的全部报文，或者发布到某个主题(Topic)的全部消息。
 
 追踪客户端(Client):
 
