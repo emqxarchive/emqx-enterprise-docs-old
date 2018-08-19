@@ -3,15 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-============
-EMQ X 企业版
-============
+====================
+EMQ X 企业版中文文档
+====================
 
 .. toctree::
    :maxdepth: 2
 
    overview
+   deploy
    install
+   quick
    config
    auth
    backends
@@ -21,6 +23,7 @@ EMQ X 企业版
    design
    cli
    plugins
+   rest
    tune
    ratelimit
    mqtt

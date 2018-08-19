@@ -12,7 +12,7 @@
 一对一消息存储
 --------------
 
-.. image:: ./_static/images/backend_queue.png
+.. image:: ./_static/images/backends_1.png
 
 1. PUB端发布一条消息；
 
@@ -29,7 +29,7 @@
 一对多消息存储
 ---------------
 
-.. image:: ./_static/images/backend_pubsub.png
+.. image:: ./_static/images/backends_2.png
 
 1. PUB端发布一条消息；
 
@@ -90,10 +90,13 @@ Redis数据存储
     ## Redis Server 127.0.0.1:6379, Redis Sentinel: 127.0.0.1:26379
     backend.redis.pool1.server = 127.0.0.1:6379
 
+    ## Redis Sentinel
+    ## backend.redis.pool1.server = 127.0.0.1:26379
+
     ## redis sentinel cluster name
     ## backend.redis.pool1.sentinel = mymaster
 
-    ## Redis Pool Size
+    ## Redis Pool Size 
     backend.redis.pool1.pool_size = 8
 
     ## Redis database
@@ -380,6 +383,16 @@ MySQL数据存储
 
     ## Mysql Database
     backend.mysql.pool1.database = mqtt
+    
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mysql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mysql.time_range = 2h
 
 配置MySQL存储规则
 -----------------
@@ -562,7 +575,7 @@ MySQL 主题订阅表
     CREATE TABLE `mqtt_sub` (
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `clientid` varchar(64) DEFAULT NULL,
-      `topic` varchar(256) DEFAULT NULL,
+      `topic` varchar(255) DEFAULT NULL,
       `qos` int(3) DEFAULT NULL,
       `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`id`),
@@ -736,6 +749,16 @@ PostgreSQL 数据存储
 
     ## Pgsql Ssl
     backend.pgsql.pool1.ssl = false
+
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.pgsql.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.pgsql.time_range = 2h
 
 配置PostgreSQL存储规则
 ----------------------
@@ -1094,6 +1117,16 @@ MongoDB数据存储
     ## backend.mongo.topology.heartbeat_frequency_ms = 10000
     ## backend.mongo.topology.min_heartbeat_frequency_ms = 1000
 
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.mongo.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.mongo.time_range = 2h
+
 配置MongoDB存储规则
 -------------------
 
@@ -1392,6 +1425,16 @@ Cassandra数据存储
 
     ## Cassandra Logger type
     backend.ecql.pool1.logger = info
+
+    ## Max number of fetch offline messages. Without count limit if infinity
+    ## backend.cassa.max_returned_count = 500
+
+    ## Time Range. Without time limit if infinity
+    ## d - day
+    ## h - hour
+    ## m - minute
+    ## s - second
+    ## backend.cassa.time_range = 2h
 
 配置Cassandra存储规则
 ---------------------

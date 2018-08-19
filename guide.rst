@@ -11,7 +11,7 @@ MQTT发布订阅
 
 MQTT是为移动互联网、物联网设计的轻量发布订阅模式的消息服务器:
 
-.. image:: ./_static/images/pubsub_concept.png
+.. image:: ./_static/images/guide_1.png
 
 EMQ X 服务器安装启动后，任何设备或终端的MQTT客户端，可通过MQTT协议连接到服务器，发布订阅消息方式互通。
 
@@ -56,13 +56,9 @@ MQTT(SSL) TCP监听器，缺省端口8883:
 共享订阅
 --------
 
-共享订阅(Shared Subscription)支持在多订阅者间采用分组负载平衡方式派发消息::
+共享订阅(Shared Subscription)支持在多订阅者间采用分组负载平衡方式派发消息:
 
-                                ---------
-                                |       | --Msg1--> Subscriber1
-    Publisher--Msg1,Msg2,Msg3-->| EMQ X | --Msg2--> Subscriber2
-                                |       | --Msg3--> Subscriber3
-                                ---------
+.. image:: ./_static/images/guide_2.png
 
 共享订阅支持两种使用方式:
 
@@ -98,7 +94,7 @@ Fastlane订阅
 
 EMQ X 企业版支持的快车道(Fastlane)订阅功能，提高到订阅者的消息派发效率:
 
-.. image:: _static/images/fastlane.png
+.. image:: _static/images/guide_3.png
 
 Fastlane订阅使用方式: 主题加 *$fastlane/* 前缀。
 
@@ -107,14 +103,9 @@ Fastlane订阅限制:
 1. CleanSession = true
 2. Qos = 0
 
-Fastlane订阅适合物联网传感器数据采集类应用::
+Fastlane订阅适合物联网传感器数据采集类应用:
 
-                 -----------------
-    Sensor ----> |               |
-                 |     EMQ X     | --$fastlane/$queue/#--> Subscriber
-                 |    Cluster    | --$fastlane/$queue/#--> Subscriber
-    Sensor ----> |               |
-                 -----------------
+.. image:: _static/images/guide_4.png
 
 .. _http_publish:
 

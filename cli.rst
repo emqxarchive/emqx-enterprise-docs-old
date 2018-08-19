@@ -390,7 +390,7 @@ subscriptions show <ClientId>
 plugins命令
 -----------
 
-plugins命令用于加载、卸载、查询插件应用。EMQ消息服务器通过插件扩展认证、定制功能，插件置于plugins/目录下。
+plugins命令用于加载、卸载、查询插件应用。EMQ X消息服务器通过插件扩展认证、定制功能，插件置于plugins/目录下。
 
 +---------------------------+-------------------------+
 | plugins list              | 列出全部插件(Plugin)    |
@@ -461,7 +461,7 @@ unload <Plugin>
 bridges命令
 -----------
 
-bridges命令用于在多台EMQ服务器节点间创建桥接::
+bridges命令用于在多台EMQ X服务器节点间创建桥接::
 
                   ---------             ---------
     Publisher --> | node1 | --Bridge--> | node2 | --> Subscriber
@@ -704,6 +704,26 @@ listener参数说明:
 +-----------------+-----------------------------------+
 | shutdown_count  | Socket关闭原因统计                |
 +-----------------+-----------------------------------+
+
+
+-----------
+license命令
+-----------
+
+查询license信息::
+
+    $ ./bin/emqx_ctl license info
+
+    vendor      : EMQ Enterprise, Inc
+    product     : EMQ X Enterprise
+    expiry      : {{2017,6,30},{0,0,0}}
+    customer    : Free Trial
+    userdata    : [{max_clients,100}]
+
+重新加载license::
+
+    $ ./bin/emqx_ctl license reload <File>
+    ok.
 
 ----------
 mnesia命令

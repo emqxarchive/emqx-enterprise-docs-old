@@ -13,11 +13,9 @@ EMQ X 企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。�
 Kafka桥接
 ---------
 
-EMQ X 桥接转发MQTT消息到Kafka集群::
+EMQ X 桥接转发MQTT消息到Kafka集群:
 
-                  ---------             ---------
-    Publisher --> | EMQ X | --Bridge--> | Kafka | --> Subscriber
-                  ---------             ---------
+.. image:: _static/images/bridges_1.png
 
 Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
@@ -240,15 +238,13 @@ Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 RabbitMQ桥接
 ------------
 
-EMQ X 桥接转发MQTT消息到RabbitMQ集群::
+EMQ X 桥接转发 MQTT 消息到 RabbitMQ 集群:
 
-                  ----------             ------------
-    Publisher --> | EMQ X  | --Bridge--> | RabbitMQ |  --> Subscriber
-                  ----------             ------------
+.. image:: _static/images/bridges_2.png
 
 RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
-配置RabbitMQ集群地址
+配置RabbitMQ桥接地址
 --------------------
 
 .. code-block:: properties
@@ -386,11 +382,9 @@ Python RabbitMQ消费者代码示例:
 EMQ X 桥接
 ----------
 
-EMQ X 支持多节点间桥接模式互联::
+EMQ X 支持多节点间桥接模式互联:
 
-                  ---------             ---------
-    Publisher --> | EMQ X | --Bridge--> | EMQ X | --> Subscriber
-                  ---------             ---------
+.. image:: _static/images/bridges_3.png
 
 假设创建emqx1, emqx2两个节点:
 
@@ -438,14 +432,9 @@ EMQ X 支持多节点间桥接模式互联::
 mosquitto桥接
 -------------
 
-mosquitto可以普通MQTT连接方式，桥接到EMQ X 服务器集群::
+mosquitto 可以普通 MQTT 连接方式，桥接到EMQ X 服务器集群:
 
-                 -------------             -----------------
-    Sensor ----> | mosquitto | --Bridge--> |               |
-                 -------------             |     EMQ X     |
-                 -------------             |    Cluster    |
-    Sensor ----> | mosquitto | --Bridge--> |               |
-                 -------------             -----------------
+.. image:: _static/images/bridges_4.png
 
 mosquitto.conf桥接配置示例::
 

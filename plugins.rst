@@ -16,11 +16,13 @@ EMQ X 企业版提供的管理维护插件:
 +---------------------+-------------------------+----------------+---------------------------+
 | emqx_modules        | emqx_modules.conf       | 是             | Modules插件               |
 +---------------------+-------------------------+----------------+---------------------------+
-| emq_retainer        | emqx_retainer.conf      | 是             | Retain消息存储插件        |
+| emqx_retainer       | emqx_retainer.conf      | 是             | Retain消息存储插件        |
 +---------------------+-------------------------+----------------+---------------------------+
-| emq_recon           | emqx_recon.conf         | 是             | Recon性能调试插件         |
+| emqx_recon          | emqx_recon.conf         | 是             | Recon性能调试插件         |
 +---------------------+-------------------------+----------------+---------------------------+
-| emq_reloader        | emqx_reloader.conf      | 否             | Reloader代码热加载插件    |
+| emqx_reloader       | emqx_reloader.conf      | 否             | Reloader代码热加载插件    |
++---------------------+-------------------------+----------------+---------------------------+
+| emqx_web_hook       | emqx_web_hook.conf      | 否             | Web钩子插件               |
 +---------------------+-------------------------+----------------+---------------------------+
 
 -------------
@@ -193,5 +195,42 @@ Reloader插件命令
 
     reload <Module>             # Reload a Module
 
-.. _recon: http://ferd.github.io/recon/
+-----------
+Web钩子插件
+-----------
 
+用于把mqtt消息通过http post方式发送到配置的WebServer
+
+配置Web hook
+-------------------
+
+配置文件emqx_web_hook.conf:
+
+.. code-block:: properties
+
+    ## http post web server
+    web.hook.api.url = http://127.0.0.1:8080
+
+    ## hook rule
+    web.hook.rule.client.connected.1     = {"action": "on_client_connected"}
+    web.hook.rule.client.disconnected.1  = {"action": "on_client_disconnected"}
+    web.hook.rule.client.subscribe.1     = {"action": "on_client_subscribe"}
+    web.hook.rule.client.unsubscribe.1   = {"action": "on_client_unsubscribe"}
+    web.hook.rule.session.created.1      = {"action": "on_session_created"}
+    web.hook.rule.session.subscribed.1   = {"action": "on_session_subscribed"}
+    web.hook.rule.session.unsubscribed.1 = {"action": "on_session_unsubscribed"}
+    web.hook.rule.session.terminated.1   = {"action": "on_session_terminated"}
+    web.hook.rule.message.publish.1      = {"action": "on_message_publish"}
+    web.hook.rule.message.delivered.1    = {"action": "on_message_delivered"}
+    web.hook.rule.message.acked.1        = {"action": "on_message_acked"}
+
+
+
+加载WebHook插件
+----------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_web_hook
+
+.. _recon: http://ferd.github.io/recon/

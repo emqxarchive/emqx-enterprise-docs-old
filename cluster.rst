@@ -11,19 +11,9 @@ Erlang/OTP 分布式编程
 
 Erlang/OTP 最初是爱立信为开发电信设备系统设计的编程语言平台，电信设备(路由器、接入网关、...)典型设计是通过背板连接主控板卡与多块业务板卡的分布式系统。
 
-Erlang/OTP 语言平台的分布式程序，由分布互联的 Erlang 运行系统组成，每个 Erlang 运行系统被称为节点(Node)，节点(Node) 间通过 TCP 互联，消息传递的方式通信::
+Erlang/OTP 语言平台的分布式程序，由分布互联的 Erlang 运行系统组成，每个 Erlang 运行系统被称为节点(Node)，节点(Node) 间通过 TCP 互联，消息传递的方式通信:
 
-    ---------         ---------
-    | Node1 | --------| Node2 |
-    ---------         ---------
-        |     \     /    |
-        |       \ /      |
-        |       / \      |
-        |     /     \    |
-    ---------         ---------
-    | Node3 | --------| Node4 |
-    ---------         ---------
-
+.. image:: _static/images/clustering_1.png
 
 节点(Node)
 ----------
@@ -107,20 +97,9 @@ EMQX 消息服务器每个集群节点，都保存一份主题树(Topic Trie)和
 | client3        | node3       | t/+/x, t/a                 |
 +----------------+-------------+----------------------------+
 
-最终会生成如下主题树(Topic Trie)和路由表(Route Table)::
+最终会生成如下主题树(Topic Trie)和路由表(Route Table):
 
-    --------------------------
-    |             t          |
-    |            / \         |
-    |           +   #        |
-    |         /  \           |
-    |       x      y         |
-    --------------------------
-    | t/+/x -> node1, node3  |
-    | t/+/y -> node1         |
-    | t/#   -> node2         |
-    | t/a   -> node3         |
-    --------------------------
+.. image:: _static/images/clustering_2.png
 
 订阅(Subscription)与消息派发
 ----------------------------
@@ -137,7 +116,7 @@ EMQX 消息服务器每个集群节点，都保存一份主题树(Topic Trie)和
     node2-->client2: Deliver[t/#]
     node3-->client3: Deliver[t/a]
 
-.. image:: ./_static/images/route.png
+.. image:: ./_static/images/design_9.png
 
 ----------------
 手工配置管理集群
@@ -394,16 +373,9 @@ EMQ X R2.3 版本支持从集群自动删除宕机节点(Autoclean):
 
 EMQ X 消息服务器集群模式下，MQTT 连接的持久会话(Session)跨节点。
 
-例如负载均衡的两台集群节点: node1 与 node2，同一 MQTT 客户端先连接 node1，node1 节点会创建持久会话；客户端断线重连到 node2 时，MQTT 的连接在 node2 节点，持久会话仍在 node1 节点::
+例如负载均衡的两台集群节点: node1 与 node2，同一 MQTT 客户端先连接 node1，node1 节点会创建持久会话；客户端断线重连到 node2 时，MQTT 的连接在 node2 节点，持久会话仍在 node1 节点:
 
-                                      node1
-                                   -----------
-                               |-->| session |
-                               |   -----------
-                 node2         |
-              --------------   |
-     client-->| connection |<--|
-              --------------
+.. image:: _static/images/clustering_4.png
 
 .. _cluster_firewall:
 
@@ -441,4 +413,3 @@ NoSQL 数据库领域分布式设计，大多会采用一致性 Hash 或 DHT。E
 
 .. _etcd:        https://coreos.com/etcd/
 .. _Kubernetes:  https://kubernetes.io/
-

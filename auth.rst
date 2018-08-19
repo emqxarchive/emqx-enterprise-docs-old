@@ -11,14 +11,9 @@ MQTT认证设计
 
 EMQ X 认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID或匿名认证，支持与MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP、JTW集成认证。
 
-系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
+系统默认开启匿名认证(anonymous)，通过加载认证插件可开启的多个认证模块组成认证链:
 
-               ----------------           ----------------           ------------
-    Client --> | Username认证 | -ignore-> | ClientID认证 | -ignore-> | 匿名认证 |
-               ----------------           ----------------           ------------
-                      |                         |                         |
-                     \|/                       \|/                       \|/
-                allow | deny              allow | deny              allow | deny
+.. image:: _static/images/authn_1.png
 
 ------------
 匿名认证设置
@@ -41,15 +36,9 @@ ACL访问控制规则定义::
 
     允许(Allow)|拒绝(Deny) 谁(Who) 订阅(Subscribe)|发布(Publish) 主题列表(Topics)
 
-MQTT客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止::
+MQTT客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制模块，会逐条匹配ACL规则，直到匹配成功为止:
 
-              ---------              ---------              ---------
-    Client -> | Rule1 | --nomatch--> | Rule2 | --nomatch--> | Rule3 | --> Default
-              ---------              ---------              ---------
-                  |                      |                      |
-                match                  match                  match
-                 \|/                    \|/                    \|/
-            allow | deny           allow | deny           allow | deny
+.. image:: _static/images/authn_2.png
 
 ----------------
 默认访问控制设置
@@ -58,6 +47,9 @@ MQTT客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制
 EMQ X 消息服务器默认访问控制，通过acl.conf配置文件设置:
 
 .. code-block:: properties
+    
+    ## ACL nomatch
+    mqtt.acl_nomatch = allow
 
     ## ACL nomatch
     mqtt.acl_nomatch = allow
@@ -77,6 +69,7 @@ ACL规则定义在etc/acl.conf，EMQ X 启动时加载到内存:
 
     %% Deny clients to subscribe '$SYS#' and '#'
     {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
+
 
 ACL规则修改后可通过命令行重新加载:
 
@@ -272,14 +265,14 @@ MQTT认证用户表
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `username` varchar(100) DEFAULT NULL,
       `password` varchar(100) DEFAULT NULL,
-      `salt` varchar(20) DEFAULT NULL,
+      `salt` varchar(100) DEFAULT NULL,
       `is_superuser` tinyint(1) DEFAULT 0,
       `created` datetime DEFAULT NULL,
       PRIMARY KEY (`id`),
       UNIQUE KEY `mqtt_username` (`username`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-.. NOTE:: 用户可自定义认证用户表，通过'authquery'配置查询语句。
+.. NOTE:: 用户可自定义认证用户表，通过'auth_query'配置查询语句。
 
 MQTT访问控制表
 --------------
@@ -333,7 +326,7 @@ MQTT访问控制表
 
     ## Variables: %u = username, %c = clientid
 
-    ## Authentication Query: select password only
+    ## Authentication Query: select password or password,salt
     auth.mysql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
     ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
@@ -371,7 +364,7 @@ MQTT访问控制表
     ./bin/emqx_ctl plugins load emqx_auth_mysql
 
 ---------------------
-Postgre认证制插件配置
+Postgre认证插件配置
 ---------------------
 
 配置文件emqx_auth_pgsql.conf, 默认的MQTT用户、ACL库表和认证设置:
@@ -386,10 +379,10 @@ Postgre MQTT用户表
       is_superuser boolean,
       username character varying(100),
       password character varying(100),
-      salt character varying(40)
+      salt character varying(100)
     );
 
-.. NOTE:: 用户可自定义认证用户表，通过'authquery'配置查询语句。
+.. NOTE:: 用户可自定义认证用户表，通过'auth_query'配置查询语句。
 
 Postgre MQTT访问控制表
 ----------------------
@@ -442,7 +435,7 @@ Postgre MQTT访问控制表
 
     ## Variables: %u = username, %c = clientid, %a = ipaddress
 
-    ## Authentication Query: select password only
+    ## Authentication Query: select password or password,salt
     auth.pgsql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
     ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
@@ -493,6 +486,9 @@ Redis认证插件配置
     ## Redis Server: 6379, 127.0.0.1:6379, localhost:6379, Redis Sentinel: 127.0.0.1:26379
     auth.redis.server = 127.0.0.1:6379
 
+    ## Redis Sentinel
+    ## auth.redis.server = 127.0.0.1:26379
+
     ## redis sentinel cluster name
     ## auth.redis.sentinel = mymaster
 
@@ -513,10 +509,11 @@ Redis认证插件配置
     ## Variables: %u = username, %c = clientid
 
     ## Authentication Query Command
+    ## HMGET mqtt_user:%u password or HMGET mqtt_user:%u password salt or HGET mqtt_user:%u password
     auth.redis.auth_cmd = HGET mqtt_user:%u password
 
-    ## Password hash: plain, md5, sha, sha256, bcrypt
-    auth.redis.password_hash = plain
+    ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
+    auth.redis.password_hash = sha256
 
     ## sha256 with salt prefix
     ## auth.redis.password_hash = salt,sha256

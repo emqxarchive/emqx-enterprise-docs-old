@@ -274,7 +274,7 @@ NGINX Plus 产品作为 EMQ X 集群的LB，并终结SSL连接:
 
 EMQ X 采用Erlang/OTP语言平台开发，可跨平台运行在Linux、FreeBSD、Mac OS X、Windows服务器。
 
-产品环境推荐部署在64-bit Linux或FreeBSD云主机或服务器。
+产品环境推荐部署在64-bit Linux云主机或服务器。
 
 CPU/内存
 --------
@@ -299,7 +299,7 @@ EMQ X 每个版本会发布Ubuntu、CentOS、FreeBSD、Mac OS X、Windows平台�
 RPM包安装
 ---------
 
-CentOS、RedHat操作系统下，推荐RPM包安装。RPM包安装后可通过操作系统，直接管理启停EMQ服务。
+CentOS、RedHat操作系统下，推荐RPM包安装。RPM包安装后可通过操作系统，直接管理启停EMQ X服务。
 
 RPM安装
 -------
@@ -327,7 +327,12 @@ EMQ X 配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/
 数据文件
 --------
 
-数据文件目录：/var/lib/emqx/
+数据文件目录: /var/lib/emqx/
+
+导入License
+-----------
+
+导入License文件: cp emqx.lic /etc/emqx/
 
 启动停止
 --------
@@ -342,7 +347,7 @@ EMQ X 配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/
 DEB包安装
 ---------
 
-Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过操作系统，直接管理启停EMQ服务。
+Debian、Ubuntu操作系统下，推荐DEB包安装。DEB包安装后可通过操作系统，直接管理启停EMQ X服务。
 
 .. code-block:: console
 
@@ -367,7 +372,13 @@ EMQ X 配置文件: /etc/emqx/emqx.conf，插件配置文件: /etc/emqx/plugins/
 数据文件
 --------
 
-数据文件目录：/var/lib/emqx/
+数据文件目录: /var/lib/emqx/
+
+导入License
+-----------
+
+导入License文件: cp emqx.lic /etc/emqx/
+
 
 启动停止
 --------
@@ -410,6 +421,11 @@ CentOS平台为例，下载安装过程:
 .. code-block:: bash
 
     unzip emqx-enterprise-centos7-v2.4.zip
+
+导入License
+-----------
+
+导入License文件 cp emqx.lic etc/
 
 控制台调试模式启动，检查 EMQ X 是否可正常启动:
 
@@ -513,6 +529,11 @@ EMQ X Docker镜像获取:
 启动容器::
 
     docker run -itd --net='host' --name emqx24 emqx-enterprise-docker-v2.4
+
+导入License::
+
+    docker cp emqx.lic emqx20:/opt/emqx/etc/
+
 
 停止容器::
 
