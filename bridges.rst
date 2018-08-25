@@ -28,67 +28,107 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
     ## bridge.kafka.servers = 127.0.0.1:9092,127.0.0.2:9092,127.0.0.3:9092
     bridge.kafka.servers = 127.0.0.1:9092
 
-    ## Kafka Parition Strategy
-    bridge.kafka.parition_strategy = random
+    ## Kafka Parition Strategy. option value: per_partition | per_broker
+    bridge.kafka.connection_strategy = per_partition
 
-    ## Kafka Max Buffer Size
-    bridge.kafka.max_buffer_size = 10000
+    bridge.kafka.min_metadata_refresh_interval = 5S
 
-    ## Kafka Max Buffer TTL
-    bridge.kafka.max_buffer_ttl = 1s
-
-    ## Kafka Partition Workers Size
-    bridge.kafka.per_partition_workers = 64
-
-    ## Produce writes type
+    ## Produce writes type. option value: sync | async
     bridge.kafka.produce = sync
+
+    bridge.kafka.produce.sync_timeout = 3S
+
+    ## Base directory for replayq to store messages on disk.
+    ## If this config entry if missing or set to undefined,
+    ## replayq works in a mem-only manner.
+    ## i.e. messages are not queued on disk -- in such case,
+    ## the send or send_sync API callers are responsible for
+    ## possible message loss in case of application,
+    ## network or kafka disturbances. For instance,
+    ## in the wolff:send API caller may trap_exit then
+    ## react on parition-producer worker pid's 'EXIT'
+    ## message to issue a retry after restarting the producer.
+    ## bridge.kafka.replayq_dir = /tmp/emqx_bridge_kafka/
+
+    ## default=10MB, replayq segment size.
+    ## bridge.kafka.producer.replayq_seg_bytes = 10MB
+
+    ## producer required_acks. option value all_isr | leader_only | none.
+    bridge.kafka.producer.required_acks = none
+
+    ## default=10000. Timeout leader wait for replicas before reply to producer.
+    bridge.kafka.producer.ack_timeout = 10S
+
+    ## default number of message sets sent on wire before block waiting for acks
+    bridge.kafka.producer.max_batch_bytes = 1024KB
+
+    ## by default, send max 1 MB of data in one batch (message set)
+    bridge.kafka.producer.min_batch_bytes = 0
+
+    ## Number of batches to be sent ahead without receiving ack for the last request.
+    ## Must be 0 if messages must be delivered in strict order.
+    bridge.kafka.producer.max_send_ahead = 0
+
+    ## by default, no compression
+    ## bridge.kafka.producer.compression = no_compression
+
+    ## bridge.kafka.encode_payload_type = base64
+
+    ## bridge.kafka.sock.buffer = 32KB
+    ## bridge.kafka.sock.recbuf = 32KB
+    bridge.kafka.sock.sndbuf = 1MB
+    ## bridge.kafka.sock.read_packets = 20
 
 配置Kafka桥接规则
 -----------------
 
 .. code-block:: properties
 
-    ## Client Connected Record Hook
-    bridge.kafka.hook.client.connected.1 = {"action": "on_client_connected", "pool": "pool1", "topic": "client_connected"}
+    ## Bridge Kafka Hooks
+    ## ${topic}: the kafka topics to which the messages will be published.
+    ## ${filter}: the mqtt topic (may contain wildcard) on which the action will be performed .
 
-    ## Client Disconnected Record Hook
-    bridge.kafka.hook.client.disconnected.1 = {"action": "on_client_disconnected", "pool": "pool1", "topic": "client_disconnected"}
+    bridge.kafka.hook.client.connected.1     = {"topic": "client_connected"}
+    bridge.kafka.hook.client.disconnected.1  = {"topic": "client_disconnected"}
+    bridge.kafka.hook.session.subscribed.1   = {"filter": "#",  "topic": "session_subscribed"}
+    bridge.kafka.hook.session.unsubscribed.1 = {"filter": "#",  "topic": "session_unsubscribed"}
+    bridge.kafka.hook.message.publish.1      = {"filter": "#",  "topic": "message_publish"}
+    bridge.kafka.hook.message.delivered.1    = {"filter": "#",  "topic": "message_delivered"}
+    bridge.kafka.hook.message.acked.1        = {"filter": "#",  "topic": "message_acked"}
 
-    ## Session Subscribed Record Hook
-    bridge.kafka.hook.session.subscribed.1 = {"action": "on_session_subscribed", "filter": "#", "pool": "pool1", "topic": "session_subscribed"}
+    ## More Configures
+    ## partitioner strategy:
+    ## Option:  random | roundrobin | first_key_dispatch
+    ## Example: bridge.kafka.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "strategy":"random"}
 
-    ## Session Unsubscribed Record Hook
-    bridge.kafka.hook.session.unsubscribed.1 = {"action": "on_session_unsubscribed", "filter": "#", "pool": "pool1", "topic": "session_unsubscribed"}
+    ## key:
+    ## Option: ${clientid} | ${username}
+    ## Example: bridge.kafka.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "key":"${clientid}"}
 
-    ## Message Publish Record Hook
-    bridge.kafka.hook.message.publish.1 = {"action": "on_message_publish", "filter": "#", "pool": "pool1", "topic": "message_publish"}
-
-    ## Message Delivered Record Hook
-    bridge.kafka.hook.message.delivered.1 = {"action": "on_message_delivered", "filter": "#", "pool": "pool1", "topic": "message_delivered"}
-
-    ## Message Acked Record Hook
-    bridge.kafka.hook.message.acked.1 = {"action": "on_message_acked", "filter": "#", "pool": "pool1", "topic": "message_acked"}
+    ## format:
+    ## Option: json | json
+    ## Example: bridge.kafka.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "format":"json"}
 
 Kafka桥接规则说明
 -----------------
 
-+------------------------+----------------------------------+
-| action                 | 说明                             |
-+========================+==================================+
-| on_client_connected    | 客户端登录                       |
-+------------------------+----------------------------------+
-| on_client_disconnected | 客户端退出                       |
-+------------------------+----------------------------------+
-| on_session_subscribed  | 订阅主题                         |
-+------------------------+----------------------------------+
-| on_session_unsubscribed| 取消订阅主题                     |
-+------------------------+----------------------------------+
-| on_message_publish     | 发布消息                         |
-+------------------------+----------------------------------+
-| on_message_delivered   | delivered消息                    |
-+------------------------+----------------------------------+
-| on_message_acked       | ACK消息                          |
-+------------------------+----------------------------------+
++-----------------------------------------+------------------+
+| 事件                                    | 说明             |
++=========================================+==================+
+| bridge.kafka.hook.client.connected.1    | 客户端登录       |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.client.disconnected.1 | 客户端退出       |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.session.subscribed.1  | 订阅主题         |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.session.unsubscribed.1| 取消订阅主题     |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.message.publish.1     | 发布消息         |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.message.delivered.1   | delivered消息    |
++-----------------------------------------+------------------+
+| bridge.kafka.hook.message.acked.1       | ACK消息          |
++-----------------------------------------+------------------+
 
 客户端上下线事件转发Kafka
 -------------------------
@@ -265,19 +305,19 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
     bridge.rabbit.1.virtual_host = /
 
     ## Rabbit Brokers heartbeat
-    bridge.rabbit.1.heartbeat = 0
+    bridge.rabbit.1.heartbeat = 30
 
     # bridge.rabbit.2.server = 127.0.0.1:5672
 
     # bridge.rabbit.2.pool_size = 8
 
-    # bridge.rabbit.1.username = guest
+    # bridge.rabbit.2.username = guest
 
-    # bridge.rabbit.1.password = guest
+    # bridge.rabbit.2.password = guest
 
-    # bridge.rabbit.1.virtual_host = /
+    # bridge.rabbit.2.virtual_host = /
 
-    # bridge.rabbit.1.heartbeat = 0
+    # bridge.rabbit.2.heartbeat = 30
 
 配置RabbitMQ桥接规则
 --------------------
@@ -293,7 +333,7 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
     bridge.rabbit.hook.message.publish.2 = {"topic": "#", "action": "on_message_publish", "rabbit": 1, "exchange": "topic:emq.pub"}
 
-    bridge.rabbit.hook.message.acked.1 = {"action": "on_message_acked", "rabbit": 1, "exchange": "topic:emq.acked"}
+    bridge.rabbit.hook.message.acked.1 = {"topic": "#", "action": "on_message_acked", "rabbit": 1, "exchange": "topic:emq.acked"}
 
 客户端订阅主题事件转发RabbitMQ
 ------------------------------
