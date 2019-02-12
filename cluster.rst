@@ -122,26 +122,26 @@ EMQX 消息服务器每个集群节点，都保存一份主题树(Topic Trie)和
 手工配置管理集群
 ----------------
 
-假设部署两台服务器 s1.emqtt.io, s2.emqtt.io 上部署集群:
+假设部署两台服务器 s1.emqx.io, s2.emqx.io 上部署集群:
 
 +----------------------+-----------------+---------------------+
 | 节点名               | 主机名(FQDN)    |    IP 地址          |
 +----------------------+-----------------+---------------------+
-| emqx@s1.emqtt.io 或  | s1.emqtt.io     | 192.168.0.10        |
+| emqx@s1.emqx.io 或  | s1.emqx.io     | 192.168.0.10        |
 | emqx@192.168.0.10    |                 |                     |
 +----------------------+-----------------+---------------------+
-| emqx@s2.emqtt.io 或  | s2.emqtt.io     | 192.168.0.20        |
+| emqx@s2.emqx.io 或  | s2.emqx.io     | 192.168.0.20        |
 | emqx@192.168.0.20    |                 |                     |
 +----------------------+-----------------+---------------------+
 
 .. WARNING:: 节点名格式: Name@Host, Host必须是IP地址或FQDN(主机名.域名)
 
-emqx@s1.emqtt.io 节点设置
+emqx@s1.emqx.io 节点设置
 ------------------------
 
 emqx/etc/emqx.conf::
 
-    node.name = emqx@s1.emqtt.io
+    node.name = emqx@s1.emqx.io
 
     或
 
@@ -149,16 +149,16 @@ emqx/etc/emqx.conf::
 
 也可通过环境变量::
 
-    export EMQX_NODE_NAME=emqx@s1.emqtt.io && ./bin/emqx start
+    export EMQX_NODE_NAME=emqx@s1.emqx.io && ./bin/emqx start
 
 .. WARNING:: 节点启动加入集群后，节点名称不能变更。
 
-emqx@s2.emqtt.io 节点设置
+emqx@s2.emqx.io 节点设置
 ------------------------
 
 emqx/etc/emqx.conf::
 
-    node.name = emqx@s2.emqtt.io
+    node.name = emqx@s2.emqx.io
 
     或
 
@@ -167,25 +167,25 @@ emqx/etc/emqx.conf::
 节点加入集群
 ------------
 
-启动两台节点后，emqx@s2.emqtt.io 上执行::
+启动两台节点后，emqx@s2.emqx.io 上执行::
 
-    $ ./bin/emqx_ctl cluster join emqx@s1.emqtt.io
-
-    Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
-
-或，emqx@s1.emqtt.io 上执行::
-
-    $ ./bin/emqx_ctl cluster join emqx@s2.emqtt.io
+    $ ./bin/emqx_ctl cluster join emqx@s1.emqx.io
 
     Join the cluster successfully.
-    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emqx@s1.emqx.io','emqx@s2.emqx.io']}]
+
+或，emqx@s1.emqx.io 上执行::
+
+    $ ./bin/emqx_ctl cluster join emqx@s2.emqx.io
+
+    Join the cluster successfully.
+    Cluster status: [{running_nodes,['emqx@s1.emqx.io','emqx@s2.emqx.io']}]
 
 任意节点上查询集群状态::
 
     $ ./bin/emqx_ctl cluster status
 
-    Cluster status: [{running_nodes,['emqx@s1.emqtt.io','emqx@s2.emqtt.io']}]
+    Cluster status: [{running_nodes,['emqx@s1.emqx.io','emqx@s2.emqx.io']}]
 
 节点退出集群
 ------------
@@ -196,13 +196,13 @@ emqx/etc/emqx.conf::
 
 2. remove: 从集群删除其他节点
 
-emqx@s2.emqtt.io 主动退出集群::
+emqx@s2.emqx.io 主动退出集群::
 
     $ ./bin/emqx_ctl cluster leave
 
-或 emqx@s1.emqtt.io 节点上，从集群删除 emqx@s2.emqtt.io 节点::
+或 emqx@s1.emqx.io 节点上，从集群删除 emqx@s2.emqx.io 节点::
 
-    $ ./bin/emqx_ctl cluster remove emqx@s2.emqtt.io
+    $ ./bin/emqx_ctl cluster remove emqx@s2.emqx.io
 
 .. _autodiscovery:
 
