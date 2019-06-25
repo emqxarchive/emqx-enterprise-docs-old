@@ -9,42 +9,43 @@
 EMQ X 规则引擎介绍
 ===================
 
-规则引擎用于配置事件的业务规则。使用规则引擎可以方便地实现诸如将消息筛选和转换成指定格式，并存入数据库表，或者发送到消息队列等功能。
+使用 EMQ X 的规则引擎可以灵活地处理消息和事件。使用规则引擎可以方便地实现诸如将消息转换成指定格式，然后存入数据库表，或者发送到消息队列等。
 
-规则引擎相关的概念包括: 规则(rule)、动作(action)、资源(resource) 和 资源类型(resource-type)。
+与 EMQ X 规则引擎相关的概念包括: 规则(rule)、动作(action)、资源(resource) 和 资源类型(resource-type)。
+
+.. sidebar:: 规则、动作、资源的关系
+
+    ::
+
+        规则: {
+            SQL 语句,
+            动作列表: [
+                {
+                    动作1,
+                    动作参数,
+                    绑定资源: {
+                        资源配置
+                    }
+                },
+                {
+                    动作2,
+                    动作参数,
+                    绑定资源: {
+                        资源配置
+                    }
+                }, ...
+            ]
+        }
 
 - 规则 (Rule): 规则由 SQL 语句和动作列表组成。
-  SQL 语句用于从 emqx 事件中筛选和转换原始数据。
-  动作列表包含一个或多个动作及其参数。
-  规则需要挂载到某个事件上，比如 “消息发布”，“连接完成”，“连接断开” 等。挂载事件由 SQL 语句的 “FROM” 子句完成。
+  SQL 语句用于筛选或转换事件中的数据。
+  动作是 SQL 语句匹配通过之后，所执行的任务。动作列表包含一个或多个动作及其参数。
 - 动作 (Action): 动作定义了一个针对数据的操作。
   动作可以绑定资源，也可以不绑定。例如，“inspect” 动作不需要绑定资源，它只是简单打印数据内容和动作参数。而 “data_to_webserver” 动作需要绑定一个 web_hook 类型的资源，此资源中配置了 URL。
 - 资源 (Resource): 资源是通过资源类型为模板实例化出来的对象，保存了与资源相关的配置(比如数据库连接地址和端口、用户名和密码等)。
 - 资源类型 (Resource Type): 资源类型是资源的静态定义，描述了此类型资源需要的配置项。
 
 .. important:: 动作和资源类型是由 emqx 或插件的代码提供的，不能通过 API 和 CLI 动态创建。
-
-规则、动作、资源的关系::
-
-    规则: {
-        SQL 语句,
-        动作列表: [
-            {
-                动作参数: {
-                    参数1: 值,
-                    参数2: 值,
-                    ...
-                },
-                绑定资源: {
-                    资源配置项: {
-                        配置项1: 值,
-                        配置项2: 值,
-                        ...
-                    }
-                }
-            }
-        ]
-    }
 
 .. _rule_sql:
 
@@ -61,9 +62,63 @@ SQL 语句用于从原始数据中，根据条件筛选出字段，并进行预�
 
     SELECT <字段名> FROM <触发事件> [WHERE <条件>]
 
+FROM、SELECT 和 WHERE 子句:
+
+- ``FROM`` 子句将规则挂载到某个触发事件上，比如 “消息发布”，“连接完成”，“连接断开” 等
+- ``SELECT`` 子句用于筛选或转换事件中的字段
+- ``WHERE`` 子句用于根据条件筛选事件
+
+.. _rule_sql.examples:
+
+SQL 语句示例:
+--------------
+
+- 从 topic 为 "t/a" 的消息中提取所有字段::
+
+    SELECT * FROM "message.publish" WHERE topic = 't/a'
+
+- 从 topic 能够匹配到 't/#' 的消息中提取所有字段。注意这里使用了 **'=~'** 操作符进行带通配符的 topic 匹配::
+
+    SELECT * FROM "message.publish" WHERE topic =~ 't/#'
+
+- 从 topic 能够匹配到 't/#' 的消息中提取 qos，username 和 client_id 字段::
+
+    SELECT qos, username, client_id FROM "message.publish" WHERE topic =~ 't/#'
+
+- 从任意 topic 的消息中提取 username 字段，并且筛选条件为 username = 'Steven'::
+
+    SELECT username FROM "message.publish" WHERE username='Steven'
+
+- 从任意 topic 的消息的消息体(payload) 中提取 x 字段，并创建别名 x 以便在 WHERE 子句中使用。WHERE 子句限定条件为 x = 1。注意 payload 必须为 JSON 格式。举例：此 SQL 语句可以匹配到消息体 {"x": 1}, 但不能匹配到消息体 {"x": 2}::
+
+    SELECT payload.x as x FROM "message.publish" WHERE x=1
+
+- 类似于上面的 SQL 语句，但嵌套地提取消息体中的数据，此 SQL 语句可以匹配到消息体 {"x": {"y": 1}}::
+
+    SELECT payload.x.y as a FROM "message.publish" WHERE a=1
+
+- 在 client_id = 'c1' 尝试连接时，提取其来源 IP 地址和端口号::
+
+    SELECT peername as ip_port FROM "client.connected" WHERE client_id = 'c1'
+
+- 筛选所有订阅 't/#' 主题且订阅级别为 QoS1 的 client_id。注意这里用的是严格相等操作符 **'='**，所以不会匹配主题为 't' 或 't/+/a' 的订阅请求::
+
+    SELECT client_id FROM "client.subscribe" WHERE topic = 't/#' and qos = 1
+
+- 事实上，上例中的 topic 和 qos 字段，是当订阅请求里只包含了一对 (Topic, QoS) 时，为使用方便而设置的别名。但如果订阅请求中 Topic Filters 包含了多个 (Topic, QoS) 组合对，那么必须显式使用 contains_topic() 或 contains_topic_match() 函数来检查 Topic Filters 是否包含指定的 (Topic, QoS)::
+
+    SELECT client_id FROM "client.subscribe" WHERE contains_topic(topic_filters, 't/#')
+
+    SELECT client_id FROM "client.subscribe" WHERE contains_topic(topic_filters, 't/#', 1)
+
+.. important::
+    - FROM 子句后面的触发事件需要用双引号 ``""`` 引起来。
+    - WHERE 子句后面接筛选条件，如果使用到字符串需要用单引号 ``''`` 引起来。
+    - SELECT 子句中，若使用 ``"."`` 符号对 payload 进行嵌套选择，必须保证 payload 为 JSON 格式。
+
 .. _rule_sql.events:
 
-规则引擎里可用的触发事件
+FROM 子句可用的触发事件
 ------------------------
 
 +---------------------+----------+
@@ -90,6 +145,8 @@ SQL 语句用于从原始数据中，根据条件筛选出字段，并进行预�
 
 SELECT 子句可用的字段
 ----------------------
+
+SELECT 子句可用的字段与触发事件的类型相关。其中 ``client_id``, ``username`` 和 ``event`` 是通用字段，每种事件类型都有。
 
 message.publish
 ^^^^^^^^^^^^^^^
@@ -226,7 +283,6 @@ client.connected
 | proto_ver    | MQTT 协议版本                       |
 +--------------+-------------------------------------+
 
-
 client.disconnected
 ^^^^^^^^^^^^^^^^^^^
 
@@ -292,58 +348,24 @@ client.unsubscribe
 | topic_filters | MQTT 订阅列表中的第一个订阅的 QoS     |
 +---------------+---------------------------------------+
 
-.. important::
-    - FROM 子句后面的主题名需要用双引号("") 引起来。
-    - WHERE 子句后面接筛选条件，如果使用到字符串需要用单引号 ('') 引起来。
-    - SELECT 子句中，若使用 "." 符号对 payload 进行嵌套选择，必须保证 payload 为 JSON 格式。
-
-.. _rule_sql.examples:
-
-SQL 语句示例:
---------------
-
-- 从 topic 为 "t/a" 的消息中提取所有字段::
-
-    SELECT * FROM "message.publish" WHERE topic = 't/a'
-
-- 从 topic 能够匹配到 't/#' 的消息中提取所有字段。注意这里使用了 '=~' 操作符进行带通配符的 topic 匹配::
-
-    SELECT * FROM "message.publish" WHERE topic =~ 't/#'
-
-- 从 topic 能够匹配到 't/#' 的消息中提取 qos，username 和 client_id 字段::
-
-    SELECT qos, username, client_id FROM "message.publish" WHERE topic =~ 't/#'
-
-- 从任意 topic 的消息中提取 username 字段，并且筛选条件为 username = 'Steven'::
-
-    SELECT username FROM "message.publish" WHERE username='Steven'
-
-- 从任意 topic 的消息的消息体(payload) 中提取 x 字段，并创建别名 x 以便在 WHERE 子句中使用。WHERE 子句限定条件为 x = 1。注意 payload 必须为 JSON 格式。举例：此 SQL 语句可以匹配到消息体 {"x": 1}, 但不能匹配到消息体 {"x": 2}::
-
-    SELECT payload.x as x FROM "message.publish" WHERE x=1
-
-- 类似于上面的 SQL 语句，但嵌套地提取消息体中的数据，此 SQL 语句可以匹配到消息体 {"x": {"y": 1}}::
-
-    SELECT payload.x.y as a FROM "message.publish" WHERE a=1
-
-- 在 client_id = 'c1' 尝试连接时，提取其来源 IP 地址和端口号::
-
-    SELECT peername as ip_port FROM "client.connected" WHERE client_id = 'c1'
-
-- 筛选所有订阅 't/#' 主题且订阅级别为 QoS1 的 client_id。注意这里用的是严格相等操作符 '='，所以不会匹配主题为 't' 或 't/+/a' 的订阅请求::
-
-    SELECT client_id FROM "client.subscribe" WHERE topic = 't/#' and qos = 1
-
-- 事实上，上例中的 topic 和 qos 字段，是当订阅请求里只包含了一对 (Topic, QoS) 时，为使用方便而设置的别名。但如果订阅请求中 Topic Filters 包含了多个 (Topic, QoS) 组合对，那么必须显式使用 contains_topic() 或 contains_topic_match() 函数来检查 Topic Filters 是否包含指定的 (Topic, QoS)::
-
-    SELECT client_id FROM "client.subscribe" WHERE contains_topic(topic_filters, 't/#')
-
-    SELECT client_id FROM "client.subscribe" WHERE contains_topic(topic_filters, 't/#', 1)
-
 .. _rule_sql.test:
 
 在 Dashboard 中测试 SQL 语句
 ------------------------------
+
+Dashboard 界面提供了 SQL 语句测试功能，通过给定的 SQL 语句和事件参数，展示 SQL 测试结果。
+
+1. 在创建规则界面，输入 **规则SQL**，并启用 **SQL 测试** 开关:
+
+   .. image:: ./_static/images/sql-test-1@2x.png
+
+2. 修改模拟事件的字段，或者使用默认的配置，点击 **测试** 按钮:
+
+   .. image:: ./_static/images/sql-test-2@2x.png
+
+3. SQL 处理后的结果将在 **测试输出** 文本框里展示:
+
+   .. image:: ./_static/images/sql-test-3@2x.png
 
 ============================
 规则引擎管理命令和 HTTP API
@@ -370,11 +392,11 @@ rules 命令
 rules create
 """"""""""""
 
-创建一个新的规则。参数::
+创建一个新的规则。参数:
 
-    - <sql>: 规则 SQL
-    - <actions>: JSON 格式的动作列表
-    - -d <descr>: 可选，规则描述信息
+- <sql>: 规则 SQL
+- <actions>: JSON 格式的动作列表
+- -d <descr>: 可选，规则描述信息
 
 使用举例::
 
@@ -386,7 +408,7 @@ rules create
 
     Rule rule:9a6a725d created
 
-上例创建了一个 ID 为 ``rule:9a6a725d`` 的规则，动作列表里只有一个动作：动作名为 inspect，动作的参数是 {"a": 1}。
+上例创建了一个 ID 为 ``rule:9a6a725d`` 的规则，动作列表里只有一个动作：动作名为 inspect，动作的参数是 ``{"a": 1}``。
 
 rules list
 """"""""""
@@ -451,13 +473,13 @@ rule-actions list
     ...
 
     ## 列出所有 EventType 类型匹配 'client.connected' 的动作
+    ## '$any' 表明此动作可以绑定到到所有类型的事件上。
     $ ./bin/emqx_ctl rule-actions list -k 'client.connected'
 
     action(name='data_to_cassa', app='emqx_backend_cassa', for='$any', types=[backend_cassa], title ='Data to Cassandra', description='Store data to Cassandra')
     action(name='data_to_dynamo', app='emqx_backend_dynamo', for='$any', types=[backend_dynamo], title ='Data to DynamoDB', description='Store Data to DynamoDB')
     ...
 
-    '$any' 表明此动作可以绑定到到所有类型的事件上。
 
 resources 命令
 ^^^^^^^^^^^^^^^^
@@ -475,11 +497,13 @@ resources 命令
 resources create
 """"""""""""""""
 
-创建一个新的资源，参数::
+创建一个新的资源，参数:
 
-    - type: 资源类型
-    - -c config: JSON 格式的配置
-    - -d descr: 可选，资源的描述
+- type: 资源类型
+- -c config: JSON 格式的配置
+- -d descr: 可选，资源的描述
+
+::
 
     $ ./bin/emqx_ctl resources create 'web_hook' -c '{"url": "http://host-name/chats"}' -d 'forward msgs to host-name/chats'
 
@@ -570,17 +594,17 @@ API 定义::
 
 参数定义:
 
-+-------------+---------------------------------------------------------------+-----------------------+
-| rawsql      | String，用于筛选和转换原始数据的 SQL 语句                                             |
-+-------------+---------------------------------------------------------------+-----------------------+
-| actions     | JSON Array，动作列表                                                                  |
-+-------------+---------------------------------------------------------------+-----------------------+
-|             | name                                                          | String, 动作名字      |
-+-------------+---------------------------------------------------------------+-----------------------+
-|             | params                                                        | JSON Object, 动作参数 |
-+-------------+---------------------------------------------------------------+-----------------------+
-| description | String，可选，规则描述                                                                |
-+-------------+---------------------------------------------------------------+-----------------------+
++------------------+-------------------------------------------+
+| rawsql           | String，用于筛选和转换原始数据的 SQL 语句 |
++------------------+-------------------------------------------+
+| actions          | JSON Array，动作列表                      |
++------------------+-------------------------------------------+
+| - actions.name   | String, 动作名字                          |
++------------------+-------------------------------------------+
+| - actions.params | JSON Object, 动作参数                     |
++------------------+-------------------------------------------+
+| description      | String，可选，规则描述                    |
++------------------+-------------------------------------------+
 
 API 请求示例::
 
@@ -618,7 +642,6 @@ API 返回数据示例:
         "enabled": true,
         "for": "message.publish",
         "id": "rule:34476883",
-        "name": "test-rule",
         "rawsql": "select * from \"message.publish\""
     }
   }
@@ -651,7 +674,6 @@ API 返回数据示例:
         "enabled": true,
         "for": "message.publish",
         "id": "rule:34476883",
-        "name": "test-rule",
         "rawsql": "select * from \"message.publish\""
     }
   }
@@ -680,7 +702,6 @@ API 返回数据示例:
         "enabled": true,
         "for": "message.publish",
         "id": "rule:34476883",
-        "name": "test-rule",
         "rawsql": "select * from \"message.publish\""
     }]
   }
@@ -1066,7 +1087,7 @@ API 返回数据示例::
 
 0. 首先我们创建一个简易 Web 服务，这可以使用 ``nc`` 命令实现::
 
-    $ echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l localhost 9910
+    $ while true; do echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l 127.0.0.1 9910; done;
 
 1. 使用 WebHook 类型创建一个资源，并配置资源参数 url:
 
@@ -1109,7 +1130,7 @@ API 返回数据示例::
 
 3. 现在我们使用 username "Steven" 发送 "hello" 到任意主题，上面创建的规则就会被触发，Web Server 收到消息并回复 200 OK::
 
-    $ echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l localhost 9910
+    $ while true; do echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l 127.0.0.1 9910; done;
 
     POST / HTTP/1.1
     content-type: application/json
@@ -1125,6 +1146,8 @@ API 返回数据示例::
 
 通过 Dashboard 创建规则
 --------------------------
+
+通过 Dashboard 可以更方便地创建和配置规则。
 
 .. _rule_engine_examples.dashboard.mysql:
 
@@ -1178,13 +1201,13 @@ API 返回数据示例::
 
 3. 关联动作:
 
-  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “发送数据到 MySQL”。
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 MySQL”。
 
   .. image:: ./_static/images/rule_action_1@2x.png
 
 4. 填写动作参数:
 
-  “发送数据到 MySQL” 动作需要两个参数：
+  “保存数据到 MySQL” 动作需要两个参数：
 
   1). SQL 模板。这个例子里我们向 MySQL 插入一条数据，SQL 模板为::
 
@@ -1235,6 +1258,111 @@ API 返回数据示例::
 创建 PostgreSQL 规则
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+0. 搭建 PostgreSQL 数据库，以 MacOS X 为例::
+
+    $ brew install postgresql
+
+    $ brew services start postgresql
+
+    ## 使用用户名 root 创建名为 'mqtt' 的数据库
+    $ createdb -U root mqtt
+
+    $ psql -U root mqtt
+
+      mqtt=> \dn;
+      List of schemas
+        Name  | Owner
+      --------+-------
+       public | shawn
+      (1 row)
+
+1. 初始化 PgSQL 表:
+
+  $ psql -U root mqtt
+
+  创建 ``t_mqtt_msg`` 表::
+
+    CREATE TABLE t_mqtt_msg (
+    id SERIAL primary key,
+    msgid character varying(64),
+    sender character varying(64),
+    topic character varying(255),
+    qos integer,
+    retain bool,
+    payload text,
+    arrived timestamp without time zone
+    );
+
+2. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *, flags.retain as retain
+    FROM
+      "message.publish"
+
+  .. image:: ./_static/images/pgsql-rulesql-1@2x.png
+
+3. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 PostgreSQL”。
+
+  .. image:: ./_static/images/pgsql-action-0@2x.png
+
+4. 填写动作参数:
+
+  “保存数据到 PostgreSQL” 动作需要两个参数：
+
+  1). SQL 模板。这个例子里我们向 PostgreSQL 插入一条数据，SQL 模板为::
+
+    insert into t_mqtt_msg(msgid, topic, qos, retain, payload, arrived) values (${id}, ${topic}, ${qos}, ${retain}, ${payload}, to_timestamp(${timestamp}::double precision /1000)) returning id
+
+  插入数据之前，SQL 模板里的 ${key} 占位符会被替换为相应的值。
+
+  .. image:: ./_static/images/pgsql-action-1@2x.png
+
+  2). 关联资源的 ID。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 PostgreSQL 资源:
+
+  .. image:: ./_static/images/pgsql-resource-0@2x.png
+
+  选择 “PostgreSQL 资源”。
+
+5. 填写资源配置:
+
+  数据库名填写 “mqtt”，用户名填写 “root”，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/pgsql-resource-1@2x.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/pgsql-action-2@2x.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/pgsql-rulesql-2@2x.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "hello1"
+
+  然后检查 PostgreSQL 表，新的 record 是否添加成功:
+
+  .. image:: ./_static/images/pgsql-result-1@2x.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/pgsql-rulelist-1@2x.png
 
 .. _rule_engine_examples.dashboard.cassa:
 
