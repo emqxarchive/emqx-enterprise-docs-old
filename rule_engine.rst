@@ -1468,69 +1468,71 @@ API 返回数据示例::
 
   我们通过 Postman 或者 curl 命令，向 OpenTSDB Server 发送以下请求::
 
-  POST /api/query HTTP/1.1
-  Host: 127.0.0.1:4242
-  Content-Type: application/json
-  cache-control: no-cache
-  Postman-Token: 69af0565-27f8-41e5-b0cd-d7c7f5b7a037
-  {
-      "start": 1560409825000,
-      "queries": [
-          {
+    POST /api/query HTTP/1.1
+    Host: 127.0.0.1:4242
+    Content-Type: application/json
+    cache-control: no-cache
+    Postman-Token: 69af0565-27f8-41e5-b0cd-d7c7f5b7a037
+    {
+        "start": 1560409825000,
+        "queries": [
+            {
+                "aggregator": "last",
+                "metric": "cpu",
+                "tags": {
+                    "host": "*"
+                }
+            }
+        ],
+        "showTSUIDs": "true",
+        "showQuery": "true",
+        "delete": "false"
+    }
+    ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+  如果 data point 存储成功，将会得到以下应答:
+
+  .. code-block:: json
+
+    [
+      {
+          "metric": "cpu",
+          "tags": {
+              "host": "serverA"
+          },
+          "aggregateTags": [],
+          "query": {
               "aggregator": "last",
               "metric": "cpu",
+              "tsuids": null,
+              "downsample": null,
+              "rate": false,
+              "filters": [
+                  {
+                      "tagk": "host",
+                      "filter": "*",
+                      "group_by": true,
+                      "type": "wildcard"
+                  }
+              ],
+              "index": 0,
               "tags": {
-                  "host": "*"
-              }
+                  "host": "wildcard(*)"
+              },
+              "rateOptions": null,
+              "filterTagKs": [
+                  "AAAC"
+              ],
+              "explicitTags": false
+          },
+          "tsuids": [
+              "000002000002000007"
+          ],
+          "dps": {
+              "1561532453": 12
           }
-      ],
-      "showTSUIDs": "true",
-      "showQuery": "true",
-      "delete": "false"
-  }
-  ------WebKitFormBoundary7MA4YWxkTrZu0gW--
-
-  如果 data point 存储成功，将会得到以下应答::
-
-  [
-    {
-        "metric": "cpu",
-        "tags": {
-            "host": "serverA"
-        },
-        "aggregateTags": [],
-        "query": {
-            "aggregator": "last",
-            "metric": "cpu",
-            "tsuids": null,
-            "downsample": null,
-            "rate": false,
-            "filters": [
-                {
-                    "tagk": "host",
-                    "filter": "*",
-                    "group_by": true,
-                    "type": "wildcard"
-                }
-            ],
-            "index": 0,
-            "tags": {
-                "host": "wildcard(*)"
-            },
-            "rateOptions": null,
-            "filterTagKs": [
-                "AAAC"
-            ],
-            "explicitTags": false
-        },
-        "tsuids": [
-            "000002000002000007"
-        ],
-        "dps": {
-            "1561532453": 12
-        }
-    }
-  ]
+      }
+    ]
 
   在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
 
@@ -1629,13 +1631,7 @@ API 返回数据示例::
 
   $ docker exec -it influxdb influx
 
-  > use db
-
-  > select * from "temperature"
-  name: temperature
-  time                external host    internal location
-  ----                -------- ----    -------- --------
-  1561535778444457348 37       serverA 25       roomA
+  .. image:: ./_static/images/influxdb-result-0@2x.png
 
   在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
 
