@@ -1375,6 +1375,85 @@ API 返回数据示例::
 创建 MongoDB 规则
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+0. 搭建 MongoDB 数据库，并设置用户名密码为 root/public，以 MacOS X 为例::
+
+    $ brew install mongodb
+    $ brew services start mongodb
+
+    ## 新增 root/public 用户
+    $ use mqtt;
+    $ db.createUser({user: "root", pwd: "public", roles: [{role: "readWrite", db: "mqtt"}]});
+
+    ## 修改配置，关闭匿名认证
+    $ vim /usr/local/etc/mongod.conf
+
+      security:
+        authorization: enabled
+
+    $ brew services restart mongodb
+
+1. 初始化 MongoDB 表::
+
+    $ mongo 127.0.0.1/mqtt -uroot -ppublic
+
+      db.createCollection("t_mqtt_msg");
+
+2. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *, flags.retain as retain
+    FROM
+      "message.publish"
+
+  .. image:: ./_static/images/pgsql-rulesql-1@2x.png
+
+3. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 MongoDB”。
+
+  .. image:: ./_static/images/mongo-action-0@2x.png
+
+4. 填写动作参数:
+
+  “保存数据到 MongoDB” 动作需要三个参数：
+
+  1). Collection 名称。这个例子我们向刚刚新建的 collection 插入数据，填 “t_mqtt_msg”
+
+  2). Selector 模板。这个例子里我们向 MongoDB 插入一条数据，Selector 模板为::
+
+    msgid=${id},topic=${topic},qos=${qos},payload=${payload},retain=${retain},arrived=${timestamp}
+
+  插入数据之前，Selector 模板里的 ${key} 占位符会被替换为相应的值。
+
+  3). 关联资源的 ID。初始状况下，资源下拉框为空，现点击右上角的 “新建资源” 来创建一个 MongoDB 单节点 资源。
+
+5. 填写资源配置:
+
+  数据库名称 填写 “mqtt”，用户名填写 “root”，密码填写 “public”，连接认证源填写 “mqtt” 其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  .. image:: ./_static/images/mongo-resoure-1.png
+
+  点击 “新建” 按钮，完成资源的创建。
+
+6. 自动返回响应动作界面，点击 “确认” 完成响应动作的创建；自动返回规则创建页面，在点击 “新建” 完成规则创建
+
+  .. image:: ./_static/images/mongo-rule-overview.png
+
+7. 现在发送一条数据，测试该规则::
+
+    Topic: "t/mongo"
+    QoS: 1
+    Retained: true
+    Payload: "hello"
+
+  然后检查 MongoDB 表，可以看到该消息已成功保存:
+
+  .. image:: ./_static/images/mongo-rule-result@2x.png
+
 
 .. _rule_engine_examples.dashboard.dynamodb:
 
