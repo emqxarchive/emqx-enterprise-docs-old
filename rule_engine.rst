@@ -1543,6 +1543,111 @@ API 返回数据示例::
 创建 TimescaleDB 规则
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+0. 搭建 TimescaleDB 数据库环境，以 MaxOS X 为例::
+
+    $ docker pull timescale/timescaledb
+
+    $ docker run -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg11
+
+    $ docker exec -it timescaledb psql -U postgres
+
+    ## 创建并连接 tutorial 数据库
+    > CREATE database tutorial;
+
+    > \c tutorial
+
+    > CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+
+1. 初始化 TimescaleDB 表::
+
+    $ docker exec -it timescaledb psql -U postgres -d tutorial
+
+  创建 ``conditions`` 表::
+
+    CREATE TABLE conditions (
+      time        TIMESTAMPTZ       NOT NULL,
+      location    TEXT              NOT NULL,
+      temperature DOUBLE PRECISION  NULL,
+      humidity    DOUBLE PRECISION  NULL
+    );
+
+    SELECT create_hypertable('conditions', 'time');
+
+2. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      payload.temp as temp,
+      payload.humidity as humidity,
+      payload.location as location
+    FROM
+      "message.publish"
+
+  .. image:: ./_static/images/timescaledb-rulesql-0@2x.png
+
+3. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 TimescaleDB”。
+
+  .. image:: ./_static/images/timescaledb-action-0@2x.png
+
+4. 填写动作参数:
+
+  “保存数据到 TimescaleDB” 动作需要两个参数：
+
+  1). SQL 模板。这个例子里我们向 TimescaleDB 插入一条数据，SQL 模板为::
+
+    insert into conditions(time, location, temperature, humidity) values (NOW(), ${location}, ${temp}, ${humidity})
+
+  插入数据之前，SQL 模板里的 ${key} 占位符会被替换为相应的值。
+
+  2). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 TimescaleDB 资源:
+
+  .. image:: ./_static/images/timescaledb-resource-0@2x.png
+
+  选择 “TimescaleDB 资源”。
+
+  .. image:: ./_static/images/timescaledb-resource-1@2x.png
+
+5. 填写资源配置:
+
+  数据库名填写 “tutorial”，用户名填写 “postgres”，密码填写 “password”，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/timescaledb-resource-2@2x.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/timescaledb-action-1@2x.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/timescaledb-rulesql-1@2x.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "{\"temp\":24,\"humidity\":30,\"location\":\"hangzhou\"}"
+
+  然后检查 TimescaleDB 表，新的 record 是否添加成功::
+
+    tutorial=# SELECT * FROM conditions LIMIT 100;
+                time              | location | temperature | humidity 
+    -------------------------------+----------+-------------+----------
+    2019-06-27 01:41:08.752103+00 | hangzhou |          24 |       30
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/timescaledb-rulelist-0@2x.png
 
 .. _rule_engine_examples.dashboard.influxdb:
 
@@ -1629,9 +1734,15 @@ API 返回数据示例::
 
   然后检查 InfluxDB，新的 data point 是否添加成功::
 
-  $ docker exec -it influxdb influx
+    $ docker exec -it influxdb influx
 
-  .. image:: ./_static/images/influxdb-result-0@2x.png
+    > use db
+    Using database db
+    > select * from "temperature"
+    name: temperature
+    time                external host    internal location
+    ----                -------- ----    -------- --------
+    1561535778444457348 35       serverA 25       roomA
 
   在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
 
