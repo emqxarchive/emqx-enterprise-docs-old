@@ -1288,7 +1288,7 @@ API 返回数据示例::
     sender character varying(64),
     topic character varying(255),
     qos integer,
-    retain bool,
+    retain integer,
     payload text,
     arrived timestamp without time zone
     );
@@ -1300,7 +1300,7 @@ API 返回数据示例::
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
     SELECT
-      *, flags.retain as retain
+      *
     FROM
       "message.publish"
 
