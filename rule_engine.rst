@@ -1388,7 +1388,7 @@ API 返回数据示例::
 
 1. 初始化 Cassandra 表::
 
-  $ cqlsh -uroot -ppublic
+    $ cqlsh -uroot -ppublic
 
   创建 "test" 表空间::
 
