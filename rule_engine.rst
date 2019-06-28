@@ -1924,7 +1924,72 @@ API 返回数据示例::
 
 创建 WebHook 规则
 ^^^^^^^^^^^^^^^^^^^^^^^^
+0. 搭建 Web 服务，这里使用 ``nc`` 命令做一个简单的Web 服务::
 
+    $ while true; do echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l 127.0.0.1 9901; done;
+
+1. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+
+  .. image:: ./_static/images/webhook-rulesql-1.png
+
+2. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “发送数据到 Web 服务”。
+
+  .. image:: ./_static/images/webhook-action-1.png
+
+3. 给动作关联资源:
+
+  现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 WebHook 资源:
+
+  .. image:: ./_static/images/webhook-action-2.png
+
+  选择 “WebHook 资源”:
+
+  .. image:: ./_static/images/webhook-resource-1.png
+
+4. 填写资源配置:
+
+  填写 “请求 URL” 和请求头(可选)::
+
+    http://127.0.0.1:9901
+
+  点击 “测试连接” 按钮，确保连接测试成功，最后点击 “新建” 按钮:
+
+  .. image:: ./_static/images/webhook-resource-2.png
+
+5. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/webhook-action-3.png
+
+6. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/webhook-rule-create.png
+
+  规则已经创建完成，规则列表里展示出了新创建的规则:
+
+  .. image:: ./_static/images/webhook-rulelist-1.png
+
+7. 发一条消息::
+
+    Topic: "t/1"
+
+    QoS: 1
+
+    Payload: "Hello web server"
+
+  然后检查 Web 服务是否收到消息:
+
+  .. image:: ./_static/images/webhook-result-1.png
 
 .. _rule_engine_examples.dashboard.kafka:
 
