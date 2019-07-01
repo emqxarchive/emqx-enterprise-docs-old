@@ -2013,6 +2013,8 @@ API 返回数据示例::
 
     $ $ ./bin/kafka-topics.sh --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic testTopic --create
 
+    .. note:: 创建Kafka Rule之前必须先在Kafka中创建好主题，否则创建Kafka Rule失败。
+
 2. 创建规则:
 
   打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
