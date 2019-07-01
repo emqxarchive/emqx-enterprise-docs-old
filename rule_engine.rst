@@ -1892,7 +1892,7 @@ API 返回数据示例::
   然后检查 TimescaleDB 表，新的 record 是否添加成功::
 
     tutorial=# SELECT * FROM conditions LIMIT 100;
-                time              | location | temperature | humidity 
+                time              | location | temperature | humidity
     -------------------------------+----------+-------------+----------
     2019-06-27 01:41:08.752103+00 | hangzhou |          24 |       30
 
