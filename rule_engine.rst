@@ -1164,9 +1164,9 @@ API 返回数据示例::
 
       ALTER USER 'root'@'localhost' IDENTIFIED BY 'public';
 
-1. 初始化 MySQL 表:
+1. 初始化 MySQL 表::
 
-  $ mysql -u root -h localhost -ppublic
+    $ mysql -u root -h localhost -public
 
   创建 “test” 数据库::
 
@@ -1466,7 +1466,7 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.mongo:
 
 创建 MongoDB 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 0. 搭建 MongoDB 数据库，并设置用户名密码为 root/public，以 MacOS X 为例::
 
@@ -1551,19 +1551,98 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.dynamodb:
 
 创建 DynamoDB 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
+0. 搭建 DynamoDB 数据库，以 MacOS X 为例::
+
+    $ brew install dynamodb-local
+
+    $ dynamodb-local
+
+1. 初始化 DynamoDB 表::
+
+    $ aws dynamodb create-table --cli-input-json file://mqtt_acked.json --endpoint-url http://localhost:8000
+    $ aws dynamodb create-table --cli-input-json file://mqtt_client.json --endpoint-url http://localhost:8000
+    $ aws dynamodb create-table --cli-input-json file://mqtt_msg.json --endpoint-url http://localhost:8000
+    $ aws dynamodb create-table --cli-input-json file://mqtt_retain.json --endpoint-url http://localhost:8000
+    $ aws dynamodb create-table --cli-input-json file://mqtt_sub.json --endpoint-url http://localhost:8000
+    $ aws dynamodb create-table --cli-input-json file://mqtt_topic_msg_map.json --endpoint-url http://localhost:8000
+
+2. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+     *
+    FROM
+      "message.pubish"
+
+  .. image:: ./_static/images/dynamo-rulesql-0.png
+
+3. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 DynamoDB”。
+
+  .. image:: ./_static/images/dynamo-action-0.png
+
+4. 填写动作参数:
+
+  “保存数据到 DynamoDB” 动作需要一个参数：
+
+  1). DynamoDB 表名。这个例子里我们向 DynamoDB 插入一条数据，表名为 "mqtt_msg"
+
+  .. image:: ./_static/images/dynamo-action-1.png
+
+  2). 关联资源的 ID。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 DynamoDB 资源:
+
+    .. image:: ./_static/images/dynamo-resource-0.png
+
+  选择 “DynamoDB 资源”。
+
+5. 填写资源配置:
+
+  区域名填写 “us-west-2”，服务器地址填写 “root”，连接访问 ID 填写 “AKIAU5IM2XOC7AQWG7HK”，连接访问密钥填写 “TZt7XoRi+vtCJYQ9YsAinh19jR1rngm/hxZMWR2P”
+
+  .. image:: ./_static/images/dynamo-resource-1.png
+
+  点击 “新建” 按钮。
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/dynamo-action-2.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/dynamo-rulesql-1.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/a"
+
+    QoS: 1
+
+    Payload: "hello"
+
+  然后检查 MySQL 表，新的 record 是否添加成功:
+
+  .. image:: ./_static/images/dynamo-result-0.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/dynamo-result-1.png
 
 .. _rule_engine_examples.dashboard.redis:
 
 创建 Redis 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 
 .. _rule_engine_examples.dashboard.opentsdb:
 
 创建 OpenTSDB 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 0. 搭建 OpenTSDB 数据库环境，以 MaxOS X 为例::
 
@@ -1713,7 +1792,7 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.timescaledb:
 
 创建 TimescaleDB 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 0. 搭建 TimescaleDB 数据库环境，以 MaxOS X 为例::
 
@@ -1824,7 +1903,7 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.influxdb:
 
 创建 InfluxDB 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 0. 搭建 InfluxDB 数据库环境，以 MacOS X 为例::
 
@@ -1923,7 +2002,7 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.webhook:
 
 创建 WebHook 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 0. 搭建 Web 服务，这里使用 ``nc`` 命令做一个简单的Web 服务::
 
     $ while true; do echo -e "HTTP/1.1 200 OK\n\n $(date)" | nc -l 127.0.0.1 9901; done;
@@ -1994,13 +2073,13 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.kafka:
 
 创建 Kafka 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 
 .. _rule_engine_examples.dashboard.pulsar:
 
 创建 Pulsar 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 
 .. _rule_engine_examples.dashboard.rabbit:
