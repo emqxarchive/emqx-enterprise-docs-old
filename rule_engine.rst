@@ -1813,7 +1813,7 @@ API 返回数据示例::
   然后检查 TimescaleDB 表，新的 record 是否添加成功::
 
     tutorial=# SELECT * FROM conditions LIMIT 100;
-                time              | location | temperature | humidity 
+                time              | location | temperature | humidity
     -------------------------------+----------+-------------+----------
     2019-06-27 01:41:08.752103+00 | hangzhou |          24 |       30
 
@@ -1995,6 +1995,94 @@ API 返回数据示例::
 
 创建 Kafka 规则
 ^^^^^^^^^^^^^^^^^^^^^^^^
+0. 搭建 Kafka 环境，以 MaxOS X 为例::
+
+    $ wget http://apache.claz.org/kafka/2.3.0/kafka_2.12-2.3.0.tgz
+
+    $ tar -xzf  kafka_2.12-2.3.0.tgz
+
+    $ cd kafka_2.12-2.3.0
+
+    启动Zookeeper
+    $ ./bin/zookeeper-server-start.sh config/zookeeper.properties
+    启动Kafka
+    $ ./bin/kafka-server-start.sh config/server.properties
+
+
+1. 创建 Kafka 的主题::
+
+    $ $ ./bin/kafka-topics.sh --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic testTopic --create
+
+2. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+    WHERE
+      topic =~ 't/#'
+
+  .. image:: ./_static/images/kafka-rulesql-0@2x.png
+
+3. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “桥接数据到 Kafka”。
+
+  .. image:: ./_static/images/kafka-action-0@2x.png
+
+4. 填写动作参数:
+
+  “保存数据到 Kafka 动作需要两个参数：
+
+  1). Kafka的消息主题
+
+  2). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 Kafka 资源:
+
+  .. image:: ./_static/images/kafka-resource-0@2x.png
+
+  选择 Kafka 资源”。
+
+  .. image:: ./_static/images/kafka-resource-1@2x.png
+
+5. 填写资源配置:
+
+   填写真实的Kafka 服务器，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/kafka-resource-2@2x.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/kafka-action-1@2x.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/kafka-rulesql-1@2x.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "hello"
+
+  然后通过Kafka命令去查看消息是否生产成功::
+
+  $ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic testTopic --from-beginning
+
+    .. image:: ./_static/images/kafka-consumer.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/kafka-rulelist-0@2x.png
 
 
 .. _rule_engine_examples.dashboard.pulsar:
