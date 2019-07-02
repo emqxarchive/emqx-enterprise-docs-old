@@ -1559,16 +1559,28 @@ API 返回数据示例::
 
     $ dynamodb-local
 
-1. 初始化 DynamoDB 表::
+1. 创建 DynamoDB 表定义文件 mqtt_msg.json :
 
-    $ aws dynamodb create-table --cli-input-json file://mqtt_acked.json --endpoint-url http://localhost:8000
-    $ aws dynamodb create-table --cli-input-json file://mqtt_client.json --endpoint-url http://localhost:8000
+.. code-block:: json
+     {
+         "TableName": "mqtt_msg",
+         "KeySchema": [
+             { "AttributeName": "msgid", "KeyType": "HASH" }
+         ],
+         "AttributeDefinitions": [
+             { "AttributeName": "msgid", "AttributeType": "S" }
+         ],
+         "ProvisionedThroughput": {
+             "ReadCapacityUnits": 5,
+             "WriteCapacityUnits": 5
+         }
+     }
+
+2. 初始化 DynamoDB 表::
+
     $ aws dynamodb create-table --cli-input-json file://mqtt_msg.json --endpoint-url http://localhost:8000
-    $ aws dynamodb create-table --cli-input-json file://mqtt_retain.json --endpoint-url http://localhost:8000
-    $ aws dynamodb create-table --cli-input-json file://mqtt_sub.json --endpoint-url http://localhost:8000
-    $ aws dynamodb create-table --cli-input-json file://mqtt_topic_msg_map.json --endpoint-url http://localhost:8000
 
-2. 创建规则:
+3. 创建规则:
 
   打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
 
@@ -1581,17 +1593,17 @@ API 返回数据示例::
 
   .. image:: ./_static/images/dynamo-rulesql-0.png
 
-3. 关联动作:
+4. 关联动作:
 
   在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 DynamoDB”。
 
   .. image:: ./_static/images/dynamo-action-0.png
 
-4. 填写动作参数:
+5. 填写动作参数:
 
-  “保存数据到 DynamoDB” 动作需要一个参数：
+  “保存数据到 DynamoDB” 动作需要两个参数：
 
-  1). DynamoDB 表名。这个例子里我们向 DynamoDB 插入一条数据，表名为 "mqtt_msg"
+  1). DynamoDB 表名。这个例子里我们设置的表名为 "mqtt_msg"
 
   .. image:: ./_static/images/dynamo-action-1.png
 
@@ -1601,7 +1613,7 @@ API 返回数据示例::
 
   选择 “DynamoDB 资源”。
 
-5. 填写资源配置:
+6. 填写资源配置:
 
   区域名填写 “us-west-2”，服务器地址填写 “root”，连接访问 ID 填写 “AKIAU5IM2XOC7AQWG7HK”，连接访问密钥填写 “TZt7XoRi+vtCJYQ9YsAinh19jR1rngm/hxZMWR2P”
 
@@ -1609,15 +1621,15 @@ API 返回数据示例::
 
   点击 “新建” 按钮。
 
-6. 返回响应动作界面，点击 “确认”。
+7. 返回响应动作界面，点击 “确认”。
 
   .. image:: ./_static/images/dynamo-action-2.png
 
-7. 返回规则创建界面，点击 “新建”。
+8. 返回规则创建界面，点击 “新建”。
 
   .. image:: ./_static/images/dynamo-rulesql-1.png
 
-8. 规则已经创建完成，现在发一条数据:
+9. 规则已经创建完成，现在发一条数据:
 
     Topic: "t/a"
 
@@ -1625,7 +1637,7 @@ API 返回数据示例::
 
     Payload: "hello"
 
-  然后检查 MySQL 表，新的 record 是否添加成功:
+  然后检查 DynamoDB 的 mqtt_msg 表，新的 record 是否添加成功:
 
   .. image:: ./_static/images/dynamo-result-0.png
 
@@ -2258,12 +2270,93 @@ API 返回数据示例::
 .. _rule_engine_examples.dashboard.rabbit:
 
 创建 RabbitMQ 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
+0. 搭建 RabbitMQ 环境，以 MaxOS X 为例::
+
+    $ brew install rabbitmq
+
+    启动 rabbitmq
+    $ rabbitmq-server
+
+1. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+    WHERE
+      topic =~ 't/#'
+
+  .. image:: ./_static/images/rabbit-rulesql-0.png
+
+2. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “桥接数据到 RabbitMQ”。
+
+  .. image:: ./_static/images/rabbit-action-0.png
+
+3. 填写动作参数:
+
+  “桥接数据到  RabbitMQ 动作需要三个参数：
+
+  1). RabbitMQ Exchange。这个例子里我们设置 Exchange 为 messages，
+
+  2). RabbitMQ Exchange Type。这个例子我们设置 Exchange Type 为 topic
+
+  3). RabbitMQ Routing Key。这个例子我们设置 Routing Key 为 test
+
+
+
+  4). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 Rabbit 资源:
+
+  .. image:: ./_static/images/rabbit-action-1.png  
+
+  选择 Rabbit 资源”。
+  
+  .. image:: ./_static/images/rabbit-resource-0.png
+
+4. 填写资源配置:
+
+   填写真实的 Kafka 服务器地址，多个地址用,分隔，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/rabbit-resource-1.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/rabbit-action-2.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/rabbit-rulesql-1.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "Hello, World!"
+
+  然后通过 amqp 协议的客户端查看消息是否发布成功，这里我用的是自己用 Erlang 写的 MQTT 客户端::
+
+    .. image:: ./_static/images/rabbit-subscriber-0.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/rabbit-rulelist-0.png
 
 .. _rule_engine_examples.dashboard.bridge_mqtt:
 
 创建 BrideMQTT 规则
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 
