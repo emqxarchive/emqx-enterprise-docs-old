@@ -1616,7 +1616,13 @@ API 返回数据示例::
 
 6. 填写资源配置:
 
-  区域名填写 “us-west-2”，服务器地址填写 “root”，连接访问 ID 填写 “AKIAU5IM2XOC7AQWG7HK”，连接访问密钥填写 “TZt7XoRi+vtCJYQ9YsAinh19jR1rngm/hxZMWR2P”
+  区域名填写“us-west-2”
+
+  服务器地址填写“http://localhost:8000”
+
+  连接访问ID填写“AKIAU5IM2XOC7AQWG7HK”
+
+  连接访问密钥填写“TZt7XoRi+vtCJYQ9YsAinh19jR1rngm/hxZMWR2P”
 
   .. image:: ./_static/images/dynamo-resource-1.png
 
@@ -2358,4 +2364,156 @@ API 返回数据示例::
 创建 BrideMQTT 规则
 ^^^^^^^^^^^^^^^^^^^
 
+0. 搭建 MQTT Broker 环境，以 MaxOS X 为例::
 
+    $ brew install mosquitto
+
+    启动 mosquitto
+    $ mosquitto
+
+1. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+    WHERE
+      topic =~ 't/#'
+
+  .. image:: ./_static/images/mqtt-rulesql-0.png
+
+2. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “桥接数据到 MQTT Broker”。
+
+  .. image:: ./_static/images/mqtt-action-0.png
+
+3. 填写动作参数:
+
+  "桥接数据到 MQTT Broker" 动作只需要一个参数：
+
+  关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 MQTT Bridge 资源:
+
+  .. image:: ./_static/images/mqtt-action-1.png
+
+  选择 MQTT Bridge 资源。
+
+  .. image:: ./_static/images/mqtt-resource-0.png
+
+4. 填写资源配置:
+
+   填写真实的 mosquitto 服务器地址，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/mqtt-resource-1.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/mqtt-action-2.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/mqtt-rulesql-1.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "Hello, World!"
+
+  然后通过 mqtt 客户端查看消息是否发布成功
+
+  .. image:: ./_static/images/mqtt-result-0.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/mqtt-rulelist-0.png
+
+.. _rule_engine_examples.dashboard.bridge_rpc:
+
+创建 BrideRPC 规则
+^^^^^^^^^^^^^^^^^^
+0. 搭建 EMQX Broker 环境，以 MaxOS X 为例::
+
+    $ brew tap emqx/emqx/emqx
+
+    $ brew install emqx
+
+    启动 emqx
+    $ emqx console
+
+1. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+    WHERE
+      topic =~ 't/#'
+
+  .. image:: ./_static/images/rpc-rulesql-0.png
+
+2. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “桥接数据到 MQTT Broker”。
+
+  .. image:: ./_static/images/rpc-action-0.png
+
+3. 填写动作参数:
+
+  桥接数据到 MQTT Broker 动作只需要一个参数：
+
+  关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 RPC Bridge 资源:
+
+  .. image:: ./_static/images/rpc-action-1.png
+
+  选择 MQTT Bridge 资源。
+  
+  .. image:: ./_static/images/rpc-resource-0.png
+
+4. 填写资源配置:
+
+   填写真实的 emqx 节点名，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/rpc-resource-1.png
+
+6. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/rpc-action-2.png
+
+7. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/rpc-rulesql-1.png
+
+8. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "Hello, World!"
+
+  然后通过 mqtt 客户端查看消息是否发布成功
+
+  .. image:: ./_static/images/rpc-result-0.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/rpc-rulelist-0.png
