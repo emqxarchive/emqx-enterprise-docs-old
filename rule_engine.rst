@@ -2310,11 +2310,11 @@ API 返回数据示例::
 
   3). RabbitMQ Routing Key。这个例子我们设置 Routing Key 为 "test"
 
-  4). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 Rabbit 资源:
+  4). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 RabbitMQ 资源:
 
   .. image:: ./_static/images/rabbit-action-1.png  
 
-  选择 Rabbit 资源”。
+  选择 RabbitMQ 资源。
   
   .. image:: ./_static/images/rabbit-resource-0.png
 
@@ -2344,7 +2344,7 @@ API 返回数据示例::
 
     Payload: "Hello, World!"
 
-  然后通过 amqp 协议的客户端查看消息是否发布成功，这里我用的是自己用 Erlang 写的 MQTT 客户端::
+  然后通过 amqp 协议的客户端查看消息是否发布成功
 
   .. image:: ./_static/images/rabbit-subscriber-0.png
 
