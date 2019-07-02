@@ -1166,7 +1166,7 @@ API 返回数据示例::
 
 1. 初始化 MySQL 表::
 
-    $ mysql -u root -h localhost -public
+    $ mysql -u root -h localhost -ppublic
 
   创建 “test” 数据库::
 
@@ -1609,7 +1609,7 @@ API 返回数据示例::
 
   2). 关联资源的 ID。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 DynamoDB 资源:
 
-    .. image:: ./_static/images/dynamo-resource-0.png
+  .. image:: ./_static/images/dynamo-resource-0.png
 
   选择 “DynamoDB 资源”。
 
@@ -2302,15 +2302,13 @@ API 返回数据示例::
 
 3. 填写动作参数:
 
-  “桥接数据到  RabbitMQ 动作需要三个参数：
+  “桥接数据到 RabbitMQ 动作需要四个参数：
 
-  1). RabbitMQ Exchange。这个例子里我们设置 Exchange 为 messages，
+  1). RabbitMQ Exchange。这个例子里我们设置 Exchange 为 "messages"，
 
-  2). RabbitMQ Exchange Type。这个例子我们设置 Exchange Type 为 topic
+  2). RabbitMQ Exchange Type。这个例子我们设置 Exchange Type 为 "topic"
 
-  3). RabbitMQ Routing Key。这个例子我们设置 Routing Key 为 test
-
-
+  3). RabbitMQ Routing Key。这个例子我们设置 Routing Key 为 "test"
 
   4). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 Rabbit 资源:
 
@@ -2322,7 +2320,7 @@ API 返回数据示例::
 
 4. 填写资源配置:
 
-   填写真实的 Kafka 服务器地址，多个地址用,分隔，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+   填写真实的 RabbitMQ 服务器地址，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
 
   最后点击 “新建” 按钮。
 
@@ -2348,7 +2346,7 @@ API 返回数据示例::
 
   然后通过 amqp 协议的客户端查看消息是否发布成功，这里我用的是自己用 Erlang 写的 MQTT 客户端::
 
-    .. image:: ./_static/images/rabbit-subscriber-0.png
+  .. image:: ./_static/images/rabbit-subscriber-0.png
 
   在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
 
