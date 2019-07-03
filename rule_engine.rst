@@ -1562,7 +1562,7 @@ API 返回数据示例::
 1. 创建 DynamoDB 表定义文件 mqtt_msg.json :
 
 .. code-block:: json
-                
+
      {
          "TableName": "mqtt_msg",
          "KeySchema": [
@@ -1650,6 +1650,93 @@ API 返回数据示例::
 
 创建 Redis 规则
 ^^^^^^^^^^^^^^^
+0. 搭建 Redis 环境，以 MaxOS X 为例::
+
+    $ wget http://download.redis.io/releases/redis-4.0.14.tar.gz
+    $ tar xzf redis-4.0.14.tar.gz
+    $ cd redis-4.0.14
+    $ make && make install
+
+    启动 redis
+    $ redis-server
+
+
+1. 创建规则:
+
+  打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
+
+  选择触发事件 “消息发布”，然后填写规则 SQL::
+
+    SELECT
+      *
+    FROM
+      "message.publish"
+    WHERE
+      topic =~ 't/#'
+
+  .. image:: ./_static/images/redis-rulesql-0@2x.png
+
+2. 关联动作:
+
+  在 “响应动作” 界面选择 “添加”，然后在 “动作” 下拉框里选择 “保存数据到 Redis”。
+
+  .. image:: ./_static/images/redis-action-0@2x.png
+
+3. 填写动作参数:
+
+  “保存数据到 Redis 动作需要两个参数：
+
+  1). Redis 的命令::
+
+    HMSET mqtt:msg:${id} id ${id} from ${client_id} qos ${qos} topic ${topic} payload ${payload} retain ${retain} ts ${timestamp}
+
+  2). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 Redis 资源:
+
+  .. image:: ./_static/images/redis-resource-0@2x.png
+
+  选择 Redis 单节点模式资源”。
+
+  .. image:: ./_static/images/redis-resource-1@2x.png
+
+4. 填写资源配置:
+
+   填写真实的 Redis 服务器地址，其他配置保持默认值，然后点击 “测试连接” 按钮，确保连接测试成功。
+
+  最后点击 “新建” 按钮。
+
+  .. image:: ./_static/images/redis-resource-2@2x.png
+
+5. 返回响应动作界面，点击 “确认”。
+
+  .. image:: ./_static/images/redis-action-1@2x.png
+
+6. 返回规则创建界面，点击 “新建”。
+
+  .. image:: ./_static/images/redis-rulesql-1@2x.png
+
+7. 规则已经创建完成，现在发一条数据:
+
+    Topic: "t/1"
+
+    QoS: 0
+
+    Retained: false
+
+    Payload: "hello"
+
+  然后通过 Redis 命令去查看消息是否生产成功::
+
+  $ redis-cli
+
+  KEYS mqtt:msg*
+
+  hgetall Key
+
+  .. image:: ./_static/images/redis-cli.png
+
+  在规则列表里，可以看到刚才创建的规则的命中次数已经增加了 1:
+
+  .. image:: ./_static/images/redis-rulelist-0@2x.png
 
 
 .. _rule_engine_examples.dashboard.opentsdb:
@@ -2313,10 +2400,10 @@ API 返回数据示例::
 
   4). 关联资源。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 RabbitMQ 资源:
 
-  .. image:: ./_static/images/rabbit-action-1.png  
+  .. image:: ./_static/images/rabbit-action-1.png
 
   选择 RabbitMQ 资源。
-  
+
   .. image:: ./_static/images/rabbit-resource-0.png
 
 4. 填写资源配置:
