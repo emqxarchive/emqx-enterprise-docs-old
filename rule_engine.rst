@@ -2480,7 +2480,7 @@ API 返回数据示例::
 
   .. image:: ./_static/images/rpc-action-1.png
 
-  选择 MQTT Bridge 资源。
+  选择 RPC Bridge 资源。
   
   .. image:: ./_static/images/rpc-resource-0.png
 
