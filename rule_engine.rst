@@ -2440,8 +2440,8 @@ API 返回数据示例::
 
 .. _rule_engine_examples.dashboard.bridge_mqtt:
 
-创建 BrideMQTT 规则
-^^^^^^^^^^^^^^^^^^^
+创建 BridgeMQTT 规则
+^^^^^^^^^^^^^^^^^^^^
 
 0. 搭建 MQTT Broker 环境，以 MaxOS X 为例::
 
@@ -2519,8 +2519,8 @@ API 返回数据示例::
 
 .. _rule_engine_examples.dashboard.bridge_rpc:
 
-创建 BrideRPC 规则
-^^^^^^^^^^^^^^^^^^
+创建 BridgeRPC 规则
+^^^^^^^^^^^^^^^^^^^
 0. 搭建 EMQX Broker 环境，以 MaxOS X 为例::
 
     $ brew tap emqx/emqx/emqx
