@@ -2255,7 +2255,7 @@ API 返回数据示例::
 
   然后通过 Kafka 命令去查看消息是否生产成功::
 
-  $ ./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic testTopic --from-beginning
+  $ ./bin/kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092  --topic testTopic --from-beginning
 
     .. image:: ./_static/images/kafka-consumer.png
 
