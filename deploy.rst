@@ -64,6 +64,10 @@ EMQ X默认开启的MQTT服务TCP端口:
 +-----------+-----------------------------------+
 | 8084      | MQTT/WebSocket(SSL)端口           |
 +-----------+-----------------------------------+
+| 8080      | HTTP API 端口                     |
++-----------+-----------------------------------+
+| 18083     | Dashboard 端口                    |
++-----------+-----------------------------------+
 
 防火墙根据使用的MQTT接入方式，开启上述端口的访问权限。
 
@@ -102,11 +106,11 @@ EMQ X节点集群使用的TCP端口:
 6. 在LB上创建MQTT TCP监听器:
 
 .. image:: _static/images/deploy_2.png
- 
+
 或创建SSL监听器，并终结SSL在LB:
 
 .. image:: _static/images/deploy_3.png
-  
+
 7. MQTT客户端连接LB公网地址测试。
 
 ---------------
@@ -204,7 +208,7 @@ NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
 
 1. 注册NGINX Plus试用版，Ubuntu下安装: https://cs.nginx.com/repo_setup
 
-2. 创建EMQ X节点集群，例如: 
+2. 创建EMQ X节点集群，例如:
 
 +-------+-------------+
 | 节点  | IP地址      |
@@ -243,5 +247,5 @@ NGINX Plus产品作为EMQ X集群的LB，并终结SSL连接:
 .. _UCloud:  https://ucloud.cn
 .. _QCloud:  https://www.qcloud.com
 .. _HAProxy: https://www.haproxy.org
-.. _NGINX:   https://www.nginx.com 
+.. _NGINX:   https://www.nginx.com
 

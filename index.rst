@@ -22,7 +22,7 @@ EMQ X 企业版中文文档
    guide
    cluster
    design
-   cli
+   commands
    plugins
    rest
    tune
