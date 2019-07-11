@@ -2412,15 +2412,15 @@ API 返回数据示例::
 
   .. image:: ./_static/images/rabbit-resource-1.png
 
-6. 返回响应动作界面，点击 “确认”。
+5. 返回响应动作界面，点击 “确认”。
 
   .. image:: ./_static/images/rabbit-action-2.png
 
-7. 返回规则创建界面，点击 “新建”。
+6. 返回规则创建界面，点击 “新建”。
 
   .. image:: ./_static/images/rabbit-rulesql-1.png
 
-8. 规则已经创建完成，现在发一条数据:
+7. 规则已经创建完成，现在发一条数据:
 
     Topic: "t/1"
 
