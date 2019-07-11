@@ -7,6 +7,7 @@
 
 EMQ X 企业版桥接转发 MQTT 消息到 Kafka、RabbitMQ、Pulsar、MQTT Broker 或其他 EMQ X 节点。
 
+------------
 桥接插件列表
 ------------
 
@@ -24,9 +25,9 @@ EMQ X 企业版桥接转发 MQTT 消息到 Kafka、RabbitMQ、Pulsar、MQTT Brok
 
 .. _kafka_bridge:
 
-----------
+------------
 Kafka 桥接
-----------
+------------
 
 EMQ X 桥接转发 MQTT 消息到 Kafka 集群:
 
@@ -305,9 +306,9 @@ Kafka 读取 MQTT 消息发布 (Deliver)、确认 (Ack) 事件::
 
 .. _rabbit_bridge:
 
--------------
+---------------
 RabbitMQ 桥接
--------------
+---------------
 
 EMQ X 桥接转发 MQTT 消息到 RabbitMQ 集群:
 
@@ -450,9 +451,9 @@ Python RabbitMQ消费者代码示例:
 
 .. _pulsar_bridge:
 
--------------
+--------------
 Pulsar 桥接
--------------
+--------------
 
 EMQ X 桥接转发 MQTT 消息到 Pulsar 集群:
 
@@ -461,7 +462,7 @@ EMQ X 桥接转发 MQTT 消息到 Pulsar 集群:
 Pulsar 桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
 
 配置 Pulsar 集群地址
--------------------
+---------------------
 
 .. code-block:: properties
 
