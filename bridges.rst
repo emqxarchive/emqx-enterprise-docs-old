@@ -5,7 +5,7 @@
 桥接转发
 ========
 
-EMQ X 企业版桥接转发MQTT消息到 Kafka、RabbitMQ、Pulsar、MQTT Broker 或其他EMQ X节点。
+EMQ X 企业版桥接转发 MQTT 消息到 Kafka、RabbitMQ、Pulsar、MQTT Broker 或其他 EMQ X 节点。
 
 桥接插件列表
 ------------
@@ -13,29 +13,29 @@ EMQ X 企业版桥接转发MQTT消息到 Kafka、RabbitMQ、Pulsar、MQTT Broker
 +-----------------------+--------------------------+---------------------------+
 | 存储插件              | 配置文件                 | 说明                      |
 +=======================+==========================+===========================+
-| emqx_bridge_kafka     | emqx_bridge_kafka.conf   | Kafka消息存储             |
+| emqx_bridge_kafka     | emqx_bridge_kafka.conf   | Kafka 消息存储            |
 +-----------------------+--------------------------+---------------------------+
-| emqx_bridge_rabbit    | emqx_bridge_rabbit.conf  | RabbitMQ消息存储          |
+| emqx_bridge_rabbit    | emqx_bridge_rabbit.conf  | RabbitMQ 消息存储         |
 +-----------------------+--------------------------+---------------------------+
-| emqx_bridge_pulsar    | emqx_bridge_pulsar.conf  | Pulsar消息存储            |
+| emqx_bridge_pulsar    | emqx_bridge_pulsar.conf  | Pulsar 消息存储           |
 +-----------------------+--------------------------+---------------------------+
-| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker消息存储       |
+| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker 消息存储      |
 +-----------------------+--------------------------+---------------------------+
 
 .. _kafka_bridge:
 
----------
-Kafka桥接
----------
+----------
+Kafka 桥接
+----------
 
-EMQ X 桥接转发MQTT消息到Kafka集群:
+EMQ X 桥接转发 MQTT 消息到 Kafka 集群:
 
 .. image:: _static/images/bridges_1.png
 
-Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
+Kafka 桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
-配置Kafka集群地址
------------------
+配置 Kafka 集群地址
+-------------------
 
 .. code-block:: properties
 
@@ -95,8 +95,8 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
     bridge.kafka.sock.sndbuf = 1MB
     ## bridge.kafka.sock.read_packets = 20
 
-配置Kafka桥接规则
------------------
+配置 Kafka 桥接规则
+-------------------
 
 .. code-block:: properties
 
@@ -138,8 +138,8 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
     ## Option: json | json
     ## Example: bridge.kafka.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "format":"json"}
 
-Kafka桥接规则说明
------------------
+Kafka 桥接规则说明
+------------------
 
 +-----------------------------------------+------------------+
 | 事件                                    | 说明             |
@@ -154,15 +154,15 @@ Kafka桥接规则说明
 +-----------------------------------------+------------------+
 | bridge.kafka.hook.message.publish.1     | 发布消息         |
 +-----------------------------------------+------------------+
-| bridge.kafka.hook.message.delivered.1   | delivered消息    |
+| bridge.kafka.hook.message.delivered.1   | delivered 消息   |
 +-----------------------------------------+------------------+
-| bridge.kafka.hook.message.acked.1       | ACK消息          |
+| bridge.kafka.hook.message.acked.1       | ACK 消息         |
 +-----------------------------------------+------------------+
 
-客户端上下线事件转发Kafka
--------------------------
+客户端上下线事件转发 Kafka
+--------------------------
 
-设备上线 EMQ X 转发上线事件消息到Kafka:
+设备上线 EMQ X 转发上线事件消息到 Kafka:
 
 .. code-block:: javascript
 
@@ -174,7 +174,7 @@ Kafka桥接规则说明
              "ts": ${ts}
             }
 
-设备下线 EMQ X 转发下线事件消息到Kafka:
+设备下线 EMQ X 转发下线事件消息到 Kafka:
 
 .. code-block:: javascript
 
@@ -187,8 +187,8 @@ Kafka桥接规则说明
             "ts": ${ts}
             }
 
-客户端订阅主题事件转发Kafka
----------------------------
+客户端订阅主题事件转发 Kafka
+----------------------------
 
 .. code-block:: javascript
 
@@ -202,8 +202,8 @@ Kafka桥接规则说明
              "ts": ${timestamp}
             }
 
-客户端取消订阅主题事件转发Kafka
---------------------------------
+客户端取消订阅主题事件转发 Kafka
+---------------------------------
 
 .. code-block:: javascript
 
@@ -217,8 +217,8 @@ Kafka桥接规则说明
              "ts": ${timestamp}
             }
 
-MQTT消息转发到Kafka
--------------------
+MQTT 消息转发到 Kafka
+---------------------
 
 .. code-block:: javascript
 
@@ -234,8 +234,8 @@ MQTT消息转发到Kafka
              "ts": ${timestamp}
             }
 
-MQTT消息派发(Deliver)事件转发Kafka
-----------------------------------
+MQTT 消息派发 (Deliver) 事件转发 Kafka
+--------------------------------------
 
 .. code-block:: javascript
 
@@ -251,8 +251,8 @@ MQTT消息派发(Deliver)事件转发Kafka
              "ts": ${timestamp}
             }
 
-MQTT消息确认(Ack)事件转发Kafka
--------------------------------
+MQTT 消息确认 (Ack) 事件转发 Kafka
+-----------------------------------
 
 .. code-block:: javascript
 
@@ -269,26 +269,26 @@ MQTT消息确认(Ack)事件转发Kafka
              "ts": ${timestamp}
             }
 
-Kafka消费示例
--------------
+Kafka 消费示例
+--------------
 
-Kafka读取MQTT客户端上下线事件消息::
+Kafka 读取 MQTT 客户端上下线事件消息::
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic client_connected --from-beginning
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic client_disconnected --from-beginning
 
-Kafka读取MQTT主题订阅事件消息::
+Kafka 读取 MQTT 主题订阅事件消息::
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic session_subscribed --from-beginning
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic session_unsubscribed --from-beginning
 
-Kafka读取MQTT发布消息::
+Kafka 读取 MQTT 发布消息::
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic message_publish --from-beginning
 
-Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
+Kafka 读取 MQTT 消息发布 (Deliver)、确认 (Ack) 事件::
 
     sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic message_delivered --from-beginning
 
@@ -296,8 +296,8 @@ Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 
 .. NOTE:: 默认 payload 被 base64 编码，可通过修改配置 bridge.kafka.encode_payload_type 指定 payload 数据格式。
 
-启用Kafka桥接插件
------------------
+启用 Kafka 桥接插件
+-------------------
 
 .. code-block:: bash
 
@@ -305,18 +305,18 @@ Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 
 .. _rabbit_bridge:
 
-------------
-RabbitMQ桥接
-------------
+-------------
+RabbitMQ 桥接
+-------------
 
 EMQ X 桥接转发 MQTT 消息到 RabbitMQ 集群:
 
 .. image:: _static/images/bridges_2.png
 
-RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
+RabbitMQ 桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
-配置RabbitMQ桥接地址
---------------------
+配置 RabbitMQ 桥接地址
+----------------------
 
 .. code-block:: properties
 
@@ -350,8 +350,8 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
     # bridge.rabbit.1.heartbeat = 0
 
-配置RabbitMQ桥接规则
---------------------
+配置 RabbitMQ 桥接规则
+----------------------
 
 .. code-block:: properties
 
@@ -366,8 +366,8 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
     bridge.rabbit.hook.message.acked.1 = {"topic": "#", "action": "on_message_acked", "rabbit": 1, "exchange": "topic:emq.acked"}
 
-客户端订阅主题事件转发RabbitMQ
-------------------------------
+客户端订阅主题事件转发 RabbitMQ
+-------------------------------
 
 .. code-block:: javascript
 
@@ -376,8 +376,8 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
     headers = [{<<"x-emq-client-id">>, binary, ClientId}]
     payload = jsx:encode([{Topic, proplists:get_value(qos, Opts)} || {Topic, Opts} <- TopicTable])
 
-客户端取消订阅事件转发RabbitMQ
-------------------------------
+客户端取消订阅事件转发 RabbitMQ
+-------------------------------
 
 .. code-block:: javascript
 
@@ -386,8 +386,8 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
     headers = [{<<"x-emq-client-id">>, binary, ClientId}]
     payload = jsx:encode([Topic || {Topic, _Opts} <- TopicTable]),
 
-MQTT消息转发RabbitMQ
---------------------
+MQTT 消息转发 RabbitMQ
+----------------------
 
 .. code-block:: javascript
 
@@ -399,8 +399,8 @@ MQTT消息转发RabbitMQ
                {<<"x-emqx-topic">>, binary, Topic}]
     payload = Payload
 
-MQTT消息确认(Ack)事件转发RabbitMQ
----------------------------------
+MQTT 消息确认 (Ack) 事件转发 RabbitMQ
+-------------------------------------
 
 .. code-block:: javascript
 
@@ -409,8 +409,8 @@ MQTT消息确认(Ack)事件转发RabbitMQ
     headers = [{<<"x-emq-msg-acked">>, binary, ClientId}],
     payload = emqx_base62:encode(Id)
 
-RabbitMQ订阅消费MQTT消息示例
-----------------------------
+RabbitMQ 订阅消费 MQTT 消息示例
+-------------------------------
 
 Python RabbitMQ消费者代码示例:
 
@@ -437,12 +437,12 @@ Python RabbitMQ消费者代码示例:
 
     channel.start_consuming()
 
-其他语言RabbitMQ客户端代码示例::
+其他语言 RabbitMQ 客户端代码示例::
 
     https://github.com/rabbitmq/rabbitmq-tutorials
 
-启用RabbitMQ桥接插件
---------------------
+启用 RabbitMQ 桥接插件
+----------------------
 
 .. code-block:: bash
 
@@ -454,13 +454,13 @@ Python RabbitMQ消费者代码示例:
 Pulsar 桥接
 -------------
 
-EMQ X 桥接转发MQTT消息到 Pulsar 集群:
+EMQ X 桥接转发 MQTT 消息到 Pulsar 集群:
 
 .. image:: _static/images/bridges_1.png
 
-Pulsar桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
+Pulsar 桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
 
-配置Pulsar集群地址
+配置 Pulsar 集群地址
 -------------------
 
 .. code-block:: properties
@@ -487,8 +487,8 @@ Pulsar桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
     bridge.pulsar.sock.sndbuf = 1MB
     ## bridge.pulsar.sock.read_packets = 20
 
-配置Pulsar桥接规则
--------------------
+配置 Pulsar 桥接规则
+---------------------
 
 .. code-block:: properties
 
@@ -546,15 +546,15 @@ Pulsar 桥接规则说明
 +-----------------------------------------+------------------+
 | bridge.pulsar.hook.message.publish.1     | 发布消息        |
 +-----------------------------------------+------------------+
-| bridge.pulsar.hook.message.delivered.1   | delivered消息   |
+| bridge.pulsar.hook.message.delivered.1   | delivered 消息  |
 +-----------------------------------------+------------------+
-| bridge.pulsar.hook.message.acked.1       | ACK消息         |
+| bridge.pulsar.hook.message.acked.1       | ACK 消息        |
 +-----------------------------------------+------------------+
 
-客户端上下线事件转发Pulsar
----------------------------
+客户端上下线事件转发 Pulsar
+----------------------------
 
-设备上线 EMQ X 转发上线事件消息到Pulsar:
+设备上线 EMQ X 转发上线事件消息到 Pulsar:
 
 .. code-block:: javascript
 
@@ -566,7 +566,7 @@ Pulsar 桥接规则说明
              "ts": ${ts}
             }
 
-设备下线 EMQ X 转发下线事件消息到Pulsar:
+设备下线 EMQ X 转发下线事件消息到 Pulsar:
 
 .. code-block:: javascript
 
@@ -579,8 +579,8 @@ Pulsar 桥接规则说明
             "ts": ${ts}
             }
 
-客户端订阅主题事件转发Pulsar
------------------------------
+客户端订阅主题事件转发 Pulsar
+------------------------------
 
 .. code-block:: javascript
 
@@ -594,8 +594,8 @@ Pulsar 桥接规则说明
              "ts": ${timestamp}
             }
 
-客户端取消订阅主题事件转发Pulsar
---------------------------------
+客户端取消订阅主题事件转发 Pulsar
+---------------------------------
 
 .. code-block:: javascript
 
@@ -609,8 +609,8 @@ Pulsar 桥接规则说明
              "ts": ${timestamp}
             }
 
-MQTT消息转发到Pulsar
----------------------
+MQTT 消息转发到 Pulsar
+-----------------------
 
 .. code-block:: javascript
 
@@ -626,8 +626,8 @@ MQTT消息转发到Pulsar
              "ts": ${timestamp}
             }
 
-MQTT消息派发(Deliver)事件转发Pulsar
------------------------------------
+MQTT 消息派发 (Deliver) 事件转发 Pulsar
+---------------------------------------
 
 .. code-block:: javascript
 
@@ -643,8 +643,8 @@ MQTT消息派发(Deliver)事件转发Pulsar
              "ts": ${timestamp}
             }
 
-MQTT消息确认(Ack)事件转发Pulsar
--------------------------------
+MQTT 消息确认 (Ack) 事件转发 Pulsar
+-----------------------------------
 
 .. code-block:: javascript
 
@@ -661,26 +661,26 @@ MQTT消息确认(Ack)事件转发Pulsar
              "ts": ${timestamp}
             }
 
-Pulsar消费示例
----------------
+Pulsar 消费示例
+----------------
 
-Pulsar读取MQTT客户端上下线事件消息::
+Pulsar 读取 MQTT 客户端上下线事件消息::
 
     sh pulsar-client consume client_connected  -s "client_connected" -n 1000
 
     sh pulsar-client consume client_disconnected  -s "client_disconnected" -n 1000
 
-Pulsar读取MQTT主题订阅事件消息::
+Pulsar 读取 MQTT 主题订阅事件消息::
 
     sh pulsar-client consume session_subscribed  -s "session_subscribed" -n 1000
 
     sh pulsar-client consume session_unsubscribed  -s "session_unsubscribed" -n 1000
 
-Pulsar读取MQTT发布消息::
+Pulsar 读取 MQTT 发布消息::
 
     sh pulsar-client consume message_publish  -s "message_publish" -n 1000
 
-Pulsar读取MQTT消息发布(Deliver)、确认(Ack)事件::
+Pulsar 读取 MQTT 消息发布 (Deliver)、确认 (Ack) 事件::
 
     sh pulsar-client consume message_delivered  -s "message_delivered" -n 1000
 
@@ -688,8 +688,8 @@ Pulsar读取MQTT消息发布(Deliver)、确认(Ack)事件::
 
 .. NOTE:: 默认 payload 被 base64 编码，可通过修改配置 bridge.pulsar.encode_payload_type 指定 payload 数据格式。
 
-启用Pulsar桥接插件
--------------------
+启用 Pulsar 桥接插件
+---------------------
 
 .. code-block:: bash
 
