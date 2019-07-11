@@ -5,7 +5,22 @@
 桥接转发
 ========
 
-EMQ X 企业版桥接转发MQTT消息到Kafka、RabbitMQ或其他EMQ X节点。同时支持mosquitto、rsmb以普通MQTT连接方式桥接到EMQ X。
+EMQ X 企业版桥接转发MQTT消息到 Kafka、RabbitMQ、Pulsar、MQTT Broker 或其他EMQ X节点。
+
+桥接插件列表
+------------
+
++-----------------------+--------------------------+---------------------------+
+| 存储插件              | 配置文件                 | 说明                      |
++=======================+==========================+===========================+
+| emqx_bridge_kafka     | emqx_bridge_kafka.conf   | Kafka消息存储             |
++-----------------------+--------------------------+---------------------------+
+| emqx_bridge_rabbit    | emqx_bridge_rabbit.conf  | RabbitMQ消息存储          |
++-----------------------+--------------------------+---------------------------+
+| emqx_bridge_pulsar    | emqx_bridge_pulsar.conf  | Pulsar消息存储            |
++-----------------------+--------------------------+---------------------------+
+| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker消息存储       |
++-----------------------+--------------------------+---------------------------+
 
 .. _kafka_bridge:
 
@@ -72,6 +87,7 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
     ## by default, no compression
     ## bridge.kafka.producer.compression = no_compression
 
+    ## by default=base64, option value base64 | plain
     ## bridge.kafka.encode_payload_type = base64
 
     ## bridge.kafka.sock.buffer = 32KB
@@ -88,12 +104,25 @@ Kafka桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
     ## ${topic}: the kafka topics to which the messages will be published.
     ## ${filter}: the mqtt topic (may contain wildcard) on which the action will be performed .
 
+    ## Client Connected Record Hook
     bridge.kafka.hook.client.connected.1     = {"topic": "client_connected"}
+
+    ## Client Disconnected Record Hook
     bridge.kafka.hook.client.disconnected.1  = {"topic": "client_disconnected"}
+
+    ## Session Subscribed Record Hook
     bridge.kafka.hook.session.subscribed.1   = {"filter": "#",  "topic": "session_subscribed"}
+
+    ## Session Unsubscribed Record Hook
     bridge.kafka.hook.session.unsubscribed.1 = {"filter": "#",  "topic": "session_unsubscribed"}
+
+    ## Message Publish Record Hook
     bridge.kafka.hook.message.publish.1      = {"filter": "#",  "topic": "message_publish"}
+
+    ## Message Delivered Record Hook
     bridge.kafka.hook.message.delivered.1    = {"filter": "#",  "topic": "message_delivered"}
+
+    ## Message Acked Record Hook
     bridge.kafka.hook.message.acked.1        = {"filter": "#",  "topic": "message_acked"}
 
     ## More Configures
@@ -140,6 +169,7 @@ Kafka桥接规则说明
     topic = "client_connected",
     value = {
              "client_id": ${clientid},
+             "username": ${username},
              "node": ${node},
              "ts": ${ts}
             }
@@ -151,6 +181,7 @@ Kafka桥接规则说明
     topic = "client_disconnected",
     value = {
             "client_id": ${clientid},
+            "username": ${username},
             "reason": ${reason},
             "node": ${node},
             "ts": ${ts}
@@ -243,27 +274,27 @@ Kafka消费示例
 
 Kafka读取MQTT客户端上下线事件消息::
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_connected --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic client_connected --from-beginning
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic client_disconnected --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic client_disconnected --from-beginning
 
 Kafka读取MQTT主题订阅事件消息::
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_subscribed --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic session_subscribed --from-beginning
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic session_unsubscribed --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic session_unsubscribed --from-beginning
 
 Kafka读取MQTT发布消息::
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_publish --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic message_publish --from-beginning
 
 Kafka读取MQTT消息发布(Deliver)、确认(Ack)事件::
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_delivered --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic message_delivered --from-beginning
 
-    sh kafka-console-consumer.sh --zookeeper localhost:2181 --topic message_acked --from-beginning
+    sh kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic message_acked --from-beginning
 
-.. NOTE:: payload为base64编码
+.. NOTE:: 默认 payload 被 base64 编码，可通过修改配置 bridge.kafka.encode_payload_type 指定 payload 数据格式。
 
 启用Kafka桥接插件
 -----------------
@@ -305,19 +336,19 @@ RabbitMQ桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
     bridge.rabbit.1.virtual_host = /
 
     ## Rabbit Brokers heartbeat
-    bridge.rabbit.1.heartbeat = 30
+    bridge.rabbit.1.heartbeat = 0
 
     # bridge.rabbit.2.server = 127.0.0.1:5672
 
     # bridge.rabbit.2.pool_size = 8
 
-    # bridge.rabbit.2.username = guest
+    # bridge.rabbit.1.username = guest
 
-    # bridge.rabbit.2.password = guest
+    # bridge.rabbit.1.password = guest
 
-    # bridge.rabbit.2.virtual_host = /
+    # bridge.rabbit.1.virtual_host = /
 
-    # bridge.rabbit.2.heartbeat = 30
+    # bridge.rabbit.1.heartbeat = 0
 
 配置RabbitMQ桥接规则
 --------------------
@@ -364,7 +395,8 @@ MQTT消息转发RabbitMQ
     exchange = emq.$sys | emq.pub
     headers = [{<<"x-emq-publish-qos">>, byte, Qos},
                {<<"x-emq-client-id">>, binary, pub_from(From)},
-               {<<"x-emq-publish-msgid">>, binary, emqx_base62:encode(Id)}]
+               {<<"x-emq-publish-msgid">>, binary, emqx_base62:encode(Id)},
+               {<<"x-emqx-topic">>, binary, Topic}]
     payload = Payload
 
 MQTT消息确认(Ack)事件转发RabbitMQ
@@ -416,87 +448,250 @@ Python RabbitMQ消费者代码示例:
 
     ./bin/emqx_ctl plugins load emqx_bridge_rabbit
 
-.. _emqx_bridge:
-
-----------
-EMQ X 桥接
-----------
-
-EMQ X 支持多节点间桥接模式互联:
-
-.. image:: _static/images/bridges_3.png
-
-假设创建emqx1, emqx2两个节点:
-
-+---------+--------------------+
-| 目录    | 节点               |
-+---------+--------------------+
-| emqx1   | emqx1@192.168.1.10 |
-+---------+--------------------+
-| emqx2   | emqx2@192.168.1.20 |
-+---------+--------------------+
-
-启用emqx1, emqx2节点后，emqx1节点创建到emqx2桥接，转发全部'sensor/#'主题消息到emqx2:
-
-.. code-block:: bash
-
-    $ ./bin/emqx_ctl bridges start emqx2@192.168.1.20 sensor/#
-
-    bridge is started.
-
-    $ ./bin/emqx_ctl bridges list
-
-    bridge: emqx1@127.0.0.1--sensor/#-->emqx2@127.0.0.1
-
-测试emqx1--sensor/#-->emqx2的桥接:
-
-.. code-block:: bash
-
-    #emqx2节点上
-
-    mosquitto_sub -t sensor/# -p 2883 -d
-
-    #emqx1节点上
-
-    mosquitto_pub -t sensor/1/temperature -m "37.5" -d
-
-删除桥接:
-
-.. code-block:: bash
-
-    ./bin/emqx_ctl bridges stop emqx2@127.0.0.1 sensor/#
-
-.. _mosquitto_bridge:
+.. _pulsar_bridge:
 
 -------------
-mosquitto桥接
+Pulsar 桥接
 -------------
 
-mosquitto 可以普通 MQTT 连接方式，桥接到EMQ X 服务器集群:
+EMQ X 桥接转发MQTT消息到 Pulsar 集群:
 
-.. image:: _static/images/bridges_4.png
+.. image:: _static/images/bridges_1.png
 
-mosquitto.conf桥接配置示例::
+Pulsar桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
 
-    connection emqx
-    address 192.168.0.10:1883
-    topic sensor/# out 2
+配置Pulsar集群地址
+-------------------
 
-    # Set the version of the MQTT protocol to use with for this bridge. Can be one
-    # of mqttv31 or mqttv311. Defaults to mqttv31.
-    bridge_protocol_version mqttv311
+.. code-block:: properties
 
-.. _rsmb_bridge:
+    ## Cluster support
+    ## bridge.pulsar.servers = 127.0.0.1:6650,127.0.0.2:6650,127.0.0.3:6650
+    bridge.pulsar.servers = 127.0.0.1:6650
 
---------
-rsmb桥接
---------
+    ## Pick a partition producer and sync/async.
+    bridge.pulsar.produce = sync
 
-rsmb以普通MQTT连接方式，桥接到 EMQ X 服务器集群。
+    ## bridge.pulsar.produce.sync_timeout = 3s
 
-rsmb broker.cfg示例配置::
+    ## bridge.pulsar.producer.batch_size = 1000
 
-    connection emqx
-    addresses 127.0.0.1:2883
-    topic sensor/#
+    ## by default, no compression
+    ## bridge.pulsar.producer.compression = no_compression
+
+    ## base64 | plain
+    ## bridge.pulsar.encode_payload_type = base64
+
+    ## bridge.pulsar.sock.buffer = 32KB
+    ## bridge.pulsar.sock.recbuf = 32KB
+    bridge.pulsar.sock.sndbuf = 1MB
+    ## bridge.pulsar.sock.read_packets = 20
+
+配置Pulsar桥接规则
+-------------------
+
+.. code-block:: properties
+
+    ## Bridge Pulsar Hooks
+    ## ${topic}: the pulsar topics to which the messages will be published.
+    ## ${filter}: the mqtt topic (may contain wildcard) on which the action will be performed .
+
+    ## Client Connected Record Hook
+    bridge.pulsar.hook.client.connected.1     = {"topic": "client_connected"}
+
+    ## Client Disconnected Record Hook
+    bridge.pulsar.hook.client.disconnected.1  = {"topic": "client_disconnected"}
+
+    ## Session Subscribed Record Hook
+    bridge.pulsar.hook.session.subscribed.1   = {"filter": "#",  "topic": "session_subscribed"}
+
+    ## Session Unsubscribed Record Hook
+    bridge.pulsar.hook.session.unsubscribed.1 = {"filter": "#",  "topic": "session_unsubscribed"}
+
+    ## Message Publish Record Hook
+    bridge.pulsar.hook.message.publish.1      = {"filter": "#",  "topic": "message_publish"}
+
+    ## Message Delivered Record Hook
+    bridge.pulsar.hook.message.delivered.1    = {"filter": "#",  "topic": "message_delivered"}
+
+    ## Message Acked Record Hook
+    bridge.pulsar.hook.message.acked.1        = {"filter": "#",  "topic": "message_acked"}
+
+    ## More Configures
+    ## partitioner strategy:
+    ## Option:  random | roundrobin | first_key_dispatch
+    ## Example: bridge.pulsar.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "strategy":"random"}
+
+    ## key:
+    ## Option: ${clientid} | ${username}
+    ## Example: bridge.pulsar.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "key":"${clientid}"}
+
+    ## format:
+    ## Option: json | json
+    ## Example: bridge.pulsar.hook.message.publish.1 = {"filter":"#", "topic":"message_publish", "format":"json"}
+
+Pulsar 桥接规则说明
+-------------------
+
++-----------------------------------------+------------------+
+| 事件                                    | 说明             |
++=========================================+==================+
+| bridge.pulsar.hook.client.connected.1    | 客户端登录      |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.client.disconnected.1 | 客户端退出      |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.session.subscribed.1  | 订阅主题        |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.session.unsubscribed.1| 取消订阅主题    |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.message.publish.1     | 发布消息        |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.message.delivered.1   | delivered消息   |
++-----------------------------------------+------------------+
+| bridge.pulsar.hook.message.acked.1       | ACK消息         |
++-----------------------------------------+------------------+
+
+客户端上下线事件转发Pulsar
+---------------------------
+
+设备上线 EMQ X 转发上线事件消息到Pulsar:
+
+.. code-block:: javascript
+
+    topic = "client_connected",
+    value = {
+             "client_id": ${clientid},
+             "username": ${username},
+             "node": ${node},
+             "ts": ${ts}
+            }
+
+设备下线 EMQ X 转发下线事件消息到Pulsar:
+
+.. code-block:: javascript
+
+    topic = "client_disconnected",
+    value = {
+            "client_id": ${clientid},
+            "username": ${username},
+            "reason": ${reason},
+            "node": ${node},
+            "ts": ${ts}
+            }
+
+客户端订阅主题事件转发Pulsar
+-----------------------------
+
+.. code-block:: javascript
+
+    topic = session_subscribed
+
+    value = {
+             "client_id": ${clientid},
+             "topic": ${topic},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+客户端取消订阅主题事件转发Pulsar
+--------------------------------
+
+.. code-block:: javascript
+
+    topic = session_unsubscribed
+
+    value = {
+             "client_id": ${clientid},
+             "topic": ${topic},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+MQTT消息转发到Pulsar
+---------------------
+
+.. code-block:: javascript
+
+    topic = message_publish
+
+    value = {
+             "client_id": ${clientid},
+             "username": ${username},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+MQTT消息派发(Deliver)事件转发Pulsar
+-----------------------------------
+
+.. code-block:: javascript
+
+    topic = message_delivered
+
+    value = {"client_id": ${clientid},
+             "username": ${username},
+             "from": ${fromClientId},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+MQTT消息确认(Ack)事件转发Pulsar
+-------------------------------
+
+.. code-block:: javascript
+
+    topic = message_acked
+
+    value = {
+             "client_id": ${clientid},
+             "username": ${username},
+             "from": ${fromClientId},
+             "topic": ${topic},
+             "payload": ${payload},
+             "qos": ${qos},
+             "node": ${node},
+             "ts": ${timestamp}
+            }
+
+Pulsar消费示例
+---------------
+
+Pulsar读取MQTT客户端上下线事件消息::
+
+    sh pulsar-client consume client_connected  -s "client_connected" -n 1000
+
+    sh pulsar-client consume client_disconnected  -s "client_disconnected" -n 1000
+
+Pulsar读取MQTT主题订阅事件消息::
+
+    sh pulsar-client consume session_subscribed  -s "session_subscribed" -n 1000
+
+    sh pulsar-client consume session_unsubscribed  -s "session_unsubscribed" -n 1000
+
+Pulsar读取MQTT发布消息::
+
+    sh pulsar-client consume message_publish  -s "message_publish" -n 1000
+
+Pulsar读取MQTT消息发布(Deliver)、确认(Ack)事件::
+
+    sh pulsar-client consume message_delivered  -s "message_delivered" -n 1000
+
+    sh pulsar-client consume message_acked  -s "message_acked" -n 1000
+
+.. NOTE:: 默认 payload 被 base64 编码，可通过修改配置 bridge.pulsar.encode_payload_type 指定 payload 数据格式。
+
+启用Pulsar桥接插件
+-------------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_bridge_pulsar
 
