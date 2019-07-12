@@ -20,7 +20,7 @@ EMQ X 企业版桥接转发 MQTT 消息到 Kafka、RabbitMQ、Pulsar、MQTT Brok
 +-----------------------+--------------------------+---------------------------+
 | emqx_bridge_pulsar    | emqx_bridge_pulsar.conf  | Pulsar 消息存储           |
 +-----------------------+--------------------------+---------------------------+
-| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker 消息存储      |
+| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker 消息转发      |
 +-----------------------+--------------------------+---------------------------+
 
 .. _kafka_bridge:
