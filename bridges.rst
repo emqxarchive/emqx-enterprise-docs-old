@@ -40,55 +40,50 @@ Kafka 桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
 .. code-block:: properties
 
-    ## Kafka Server
+    ## Kafka 服务器地址
     ## bridge.kafka.servers = 127.0.0.1:9092,127.0.0.2:9092,127.0.0.3:9092
     bridge.kafka.servers = 127.0.0.1:9092
 
-    ## Kafka Parition Strategy. option value: per_partition | per_broker
+    ## Kafka 分区策略。可选值: per_partition | per_broker
     bridge.kafka.connection_strategy = per_partition
 
     bridge.kafka.min_metadata_refresh_interval = 5S
 
-    ## Produce writes type. option value: sync | async
+    ## Produce 写类型。可选值: sync | async
     bridge.kafka.produce = sync
 
     bridge.kafka.produce.sync_timeout = 3S
 
-    ## Base directory for replayq to store messages on disk.
-    ## If this config entry if missing or set to undefined,
-    ## replayq works in a mem-only manner.
-    ## i.e. messages are not queued on disk -- in such case,
-    ## the send or send_sync API callers are responsible for
-    ## possible message loss in case of application,
-    ## network or kafka disturbances. For instance,
-    ## in the wolff:send API caller may trap_exit then
-    ## react on parition-producer worker pid's 'EXIT'
-    ## message to issue a retry after restarting the producer.
+    ## 指定 replayq 在磁盘上存储消息的基本目录。
+    ## 如果该配置项缺失活着设置为 undefined, replayq 将以使用内存的
+    ## 的方式工作。也就是说，消息不在磁盘上排队 -- 在这种情况下，send
+    ## 和 send_async API 的调用者负责处理在应用程序、网络或 kafka
+    ## 干扰时可能丢失的消息。
     ## bridge.kafka.replayq_dir = /tmp/emqx_bridge_kafka/
 
-    ## default=10MB, replayq segment size.
+    ## default=10MB, replayq 分段大小。
     ## bridge.kafka.producer.replayq_seg_bytes = 10MB
 
-    ## producer required_acks. option value all_isr | leader_only | none.
+    ## producer required_acks. 可选值: all_isr | leader_only | none.
     bridge.kafka.producer.required_acks = none
 
-    ## default=10000. Timeout leader wait for replicas before reply to producer.
+    ## default=10000. leader 在回复 producer 前等待副本的超时时间。
     bridge.kafka.producer.ack_timeout = 10S
 
-    ## default number of message sets sent on wire before block waiting for acks
+    ## 收集到一次 produce 请求中的最大字节数
     bridge.kafka.producer.max_batch_bytes = 1024KB
 
-    ## by default, send max 1 MB of data in one batch (message set)
+    ## 收集到一次 produce 请求中的最少字节数
     bridge.kafka.producer.min_batch_bytes = 0
 
-    ## Number of batches to be sent ahead without receiving ack for the last request.
-    ## Must be 0 if messages must be delivered in strict order.
+    ## 在没有接收到上次请求的 ack 的情况下，可以提前发送的 batch 数。
+    ## 如果消息必须严格按照顺序传递，则必须为0。
     bridge.kafka.producer.max_send_ahead = 0
 
-    ## by default, no compression
+    ## 默认为无压缩
     ## bridge.kafka.producer.compression = no_compression
 
-    ## by default=base64, option value base64 | plain
+    ## 默认值为 base64, 可选值: base64 | plain
     ## bridge.kafka.encode_payload_type = base64
 
     ## bridge.kafka.sock.buffer = 32KB
