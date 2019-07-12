@@ -1064,7 +1064,7 @@ EMQ X 消息服务器支持追踪来自某个客户端(Client)，或者发布到
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
     SELECT
-     *
+     msgid as id, topic, payload
     FROM
       "message.pubish"
 
@@ -1082,9 +1082,13 @@ EMQ X 消息服务器支持追踪来自某个客户端(Client)，或者发布到
 
   1). DynamoDB 表名。这个例子里我们设置的表名为 "mqtt_msg"
 
+  2). DynamoDB Hash Key。这个例子里我们设置的 Hash Key 要与表定义的一致
+
+  3). DynamoDB Range Key。由于我们表定义里没有设置 Range Key。这个例子里我们把 Range Key 设置为空。
+
   .. image:: ./_static/images/dynamo-action-1.png
 
-  2). 关联资源的 ID。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 DynamoDB 资源:
+  4). 关联资源的 ID。现在资源下拉框为空，可以点击右上角的 “新建资源” 来创建一个 DynamoDB 资源:
 
   .. image:: ./_static/images/dynamo-resource-0.png
 
