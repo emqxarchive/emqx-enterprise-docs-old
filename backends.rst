@@ -456,7 +456,7 @@ MySQL 存储支持用户采用 SQL 语句配置 Action:
 创建 MySQL 数据库表
 --------------------
 
-.. code-block:: sql
+.. code-block:: bash
 
     create database mqtt;
 
@@ -474,7 +474,7 @@ MySQL 设备在线状态表
 
 *mqtt_client* 存储设备在线状态:
 
-.. code-block:: sql
+.. code-block:: bash
 
     DROP TABLE IF EXISTS `mqtt_client`;
     CREATE TABLE `mqtt_client` (
@@ -493,13 +493,13 @@ MySQL 设备在线状态表
 
 查询设备在线状态:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_client where clientid = ${clientid};
 
 例如 ClientId 为 test 客户端上线:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_client where clientid = "test";
 
@@ -512,7 +512,7 @@ MySQL 设备在线状态表
 
 例如 ClientId 为 test 客户端下线:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_client where clientid = "test";
 
@@ -528,7 +528,7 @@ MySQL 主题订阅表
 
 *mqtt_sub* 存储设备的主题订阅关系:
 
-.. code-block:: sql
+.. code-block:: bash
 
     DROP TABLE IF EXISTS `mqtt_sub`;
     CREATE TABLE `mqtt_sub` (
@@ -545,20 +545,20 @@ MySQL 主题订阅表
 
 例如 ClientId 为 test 客户端订阅主题 test_topic1 test_topic2:
 
-.. code-block:: sql
+.. code-block:: bash
 
     insert into mqtt_sub(clientid, topic, qos) values("test", "test_topic1", 1);
     insert into mqtt_sub(clientid, topic, qos) values("test", "test_topic2", 2);
 
 某个客户端订阅主题:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_sub where clientid = ${clientid};
 
 查询 ClientId 为 test 的客户端已订阅主题:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_sub where clientid = "test";
 
@@ -575,7 +575,7 @@ MySQL 消息存储表
 
 *mqtt_msg* 存储 MQTT 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     DROP TABLE IF EXISTS `mqtt_msg`;
     CREATE TABLE `mqtt_msg` (
@@ -594,13 +594,13 @@ MySQL 消息存储表
 
 查询某个客户端发布的消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_msg where sender = ${clientid};
 
 查询 ClientId 为 test 的客户端发布的消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_msg where sender = "test";
 
@@ -617,7 +617,7 @@ MySQL 保留消息表
 
 mqtt_retain 存储 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     DROP TABLE IF EXISTS `mqtt_retain`;
     CREATE TABLE `mqtt_retain` (
@@ -636,13 +636,13 @@ mqtt_retain 存储 retain 消息:
 
 查询 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_retain where topic = ${topic};
 
 查询 topic 为 retain 的 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_retain where topic = "retain";
 
@@ -658,7 +658,7 @@ MySQL 消息确认表
 
 *mqtt_acked* 存储客户端消息确认:
 
-.. code-block:: sql
+.. code-block:: bash
 
     DROP TABLE IF EXISTS `mqtt_acked`;
     CREATE TABLE `mqtt_acked` (
@@ -853,7 +853,7 @@ PostgreSQL 代理订阅表
 
 *mqtt_sub* 存储订阅关系:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt_sub(
       id SERIAL8 primary key,
@@ -866,7 +866,7 @@ PostgreSQL 代理订阅表
 
 例如 ClientId 为 test 客户端订阅主题 test_topic1 test_topic2 :
 
-.. code-block:: sql
+.. code-block:: bash
 
     insert into mqtt_sub(clientid, topic, qos) values('test', 'test_topic1', 1);
     insert into mqtt_sub(clientid, topic, qos) values('test', 'test_topic2', 2);
@@ -877,7 +877,7 @@ PostgreSQL 代理订阅表
 
 查询 ClientId 为 test 的客户端已订阅主题:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_sub where clientid = 'test';
 
@@ -892,7 +892,7 @@ PostgreSQL 消息存储表
 
 *mqtt_msg* 存储MQTT消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt_msg (
       id SERIAL8 primary key,
@@ -907,7 +907,7 @@ PostgreSQL 消息存储表
 
 查询某个客户端发布的消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_msg where sender = ${clientid};
 
@@ -926,7 +926,7 @@ PostgreSQL 保留消息表
 
 *mqtt_retain* 存储 Retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt_retain(
       id SERIAL8 primary key,
@@ -941,7 +941,7 @@ PostgreSQL 保留消息表
 
 查询 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_retain where topic = ${topic};
 
@@ -959,7 +959,7 @@ PostgreSQL 消息确认表
 
 *mqtt_acked* 存储客户端消息确认:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt_acked (
       id SERIAL8 primary key,
@@ -1435,7 +1435,7 @@ Cassandra 消息存储
 Cassandra 创建一个 Keyspace
 ----------------------------
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE KEYSPACE mqtt WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;
     USR mqtt;
@@ -1443,7 +1443,7 @@ Cassandra 创建一个 Keyspace
 导入 Cassandra 表结构
 ----------------------
 
-.. code-block:: sql
+.. code-block:: bash
 
     cqlsh -e "SOURCE 'emqx_backend_cassa.cql'"
 
@@ -1455,7 +1455,7 @@ Cassandra 用户状态表(Client Table)
 
 *mqtt.client* 存储设备在线状态:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt.client (
         client_id text PRIMARY KEY,
@@ -1467,13 +1467,13 @@ Cassandra 用户状态表(Client Table)
 
 查询设备在线状态:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt.client where client_id = ${clientid};
 
 例如 ClientId 为 test 的客户端上线:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt.client where client_id = 'test';
 
@@ -1483,7 +1483,7 @@ Cassandra 用户状态表(Client Table)
 
 例如ClientId为test客户端下线:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt.client where client_id = 'test';
 
@@ -1497,7 +1497,7 @@ Cassandra 用户订阅主题表(Sub Table)
 
 *mqtt.sub* 存储订阅关系:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt.sub (
         client_id text,
@@ -1508,20 +1508,20 @@ Cassandra 用户订阅主题表(Sub Table)
 
 用户test分别订阅主题test_topic1 test_topic2:
 
-.. code-block:: sql
+.. code-block:: bash
 
     insert into mqtt.sub(client_id, topic, qos) values('test', 'test_topic1', 1);
     insert into mqtt.sub(client_id, topic, qos) values('test', 'test_topic2', 2);
 
 某个客户端订阅主题:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_sub where clientid = ${clientid};
 
 查询ClientId为'test'的客户端已订阅主题:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_sub where clientid = 'test';
 
@@ -1535,7 +1535,7 @@ Cassandra 发布消息表(Msg Table)
 
 *mqtt.msg* 存储MQTT消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt.msg (
         topic text,
@@ -1550,13 +1550,13 @@ Cassandra 发布消息表(Msg Table)
 
 查询某个客户端发布的消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_msg where sender = ${clientid};
 
 查询ClientId为'test'的客户端发布的消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_msg where sender = 'test';
 
@@ -1570,7 +1570,7 @@ Cassandra 保留消息表(Retain Message Table)
 
 *mqtt.retain* 存储 Retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt.retain (
         topic text PRIMARY KEY,
@@ -1579,13 +1579,13 @@ Cassandra 保留消息表(Retain Message Table)
 
 查询 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_retain where topic = ${topic};
 
 查询 topic 为 't/retain' 的 retain 消息:
 
-.. code-block:: sql
+.. code-block:: bash
 
     select * from mqtt_retain where topic = 't/retain';
 
@@ -1598,7 +1598,7 @@ Cassandra 接收消息 ack 表(Message Acked Table)
 
 *mqtt.acked* 存储客户端消息确认:
 
-.. code-block:: sql
+.. code-block:: bash
 
     CREATE TABLE mqtt.acked (
         client_id text,
@@ -1614,3 +1614,696 @@ Cassandra 接收消息 ack 表(Message Acked Table)
 
     ./bin/emqx_ctl plugins load emqx_backend_cassa
 
+------------------
+DynamoDB 消息存储
+------------------
+
+配置 DyanmoDB 消息存储
+----------------------
+
+配置文件: etc/plugins/emqx_backend_dynamo.conf
+
+.. code-block:: properties
+
+   ## DynamoDB Region
+   backend.dynamo.region = us-west-2
+
+   ## DynamoDB Server
+   backend.dynamo.pool1.server = http://localhost:8000
+
+   ## DynamoDB Pool Size
+   backend.dynamo.pool1.pool_size = 8
+
+   ## AWS ACCESS KEY ID
+   backend.dynamo.pool1.aws_access_key_id = AKIAU5IM2XOC7AQWG7HK
+
+   ## AWS SECRET ACCESS KEY
+   backend.dynamo.pool1.aws_secret_access_key = TZt7XoRi+vtCJYQ9YsAinh19jR1rngm/hxZMWR2P
+
+   ## DynamoDB Backend Hooks
+   backend.dynamo.hook.client.connected.1    = {"action": {"function": "on_client_connected"}, "pool": "pool1"}
+   backend.dynamo.hook.session.created.1     = {"action": {"function": "on_subscribe_lookup"}, "pool": "pool1"}
+   backend.dynamo.hook.client.disconnected.1 = {"action": {"function": "on_client_disconnected"}, "pool": "pool1"}
+   backend.dynamo.hook.session.subscribed.1  = {"topic": "#", "action": {"function": "on_message_fetch_for_queue"}, "pool": "pool1"}
+   backend.dynamo.hook.session.subscribed.2  = {"topic": "#", "action": {"function": "on_retain_lookup"}, "pool": "pool1"}
+   backend.dynamo.hook.session.unsubscribed.1= {"topic": "#", "action": {"function": "on_acked_delete"}, "pool": "pool1"}
+   backend.dynamo.hook.message.publish.1     = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+   backend.dynamo.hook.message.publish.2     = {"topic": "#", "action": {"function": "on_message_retain"}, "pool": "pool1"}
+   backend.dynamo.hook.message.publish.3     = {"topic": "#", "action": {"function": "on_retain_delete"}, "pool": "pool1"}
+   backend.dynamo.hook.message.acked.1       = {"topic": "#", "action": {"function": "on_message_acked_for_queue"}, "pool": "pool1"}
+
+   # backend.dynamo.hook.message.publish.4   = {"topic": "#", "action": {"function": "on_message_store"}, "pool": "pool1"}
+
+
+*backend* 消息存储规则包括:
+
+.. list-table::
+   :header-rows: 1
+
+   * - hook
+     - topic
+     - action
+     - 说明
+   * - client.connected
+     - 
+     - on_client_connected
+     - 存储客户端在线状态
+   * - client.connected
+     - 
+     - on_subscribe_lookup
+     - 订阅主题
+   * - client.disconnected
+     - 
+     - on_client_disconnected
+     - 存储客户端离线状态
+   * - session.subscribed
+     - #
+     - on_message_fetch_for_queue
+     - 获取一对一离线消息
+   * - session.subscribed
+     - #
+     - on_retain_lookup
+     - 获取retain消息
+   * - message.publish
+     - #
+     - on_message_publish
+     - 存储发布消息
+   * - message.publish
+     - #
+     - on_message_retain
+     - 存储retain消息
+   * - message.publish
+     - #
+     - on_retain_delete
+     - 删除retain消息
+   * - message.acked
+     - #
+     - on_message_acked_for_queue
+     - 一对一消息ACK处理
+
+DynamoDB 数据库创建表
+---------------------
+
+.. code-block:: bash
+
+   ./test/dynamo_test.sh
+
+.. note:: 数据库名称可自定义
+
+DynamoDB 用户状态表(Client Table)
+---------------------------------
+
+*mqtt_client* 表定义(存储设备在线状态):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_client",
+       "KeySchema": [
+           { "AttributeName": "clientid", "KeyType": "HASH" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "clientid", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+查询设备在线状态:
+
+.. code-block:: bash
+
+   aws dynamodb scan --table-name mqtt_client --region us-west-2  --endpoint-url http://localhost:8000
+
+   {
+       "Items": [
+           {
+               "offline_at": { "N": "0" },
+               "node": { "S": "emqx@127.0.0.1" },
+               "clientid": { "S": "mqttjs_384b9c73a9" },
+               "connect_state": { "N": "1" },
+               "online_at": { "N": "1562224940" }
+           }
+       ],
+       "Count": 1,
+       "ScannedCount": 1,
+       "ConsumedCapacity": null
+   }
+
+
+DynamoDB 用户订阅主题(Subscription Table)
+-----------------------------------------
+
+*mqtt_sub* 表定义(存储订阅关系):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_sub",
+       "KeySchema": [
+           { "AttributeName": "clientid", "KeyType": "HASH" },
+           { "AttributeName": "topic", "KeyType": "RANGE" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "clientid", "AttributeType": "S" },
+           { "AttributeName": "topic", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+查询 ClientId 为 "test-dynamo" 的客户端已订阅主题:
+
+.. code-block:: bash
+
+   aws dynamodb scan --table-name mqtt_sub --region us-west-2  --endpoint-url http://localhost:8000
+
+   {
+       "Items": [{"qos": { "N": "2" }, "topic": { "S": "test-dynamo-sub" }, "clientid": { "S": "test-dynamo" }},
+                  {"qos": { "N": "2" }, "topic": { "S": "test-dynamo-sub-1"}, "clientid": { "S": "test-dynamo" }},
+                  {"qos": { "N": "2" }, "topic": { "S": "test-dynamo-sub-2"}, "clientid": { "S": "test-dynamo" }}],
+       "Count": 3,
+       "ScannedCount": 3,
+       "ConsumedCapacity": null
+   }
+
+
+DynamoDB 发布消息(Message Table)
+--------------------------------
+
+*mqtt_msg* 表定义(存储 MQTT 消息):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_msg",
+       "KeySchema": [
+           { "AttributeName": "msgid", "KeyType": "HASH" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "msgid", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+*mqtt_topic_msg_map* 表定义(存储主题和消息的映射关系):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_topic_msg_map",
+       "KeySchema": [
+           { "AttributeName": "topic", "KeyType": "HASH" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "topic", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+某个客户端向主题 test 发布消息后，查询 *mqtt_msg* 表和 *mqtt_topic_msg_map* 表:
+
+查询 mqtt_msg 表:
+
+.. code-block:: bash
+
+    aws dynamodb scan --table-name mqtt_msg --region us-west-2  --endpoint-url http://localhost:8000
+
+   {
+       "Items": [
+           {
+                "arrived": { "N": "1562308553" },
+                "qos": { "N": "1" },
+                "sender": { "S": "mqttjs_231b962d5c" },
+                "payload": { "S": "{ \"msg\": \"Hello, World!\" }"},
+                "retain": { "N": "0" },
+                "msgid": { "S": "Mjg4MTk1MDYwNTk0NjYwNzYzMTg4MDk3OTQ2MDU2Nzg1OTD" },
+                "topic": { "S": "test" }
+           }
+       ],
+       "Count": 1,
+       "ScannedCount": 1,
+       "ConsumedCapacity": null
+   }
+
+
+查询 mqtt_topic_msg_map 表：
+
+.. code-block:: bash
+
+    aws dynamodb scan --table-name mqtt_topic_msg_map --region us-west-2  --endpoint-url http://localhost:8000
+
+   {
+       "Items": [
+           {
+                "topic": { "S": "test" },
+                "MsgId": { "SS": [ "Mjg4MTk1MDYwNTk0NjYwNzYzMTg4MDk3OTQ2MDU2Nzg1OTD" ]}
+           }
+       ],
+       "Count": 1,
+       "ScannedCount": 1,
+       "ConsumedCapacity": null
+   }
+
+
+DynamoDB 保留消息(Retain Message Table)
+---------------------------------------
+
+*mqtt_retain* 表定义(存储 retain 消息):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_retain",
+       "KeySchema": [
+           { "AttributeName": "topic", "KeyType": "HASH" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "topic", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+某个客户端向主题 test 发布消息后，查询 *mqtt_retain* 表:
+
+.. code-block:: bash
+
+   {
+       "Items": [
+           {
+               "arrived": { "N": "1562312113" },
+               "qos": { "N": "1" },
+               "sender": { "S": "mqttjs_d0513acfce" },
+               "payload": { "S": "test" },
+               "retain": { "N": "1" },
+               "msgid": { "S": "Mjg4MTk1NzE3MTY4MjYxMjA5MDExMDg0NTk5ODgzMjAyNTH" },
+               "topic": { "S": "testtopic" }
+           }
+       ],
+       "Count": 1,
+       "ScannedCount": 1,
+       "ConsumedCapacity": null
+   }
+
+
+DynamoDB 接收消息 ack (Message Acked Table)
+-------------------------------------------
+
+*mqtt_acked* 表定义(存储确认的消息):
+
+.. code-block:: bash
+
+   {
+       "TableName": "mqtt_acked",
+       "KeySchema": [
+           { "AttributeName": "topic", "KeyType": "HASH" },
+           { "AttributeName": "clientid", "KeyType": "RANGE" }
+       ],
+       "AttributeDefinitions": [
+           { "AttributeName": "topic", "AttributeType": "S" },
+           { "AttributeName": "clientid", "AttributeType": "S" }
+       ],
+       "ProvisionedThroughput": {
+           "ReadCapacityUnits": 5,
+           "WriteCapacityUnits": 5
+       }
+   }
+
+某个客户端向主题 test 发布消息后，查询 *mqtt_acked* 表:
+
+.. code-block:: bash
+
+    {
+        "Items": [
+            {
+                "topic": { "S": "test" },
+                "msgid": { "S": "Mjg4MTk1MDYwNTk0NjYwNzYzMTg4MDk3OTQ2MDU2Nzg1OTD" },
+                "clientid": { "S": "mqttjs_861e582a70" }
+            }
+        ],
+        "Count": 1,
+        "ScannedCount": 1,
+        "ConsumedCapacity": null
+    }
+
+启用 DynamoDB 消息存储:
+
+.. code-block:: bash
+
+   ./bin/emqx_ctl plugins load emqx_backend_dynamo
+
+-----------------
+InfluxDB 消息存储
+-----------------
+
+----------------------
+配置 InfluxDB 消息存储
+----------------------
+
+配置文件: etc/plugins/emqx_backend_influxdb.conf:
+
+.. code-block:: properties
+
+    ## InfluxDB UDP 服务地址
+    backend.influxdb.pool1.server = 127.0.0.1:8089
+
+    ## InfluxDB 连接池大小
+    backend.influxdb.pool1.pool_size = 5
+
+    ## 是否自动添加 timestamp
+    backend.influxdb.pool1.set_timestamp = true
+
+    ## 存储 PUBLISH 消息
+    backend.influxdb.hook.message.publish.1 = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+*InfluxDB Backend* 消息存储规则参数:
+
++----------+----------------------------------------------------------------------+
+| Option   | Description                                                          |
++==========+======================================================================+
+| topic    | 配置哪些主题下的消息需要执行 hook                                    |
++----------+----------------------------------------------------------------------+
+| action   | 配置 hook 具体动作, function 为 Backend 提供的内置函数, 实现通用功能 |
++----------+----------------------------------------------------------------------+
+| pool     | Pool Name, 实现连接多个 InfluxDB Server 功能                         |
++----------+----------------------------------------------------------------------+
+
+Example:
+
+.. code-block:: properties
+
+    ## 存储主题为 "sensor/#" 的 PUBLISH 消息
+    backend.influxdb.hook.message.publish.1 = {"topic": "sensor/#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+    ## 存储主题为 "stat/#" 的 PUBLISH 消息
+    backend.influxdb.hook.message.publish.2 = {"topic": "stat/#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+*InfluxDB Backend* 支持 Hook 与 相应内置函数列表:
+
++-----------------+--------------------+
+| Hook            | Function list      |
++=================+====================+
+| message.publish | on_message_publish |
++-----------------+--------------------+
+
+由于 MQTT Message 无法直接写入 InfluxDB, InfluxDB Backend 提供了 emqx_backend_influxdb.tmpl 模板文件将 MQTT Message 转换为可写入 InfluxDB 的 DataPoint。
+
+tmpl 文件使用 Json 格式, 用户可以为不同 Topic 定义不同的 Template, 类似:
+
+.. code-block:: bash
+
+    {
+        <Topic 1>: <Template 1>,
+        <Topic 2>: <Template 2>
+    }
+
+Template 格式如下:
+
+.. code-block:: bash
+
+    {
+        "measurement": <Where is value of measurement>,
+        "tags": {
+            <Tag Key>: <Where is value of tag>
+        },
+        "fields": {
+            <Field Key>: <Where is value of field>
+        },
+        "timestamp": <Where is value of timestamp>
+    }
+
+其中, ``measurement`` 与 ``fields`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。``<Where is value of *>`` 支持首字母为 '$' 的占位符 ("$qos", "$from", "$topic", "$timestamp") 以及 "$payload" 为首的 Json Key List, 例如 ``["$payload", "data", "temp"]`` 将从 payload 为 ``{"data": {"temp": 21.3}}`` 的 MQTT Message 中提取出 21.3.
+
+data/templates/emqx_backend_influxdb.tmpl 提供了一个 sample 供用户参考:
+
+.. code-block:: bash
+
+    {
+        "sample": {
+            "measurement": "$topic",
+            "tags": {
+                "host": ["$payload", "data", "$0", "host"],
+                "region": ["$payload", "data", "$0", "region"],
+                "qos": "$qos",
+                "from": "$from"
+            },
+            "fields": {
+                "temperature": ["$payload", "data", "$0", "temp"]
+            },
+            "timestamp": "$timestamp"
+        }
+    }
+
+当 Topic 为 "sample" 的 MQTT Message 拥有以下 Payload 时:
+
+.. code-block:: bash
+
+    {
+        "data": [
+            {
+                "temp": 1,
+                "host": "serverA",
+                "region": "hangzhou"
+            },
+            {
+                "temp": 2,
+                "host": "serverB",
+                "region": "ningbo"
+            }
+        ]
+    }
+
+Backend 会将 MQTT Message 转换为:
+
+.. code-block:: bash
+
+    [
+        {
+            "measurement": "sample",
+            "tags": {
+                "from": "mqttjs_ebcc36079a",
+                "host": "serverA",
+                "qos": "0",
+                "region": "hangzhou",
+            },
+            "fields": {
+                "temperature": "1"
+            },
+            "timestamp": "1560743513626681000"
+        },
+        {
+            "measurement": "sample",
+            "tags": {
+                "from": "mqttjs_ebcc36079a",
+                "host": "serverB",
+                "qos": "0",
+                "region": "ningbo",
+            },
+            "fields": {
+                "temperature": "2"
+            },
+            "timestamp": "1560743513626681000"
+        }
+    ]
+
+最终编码为以下数据写入 InfluxDB:
+
+.. code-block:: bash
+
+    "sample,from=mqttjs_6990f0e886,host=serverA,qos=0,region=hangzhou temperature=\"1\" 1560745505429670000\nsample,from=mqttjs_6990f0e886,host=serverB,qos=0,region=ningbo temperature=\"2\" 1560745505429670000\n"
+
+启用 InfluxDB 消息存储:
+
+.. code-block:: bash
+
+   ./bin/emqx_ctl plugins load emqx_backend_influxdb
+
+-----------------
+OpenTSDB 消息存储
+-----------------
+
+----------------------
+配置 OpenTSDB 消息存储
+----------------------
+
+配置文件：etc/plugins/emqx_backend_opentsdb.conf:
+
+.. code-block:: properties
+
+    ## OpenTSDB 服务地址
+    backend.opentsdb.pool1.server = 127.0.0.1:4242
+
+    ## OpenTSDB 连接池大小
+    backend.opentsdb.pool1.pool_size = 8
+
+    ## 是否返回 summary info
+    ##
+    ## Value: true | false
+    backend.opentsdb.pool1.summary = true
+
+    ## 是否返回 detailed info
+    ##
+    ## Value: true | false
+    backend.opentsdb.pool1.details = false
+
+    ## 是否同步写入
+    ##
+    ## Value: true | false
+    backend.opentsdb.pool1.sync = false
+
+    ## 同步写入超时时间，单位毫秒
+    ##
+    ## Value: Duration
+    ##
+    ## Default: 0
+    backend.opentsdb.pool1.sync_timeout = 0
+
+    ## 最大批量写条数
+    ##
+    ## Value: Number >= 0
+    ## Default: 20
+    backend.opentsdb.pool1.max_batch_size = 20
+
+    ## 存储 PUBLISH 消息
+    backend.opentsdb.hook.message.publish.1 = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+*OpenTSDB Backend* 消息存储规则参数:
+
++----------+----------------------------------------------------------------------+
+| Option   | Description                                                          |
++==========+======================================================================+
+| topic    | 配置哪些主题下的消息需要执行 hook                                    |
++----------+----------------------------------------------------------------------+
+| action   | 配置 hook 具体动作, function 为 Backend 提供的内置函数, 实现通用功能 |
++----------+----------------------------------------------------------------------+
+| pool     | Pool Name, 实现连接多个 OpenTSDB Server 功能                         |
++----------+----------------------------------------------------------------------+
+
+示例:
+
+.. code-block:: properties
+
+    ## 存储主题为 "sensor/#" 的 PUBLISH 消息
+    backend.influxdb.hook.message.publish.1 = {"topic": "sensor/#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+    ## 存储主题为 "stat/#" 的 PUBLISH 消息
+    backend.influxdb.hook.message.publish.2 = {"topic": "stat/#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
+
+*OpenTSDB Backend* 支持 Hook 与 相应内置函数列表:
+
++-----------------+--------------------+
+| Hook            | Function list      |
++=================+====================+
+| message.publish | on_message_publish |
++-----------------+--------------------+
+
+由于 MQTT Message 无法直接写入 OpenTSDB, OpenTSDB Backend 提供了 emqx_backend_opentsdb.tmpl 模板文件将 MQTT Message 转换为可写入 OpenTSDB 的 DataPoint。
+
+tmpl 文件使用 Json 格式, 用户可以为不同 Topic 定义不同的 Template, 类似:
+
+.. code-block:: bash
+
+    {
+        <Topic 1>: <Template 1>,
+        <Topic 2>: <Template 2>
+    }
+
+Template 格式如下:
+
+.. code-block:: bash
+
+    {
+        "measurement": <Where is value of measurement>,
+        "tags": {
+            <Tag Key>: <Where is value of tag>
+        },
+        "value": <Where is value of value>,
+        "timestamp": <Where is value of timestamp>
+    }
+
+其中, ``measurement`` 与 ``value`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。``<Where is value of *>`` 支持首字母为 '$' 的占位符 ("$qos", "$from", "$topic", "$timestamp") 以及 "$payload" 为首的 Json Key List, 例如 ``["$payload", "data", "temp"]`` 将从 payload 为 ``{"data": {"temp": 21.3}}`` 的 MQTT Message 中提取出 21.3.
+
+/etc/plugins/emqx_backend_opentsdb.tmpl 提供了一个 sample 供用户参考:
+
+.. code-block:: bash
+
+    {
+        "sample": {
+            "measurement": "$topic",
+            "tags": {
+                "host": ["$payload", "data", "$0", "host"],
+                "region": ["$payload", "data", "$0", "region"],
+                "qos": "$qos",
+                "from": "$from"
+            },
+            "value": ["$payload", "data", "$0", "temp"],
+            "timestamp": "$timestamp"
+        }
+    }
+
+当 Topic 为 "sample" 的 MQTT Message 拥有以下 Payload 时:
+
+.. code-block:: bash
+
+    {
+        "data": [
+            {
+                "temp": 1,
+                "host": "serverA",
+                "region": "hangzhou"
+            },
+            {
+                "temp": 2,
+                "host": "serverB",
+                "region": "ningbo"
+            }
+        ]
+    }
+
+Backend 将 MQTT Message 转换为以下数据写入 OpenTSDB:
+
+.. code-block:: bash
+
+    [
+        {
+            "measurement": "sample",
+            "tags": {
+                "from": "mqttjs_ebcc36079a",
+                "host": "serverA",
+                "qos": "0",
+                "region": "hangzhou",
+            },
+            "value": "1",
+            "timestamp": "1560743513626681000"
+        },
+        {
+            "measurement": "sample",
+            "tags": {
+                "from": "mqttjs_ebcc36079a",
+                "host": "serverB",
+                "qos": "0",
+                "region": "ningbo",
+            },
+            "value": "2",
+            "timestamp": "1560743513626681000"
+        }
+    ]
+
+启用 OpenTSDB 消息存储:
+
+.. code-block:: bash
+
+   ./bin/emqx_ctl plugins load emqx_backend_opentsdb
