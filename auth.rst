@@ -24,7 +24,7 @@ EMQ X 认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户
 .. code-block:: properties
 
     ## Allow Anonymous authentication
-    mqtt.allow_anonymous = true
+    allow_anonymous = true
 
 -------------
 访问控制(ACL)
