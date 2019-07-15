@@ -7,82 +7,63 @@
 
 EMQ X 企业版支持多种限速方式，以保证系统可靠稳定运行。
 
---------------------------
-并发连接数量 - max_clients
---------------------------
+-------------------------------
+并发连接数量 - max_connections
+-------------------------------
 
-MQTT TCP 或 SSL 监听器，配置最大允许并发连接数：
+MQTT TCP 或 SSL 监听器，配置允许的最大并发连接数：
 
 .. code-block:: properties
 
-    ## Maximum number of concurrent MQTT/TCP connections.
-    ##
-    ## Value: Number
-    listener.tcp.<name>.max_clients = 102400
+    ## 最大并发连接数; 针对该 <name> 监听的端口有效
+    listener.tcp.<name>.max_connections = 1000000
 
-    ## Maximum number of concurrent MQTT/SSL connections.
-    ##
-    ## Value: Number
-    listener.ssl.<name>.max_clients = 102400
+    listener.ssl.<name>.max_connections = 1000000
 
-----------------------------
+-----------------------------
 连接速率限制 - max_conn_rate
-----------------------------
+-----------------------------
 
-MQTT TCP 或 SSL 监听器，配置最大允许连接速率，默认每秒1000连接：
+MQTT TCP 或 SSL 监听器，配置最大允许连接速率：
 
 .. code-block:: properties
 
-    ## Maximum external connections per second.
-    ##
-    ## Value: Number
+    ## 每秒允许的最大连接数; 针对该 <name> 监听的端口有效
     listener.tcp.<name>.max_conn_rate = 1000
 
-    ## Maximum MQTT/SSL connections per second.
-    ##
-    ## Value: Number
     listener.ssl.<name>.max_conn_rate = 1000
 
--------------------------
+--------------------------
 连接流量限制 - rate_limit
--------------------------
+--------------------------
 
 MQTT TCP 或 SSL 监听器，设置单个连接流量限制：
 
 .. code-block:: properties
 
-    ## Rate limit for the external MQTT/TCP connections. Format is 'rate,burst'.
+    ## 单个连接流量限制
     ##
-    ## Value: rate,burst
-    ## Unit: Bps
-    ## listener.tcp.<name>.rate_limit = 1024,4096
+    ## 格式: rate,burst
+    ##   - rate: 限制的平均速率值
+    ##   - burst: 单次检测最大允许的流量值; 为避免频繁的被流控限制, 该值
+    ##            建议为 `(max_packet_size * active_n)/2`
+    ##            (`max_packet_size` 和 `active_n` 为 `etc/emqx.conf` 
+    ##            中的另外俩个配置项
+    ## 单位: Byte
+    ## listener.tcp.<name>.rate_limit = 1024,52428800
 
-    ## Rate limit for the external MQTT/SSL connections.
-    ##
-    ## Value: rate,burst
-    ## Unit: Bps
-    ## listener.ssl.<name>.rate_limit = 1024,4096
+    ## listener.ssl.<name>.rate_limit = 1024,52428800
 
 -------------------------------
 发布速率限制 - max_publish_rate
 -------------------------------
 
-MQTT TCP 或 SSL 监听器，设置单个连接发布消息速率限制：
+可以为每个 `<name>` 设置消息发布速率限制：
 
 .. code-block:: properties
 
-    ## Maximum publish rate of MQTT messages.
+    ## 最大 MQTT 消息发布速率限制
     ##
-    ## Value: Number,Seconds
-    ## Default: 10 messages per minute
-    ## listener.tcp.<name>.max_publish_rate = 10,60
-
-    ## Maximum publish rate of MQTT messages.
-    ##
-    ## See: listener.tcp.<name>.max_publish_rate
-    ##
-    ## Value: Number,Seconds
-    ## Default: 10 messages per minute
-    ## listener.ssl.external.max_publish_rate = 10,60
-
+    ## 例: 每分钟 10 条
+    ## zone.<name>.publish_limit = 10,1m
 
