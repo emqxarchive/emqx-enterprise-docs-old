@@ -16,6 +16,7 @@ EMQ X 企业版中文文档
    quick
    config
    rule_engine
+   rule_tutorial
    auth
    backends
    bridges
