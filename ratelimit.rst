@@ -16,9 +16,9 @@ MQTT TCP 或 SSL 监听器，配置允许的最大并发连接数：
 .. code-block:: properties
 
     ## 最大并发连接数; 针对该 <name> 监听的端口有效
-    listener.tcp.<name>.max_connections = 102400
+    listener.tcp.<name>.max_connections = 1000000
 
-    listener.ssl.<name>.max_connections = 102400
+    listener.ssl.<name>.max_connections = 1000000
 
 -----------------------------
 连接速率限制 - max_conn_rate
