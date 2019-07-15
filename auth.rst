@@ -48,41 +48,41 @@ EMQ X 消息服务器访问控制功能在 emqx.conf 配置文件中设置:
 
 .. code-block:: properties
 
-    ## Whether to allow anonymous authentication or not if no auth plugins loaded or skipped by authentication chain.
+    ## 当未开启认证插件、或认证请求被所有认证插件忽略时，是否允许该用户以匿名身份登录
     allow_anonymous = true
 
-    ## Whether to allow or deny if no ACL rules matched.
+    ## 所有 ACL 规则都不匹配时是否允许访问
     acl_nomatch = allow
 
-    ## ACL File
+    ## ACL 规则文件
     acl_file = {{ platform_etc_dir }}/acl.conf
 
-    ## Whether to enable ACL cache or not
+    ## 是否开启 ACL 缓存功能
     enable_acl_cache = on
 
-    ## The maximum count of ACL entries can be cached for a client.
+    ## ACL 最大缓存数量
     acl_cache_max_size = 32
 
-    ## The time after which an ACL cache entry will be deleted
+    ## ACL 缓存清理周期
     acl_cache_ttl = 1m
 
-    ## The action when acl check reject current operation
+    ## 配置 ACL 检查失败时的操作
     acl_deny_action = ignore
 
 ACL 规则默认从 etc/acl.conf 中获取，在 EMQ X 启动时加载到内存:
 
 .. code-block:: erlang
 
-    %% Allow 'dashboard' to subscribe '$SYS/#'
+    %% 允许 'dashboard' 订阅 '$SYS/#'
     {allow, {user, "dashboard"}, subscribe, ["$SYS/#"]}.
 
-    %% Allow clients from localhost to subscribe any topics
+    %% 允许来自 localhost 的客户端订阅所有主题
     {allow, {ipaddr, "127.0.0.1"}, pubsub, ["$SYS/#", "#"]}.
 
-    %% Deny clients to subscribe '$SYS/#' and '#'
+    %% 拒绝客户端订阅 '$SYS/#' and '#'
     {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
 
-    ## Allow all
+    ## 允许所有
     {allow, all}.
 
 ACL 规则修改后可通过命令行重新加载:
@@ -131,9 +131,9 @@ ClientID 认证插件配置
 
 .. code-block:: properties
 
-    ## Password hash.
+    ## 密码 hash 方式.
     ##
-    ## Value: plain | md5 | sha | sha256
+    ## 值: plain | md5 | sha | sha256
     auth.client.password_hash = sha256
 
 加载 ClientId 认证插件:
@@ -166,9 +166,9 @@ ClientID 认证插件配置
 
 .. code-block:: properties
 
-    ## Password hash.
+    ## 密码 hash 方式.
     ##
-    ## Value: plain | md5 | sha | sha256
+    ## 值: plain | md5 | sha | sha256
     auth.user.password_hash = sha256
 
 加载用户名认证插件:
@@ -201,26 +201,37 @@ OpenLDAP 认证插件配置
 
 .. code-block:: properties
 
+    ## OpenLDAP 服务器列表
     auth.ldap.servers = 127.0.0.1
 
+    ## OpenLDAP 服务器端口
     auth.ldap.port = 389
 
+    ## OpenLDAP 连接池大小
     auth.ldap.pool = 8
 
+    ## OpenLDAP Bind DN.
     auth.ldap.bind_dn = cn=root,dc=emqx,dc=io
 
+    ## OpenLDAP Bind 密码.
     auth.ldap.bind_password = public
 
+    ## OpenLDAP 查询超时时间
     auth.ldap.timeout = 30s
 
+    ## OpenLDAP Device DN.
     auth.ldap.device_dn = ou=device,dc=emqx,dc=io
 
+    ## 指定的 ObjectClass
     auth.ldap.match_objectclass = mqttUser
 
+    ## username 的属性类型
     auth.ldap.username.attributetype = uid
 
+    ## password 的属性类型
     auth.ldap.password.attributetype = userPassword
 
+    ## 是否开启 SSL
     auth.ldap.ssl = false
 
 加载 OpenLDAP 认证插件:
@@ -233,12 +244,28 @@ OpenLDAP 认证插件配置
 HTTP 认证插件配置
 -----------------
 
-配置文件 emqx_auth_http.conf，设置认证 URL 及其参数:
+配置文件 emqx_auth_http.conf，设置 HTTP 请求相关参数
+
+    ## HTTP 请求超时时间，0 表示永不超时
+    ## auth.http.request.timeout = 0
+
+    ## 连接超时时间，0 表示永不超时
+    ## auth.http.request.connect_timout = 0
+
+    ## HTTP 请求重传次数
+    auth.http.request.retry_times = 3
+
+    ## HTTP 请求重传间隔
+    auth.http.request.retry_interval = 1s
+
+    ## 请求重传使用了指数退避机制， 实际重传间隔为 `interval * backoff ^ times`
+    auth.http.request.retry_backoff = 2.0
+
+设置认证 URL 及其参数:
 
 .. code-block:: properties
 
     ## Variables: %u = username, %c = clientid, %a = ipaddress, %P = password, %t = topic
-
     auth.http.auth_req = http://127.0.0.1:8991/mqtt/auth
     auth.http.auth_req.method = post
     auth.http.auth_req.params = clientid=%c,username=%u,password=%P
@@ -326,29 +353,36 @@ MQTT 访问控制表
 
 .. code-block:: properties
 
-    ## Mysql Server 3306, 127.0.0.1:3306, localhost:3306
+    ## Mysql 服务器地址
     auth.mysql.server = 127.0.0.1:3306
 
-    ## Mysql Pool Size
+    ## Mysql 连接池大小
     auth.mysql.pool = 8
 
-    ## Mysql Username
+    ## Mysql 用户名
     ## auth.mysql.username =
 
-    ## Mysql Password
+    ## Mysql 密码
     ## auth.mysql.password =
 
-    ## Mysql Database
+    ## Mysql 数据库名
     auth.mysql.database = mqtt
+
+    ## MySQL 查询超时
+    ## auth.mysql.query_timeout = 5s
 
 配置 MySQL 认证查询语句
 -----------------------
 
 .. code-block:: properties
 
-    ## Variables: %u = username, %c = clientid
-
-    ## Authentication Query: select password or password,salt
+    ## 认证查询语句
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.mysql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
     ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
@@ -367,7 +401,13 @@ MQTT 访问控制表
     ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
     ## auth.mysql.password_hash = pbkdf2,sha256,1000,20
 
-    ## %% Superuser Query
+    ## 超级用户查询语句
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.mysql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
 
 配置 MySQL 访问控制查询语句
@@ -375,7 +415,12 @@ MQTT 访问控制表
 
 .. code-block:: properties
 
-    ## ACL Query Command
+    ## ACL 查询语句
+    ##
+    ## Variables:
+    ##  - %a: ipaddr
+    ##  - %u: username
+    ##  - %c: clientid
     auth.mysql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
 
 加载 MySQL 认证插件
@@ -435,19 +480,25 @@ PostgreSQL MQTT 访问控制表
 
 .. code-block:: properties
 
-    ## PostgreSQL Server
+    ## PostgreSQL 服务器
     auth.pgsql.server = 127.0.0.1:5432
 
+    ## PostgreSQL 连接池大小
     auth.pgsql.pool = 8
 
+    ## PostgreSQL 用户名
     auth.pgsql.username = root
 
+    ## PostgreSQL 密码
     ## auth.pgsql.password =
 
+    ## PostgreSQL 数据库名
     auth.pgsql.database = mqtt
 
+    ## PostgreSQL 字符编码方式
     auth.pgsql.encoding = utf8
 
+    ## 是否开启 SSL
     auth.pgsql.ssl = false
 
     ## auth.pgsql.ssl_opts.keyfile =
@@ -461,9 +512,13 @@ PostgreSQL MQTT 访问控制表
 
 .. code-block:: properties
 
-    ## Variables: %u = username, %c = clientid, %a = ipaddress
-
-    ## Authentication Query: select password or password,salt
+    ## 认证查询语句
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.pgsql.auth_query = select password from mqtt_user where username = '%u' limit 1
 
     ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
@@ -482,7 +537,13 @@ PostgreSQL MQTT 访问控制表
     ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
     ## auth.pgsql.password_hash = pbkdf2,sha256,1000,20
 
-    ## Superuser Query
+    ## 超级用户查询语句
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.pgsql.super_query = select is_superuser from mqtt_user where username = '%u' limit 1
 
 配置 PostgreSQL 访问控制语句
@@ -490,7 +551,12 @@ PostgreSQL MQTT 访问控制表
 
 .. code-block:: properties
 
-    ## ACL Query. Comment this query, the acl will be disabled.
+    ## ACL 查询语句
+    ##
+    ## Variables:
+    ##  - %a: ipaddress
+    ##  - %u: username
+    ##  - %c: clientid
     auth.pgsql.acl_query = select allow, ipaddr, username, clientid, access, topic from mqtt_acl where ipaddr = '%a' or username = '%u' or username = '$all' or clientid = '%c'
 
 加载 PostgreSQL 认证插件
@@ -511,28 +577,28 @@ Redis 认证插件配置
 
 .. code-block:: properties
 
-    ## Redis Server cluster type
+    ## Redis 服务器集群类型
     auth.redis.type = single
 
-    ## Redis Server: 6379, 127.0.0.1:6379, localhost:6379, Redis Sentinel: 127.0.0.1:26379
+    ## Redis 服务器列表
     auth.redis.server = 127.0.0.1:6379
 
     ## Redis Sentinel
     ## auth.redis.server = 127.0.0.1:26379
 
-    ## redis sentinel cluster name
+    ## Redis Sentinel 集群名称
     ## auth.redis.sentinel = mymaster
 
-    ## Redis Pool Size
+    ## Redis 连接池大小
     auth.redis.pool = 8
 
-    ## Redis Database
+    ## Redis 数据库名
     auth.redis.database = 0
 
-    ## Redis Password
+    ## Redis 密码
     ## auth.redis.password =
 
-    ## Redis query timeout
+    ## Redis 查询超时
     ## auth.redis.query_timeout = 5s
 
 配置认证查询命令
@@ -542,8 +608,13 @@ Redis 认证插件配置
 
     ## Variables: %u = username, %c = clientid
 
-    ## Authentication Query Command
-    ## HMGET mqtt_user:%u password or HMGET mqtt_user:%u password salt or HGET mqtt_user:%u password
+    ## 认证查询命令
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.redis.auth_cmd = HGET mqtt_user:%u password
 
     ## Password hash: plain, md5, sha, sha256, pbkdf2, bcrypt
@@ -562,7 +633,13 @@ Redis 认证插件配置
     ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
     ## auth.redis.password_hash = pbkdf2,sha256,1000,20
 
-    ## Superuser Query Command
+    ## 超级用户查询命令
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.redis.super_cmd = HGET mqtt_user:%u is_superuser
 
 配置访问控制查询命令
@@ -570,7 +647,11 @@ Redis 认证插件配置
 
 .. code-block:: properties
 
-    ## ACL Query Command
+    ## ACL 查询命令
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
     auth.redis.acl_cmd = HGETALL mqtt_acl:%u
 
 Redis 认证用户 Hash
@@ -610,28 +691,28 @@ MongoDB 认证插件配置
 
 .. code-block:: properties
 
-    ## MongoDB Topology Type single | unknown | sharded| rs
+    ## MongoDB Topology 类型: single | unknown | sharded | rs
     auth.mongo.type = single
 
-    ## MongoDB Server
+    ## MongoDB 服务器列表
     auth.mongo.server = 127.0.0.1:27017
 
-    ## MongoDB Pool Size
+    ## MongoDB 连接池大小
     auth.mongo.pool = 8
 
-    ## MongoDB User
+    ## MongoDB 用户名
     ## auth.mongo.user =
 
-    ## MongoDB Password
+    ## MongoDB 密码
     ## auth.mongo.password =
 
-    ## MongoDB Database
+    ## MongoDB 数据库名
     auth.mongo.database = mqtt
 
-    ## MongoDB query timeout
+    ## MongoDB 超时时间
     ## auth.mongo.query_timeout = 5s
 
-    ## Whether to enable SSL connection.
+    ## 是否开启 SSL
     ## auth.mongo.ssl = false
 
     ## SSL keyfile.
@@ -643,13 +724,13 @@ MongoDB 认证插件配置
     ## SSL cacertfile.
     ## auth.mongo.ssl_opts.cacertfile =
 
-    ## MongoDB write mode.
+    ## MongoDB 写模式
     ## auth.mongo.w_mode =
 
-    ## MongoDB read mode.
+    ## MongoDB 读模式
     ## auth.mongo.r_mode =
 
-    ## MongoDB topology options.
+    ## MongoDB topology 选项
     auth.mongo.topology.pool_size = 1
     auth.mongo.topology.max_overflow = 0
     ## auth.mongo.topology.overflow_ttl = 1000
@@ -689,9 +770,16 @@ MongoDB 认证插件配置
     ## macfun: md4, md5, ripemd160, sha, sha224, sha256, sha384, sha512
     ## auth.mongo.auth_query.password_hash = pbkdf2,sha256,1000,20
 
+    ## 认证 Selector
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
+    ##  - %C: common name of client TLS cert
+    ##  - %d: subject of client TLS cert
     auth.mongo.auth_query.selector = username=%u
 
-    ## super_query
+    ## 超级用户 Selector
     auth.mongo.super_query = on
 
     auth.mongo.super_query.collection = mqtt_user
@@ -705,12 +793,16 @@ MongoDB 认证插件配置
 
 .. code-block:: properties
 
-    ## Enable ACL query.
+    ## 是否开启 ACL 功能
     auth.mongo.acl_query = on
 
-    ## aclquery
     auth.mongo.aclquery.collection = mqtt_acl
 
+    ## ACL Selector.
+    ##
+    ## Variables:
+    ##  - %u: username
+    ##  - %c: clientid
     auth.mongo.aclquery.selector = username=%u
 
 MongoDB 数据库
@@ -775,16 +867,16 @@ JWT 认证插件配置
     ## HMAC hash secret
     auth.jwt.secret = emqxsecret
 
-    ## From where the JWT string can be got
+    ## 配置 JWT 字符串从何处获取
     auth.jwt.from = password
 
-    ## RSA or ECDSA public key file
+    ## RSA or ECDSA 公钥文件
     ## auth.jwt.pubkey = /etc/certs/jwt_public_key.pem
 
-    ## Enable to verify claims fields
+    ## 是否验证 claims 字段
     auth.jwt.verify_claims = off
 
-    ## The checklist of claims to validate
+    ## 要验证的 claims 清单
     ## auth.jwt.verify_claims.username = %u
 
 
