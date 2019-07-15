@@ -590,25 +590,38 @@ emqx_plugin_template.erl:
 编译发布插件
 ::::::::::::
 
-1. clone emqx-rel 项目：
+1. 解压 emqx_enterprise_rel.zip：
 
 .. code:: bash
 
-    git clone https://github.com/emqx/emqx-rel.git
+    unzip emqx_enterprise_rel.zip
 
-2. Makefile 增加 ``DEPS``：
-
-.. code:: makefile
-
-    DEPS += plugin_name
-    dep_plugin_name = git url_of_plugin
-
-3. relx.config 中 release 段落添加：
+2. rebar.config 添加依赖：
 
 .. code:: erlang
 
-    {plugin_name, load},
+    {deps,
+       [ {plugin_name, {git, "url_of_plugin", {tag, "tag_of_plugin"}}}
+       , ....
+       ....
+       ]
+    }
 
+3. rebar.config 中 relx 段落添加：
+
+.. code:: erlang
+
+    {relx,
+        [...
+        , ...
+        , {release, {emqx, git_describe},
+           [
+             {plugin_name, load},
+           ]
+          }
+        ]
+    }
+  
 .. _emqx_dashboard:        https://github.com/emqx/emqx-dashboard
 .. _emqx_retainer:         https://github.com/emqx/emqx-retainer
 .. _emqx_delayed_publish:  https://github.com/emqx/emqx-delayed-publish
