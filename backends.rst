@@ -1665,15 +1665,15 @@ DynamoDB 消息存储
      - action
      - 说明
    * - client.connected
-     - 
+     -
      - on_client_connected
      - 存储客户端在线状态
    * - client.connected
-     - 
+     -
      - on_subscribe_lookup
      - 订阅主题
    * - client.disconnected
-     - 
+     -
      - on_client_disconnected
      - 存储客户端离线状态
    * - session.subscribed
@@ -1969,7 +1969,6 @@ DynamoDB 接收消息 ack (Message Acked Table)
 InfluxDB 消息存储
 -----------------
 
-----------------------
 配置 InfluxDB 消息存储
 ----------------------
 
@@ -2135,7 +2134,6 @@ Backend 会将 MQTT Message 转换为:
 OpenTSDB 消息存储
 -----------------
 
-----------------------
 配置 OpenTSDB 消息存储
 ----------------------
 

@@ -987,9 +987,9 @@ listeners stop <Proto> <Port>
 
     Stop mqtt:tcp listener on 0.0.0.0:1883 successfully.
 
-----------------------------
-规则引擎(rule engine) 命令
-----------------------------
+------------------
+rule engine 命令
+------------------
 
 ----------
 rules 命令
