@@ -1922,7 +1922,34 @@ EMQ X 消息服务器支持追踪来自某个客户端(Client)，或者发布到
 
     Payload: "Hello, World!"
 
-  然后通过 amqp 协议的客户端查看消息是否发布成功
+  编写 amqp 协议的客户端，以下是用 python 写的 amqp 客户端的示例代码::
+
+    #!/usr/bin/env python
+    import pika
+
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange='messages', exchange_type='topic')
+
+    result = channel.queue_declare(queue='', exclusive=True)
+    queue_name = result.method.queue
+
+    channel.queue_bind(exchange='messages', queue=queue_name, routing_key='test')
+
+    print('[*] Waiting for messages. To exit press CTRL+C')
+
+    def callback(ch, method, properties, body):
+        print(" [x] %r" % body)
+
+    channel.basic_consume(
+        queue=queue_name, on_message_callback=callback, auto_ack=True)
+
+    channel.start_consuming()
+
+  然后通过 amqp 协议的客户端查看消息是否发布成功,
+  以下是
 
   .. image:: ./_static/images/rabbit-subscriber-0.png
 

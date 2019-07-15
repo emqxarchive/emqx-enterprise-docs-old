@@ -20,7 +20,7 @@ EMQ X 企业版桥接转发 MQTT 消息到 Kafka、RabbitMQ、Pulsar、MQTT Brok
 +-----------------------+--------------------------+---------------------------+
 | emqx_bridge_pulsar    | emqx_bridge_pulsar.conf  | Pulsar 消息存储           |
 +-----------------------+--------------------------+---------------------------+
-| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker 消息存储      |
+| emqx_bridge_mqtt      | emqx_bridge_mqtt.conf    | MQTT Broker 消息转发      |
 +-----------------------+--------------------------+---------------------------+
 
 .. _kafka_bridge:
@@ -31,7 +31,7 @@ Kafka 桥接
 
 EMQ X 桥接转发 MQTT 消息到 Kafka 集群:
 
-.. image:: _static/images/bridges_1.png
+.. image:: _static/images/bridge_kafka.png
 
 Kafka 桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
@@ -98,7 +98,7 @@ Kafka 桥接插件配置文件: etc/plugins/emqx_bridge_kafka.conf。
 
     ## Bridge Kafka Hooks
     ## ${topic}: the kafka topics to which the messages will be published.
-    ## ${filter}: the mqtt topic (may contain wildcard) on which the action will be performed .
+    ## ${filter}: the mqtt topic (may contain wildcard) on which the action will be performed.
 
     ## Client Connected Record Hook
     bridge.kafka.hook.client.connected.1     = {"topic": "client_connected"}
@@ -176,11 +176,11 @@ Kafka 桥接规则说明
 
     topic = "client_disconnected",
     value = {
-            "client_id": ${clientid},
-            "username": ${username},
-            "reason": ${reason},
-            "node": ${node},
-            "ts": ${ts}
+             "client_id": ${clientid},
+             "username": ${username},
+             "reason": ${reason},
+             "node": ${node},
+             "ts": ${ts}
             }
 
 客户端订阅主题事件转发 Kafka
@@ -237,7 +237,8 @@ MQTT 消息派发 (Deliver) 事件转发 Kafka
 
     topic = message_delivered
 
-    value = {"client_id": ${clientid},
+    value = {
+             "client_id": ${clientid},
              "username": ${username},
              "from": ${fromClientId},
              "topic": ${topic},
@@ -307,7 +308,7 @@ RabbitMQ 桥接
 
 EMQ X 桥接转发 MQTT 消息到 RabbitMQ 集群:
 
-.. image:: _static/images/bridges_2.png
+.. image:: _static/images/bridge_rabbit.png
 
 RabbitMQ 桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
@@ -316,35 +317,35 @@ RabbitMQ 桥接插件配置文件: etc/plugins/emqx_bridge_rabbit.conf。
 
 .. code-block:: properties
 
-    ## Rabbit Brokers Server
+    ## RabbitMQ 的服务器地址
     bridge.rabbit.1.server = 127.0.0.1:5672
 
-    ## Rabbit Brokers pool_size
+    ## RabbitMQ 的连接池大小
     bridge.rabbit.1.pool_size = 4
 
-    ## Rabbit Brokers username
+    ## RabbitMQ 的用户名
     bridge.rabbit.1.username = guest
 
-    ## Rabbit Brokers password
+    ## RabbitMQ 的密码
     bridge.rabbit.1.password = guest
 
-    ## Rabbit Brokers virtual_host
+    ## RabbitMQ 的虚拟 Host
     bridge.rabbit.1.virtual_host = /
 
-    ## Rabbit Brokers heartbeat
+    ## RabbitMQ 的心跳间隔
     bridge.rabbit.1.heartbeat = 0
 
     # bridge.rabbit.2.server = 127.0.0.1:5672
 
     # bridge.rabbit.2.pool_size = 8
 
-    # bridge.rabbit.1.username = guest
+    # bridge.rabbit.2.username = guest
 
-    # bridge.rabbit.1.password = guest
+    # bridge.rabbit.2.password = guest
 
-    # bridge.rabbit.1.virtual_host = /
+    # bridge.rabbit.2.virtual_host = /
 
-    # bridge.rabbit.1.heartbeat = 0
+    # bridge.rabbit.2.heartbeat = 0
 
 配置 RabbitMQ 桥接规则
 ----------------------
@@ -452,7 +453,7 @@ Pulsar 桥接
 
 EMQ X 桥接转发 MQTT 消息到 Pulsar 集群:
 
-.. image:: _static/images/bridges_1.png
+.. image:: _static/images/bridge_pulsar.png
 
 Pulsar 桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
 
@@ -461,21 +462,23 @@ Pulsar 桥接插件配置文件: etc/plugins/emqx_bridge_pulsar.conf。
 
 .. code-block:: properties
 
-    ## Cluster support
+    ## Pulsar 服务器集群配置
     ## bridge.pulsar.servers = 127.0.0.1:6650,127.0.0.2:6650,127.0.0.3:6650
     bridge.pulsar.servers = 127.0.0.1:6650
 
-    ## Pick a partition producer and sync/async.
+    ## 分区生产者是同步/异步模式选择
     bridge.pulsar.produce = sync
 
+    ## 生产者同步模式下的超时时间
     ## bridge.pulsar.produce.sync_timeout = 3s
 
+    ## 生产者 batch 的消息数量
     ## bridge.pulsar.producer.batch_size = 1000
 
-    ## by default, no compression
+    ## 默认情况下不为生产者启用压缩选项
     ## bridge.pulsar.producer.compression = no_compression
 
-    ## base64 | plain
+    ## 采用 base64 编码或不编码
     ## bridge.pulsar.encode_payload_type = base64
 
     ## bridge.pulsar.sock.buffer = 32KB
@@ -568,11 +571,11 @@ Pulsar 桥接规则说明
 
     topic = "client_disconnected",
     value = {
-            "client_id": ${clientid},
-            "username": ${username},
-            "reason": ${reason},
-            "node": ${node},
-            "ts": ${ts}
+             "client_id": ${clientid},
+             "username": ${username},
+             "reason": ${reason},
+             "node": ${node},
+             "ts": ${ts}
             }
 
 客户端订阅主题事件转发 Pulsar
@@ -629,7 +632,8 @@ MQTT 消息派发 (Deliver) 事件转发 Pulsar
 
     topic = message_delivered
 
-    value = {"client_id": ${clientid},
+    value = {
+             "client_id": ${clientid},
              "username": ${username},
              "from": ${fromClientId},
              "topic": ${topic},
@@ -691,3 +695,247 @@ Pulsar 读取 MQTT 消息发布 (Deliver)、确认 (Ack) 事件::
 
     ./bin/emqx_ctl plugins load emqx_bridge_pulsar
 
+
+.. _mqtt_bridge:
+
+------------
+MQTT 桥接
+------------
+
+EMQ X 桥接转发 MQTT 消息到 MQTT Broker:
+
+.. image:: _static/images/bridge_mqtt.png
+
+mqtt bridge 桥接插件配置文件: etc/plugins/emqx_bridge_mqtt.conf。
+
+配置 MQTT 桥接的 Broker 地址
+----------------------------
+
+.. code-block:: properties
+
+    ## 桥接地址： 使用节点名则用于 rpc 桥接，使用 host:port 用于 mqtt 连接
+    bridge.mqtt.aws.address = 127.0.0.1:1883
+
+    ## 桥接的协议版本
+    ## 枚举值: mqttv3 | mqttv4 | mqttv5
+    bridge.mqtt.aws.proto_ver = mqttv4
+
+    ## mqtt 连接是否启用桥接模式
+    bridge.mqtt.aws.bridge_mode = true
+
+    ## mqtt 客户端的 client_id
+    bridge.mqtt.aws.client_id = bridge_aws
+    
+    ## mqtt 客户端的 clean_start 字段
+    ## 注: 有些 MQTT Broker 需要将 clean_start 值设成 `true`
+    bridge.mqtt.aws.clean_start = true
+
+    ## mqtt 客户端的 username 字段
+    bridge.mqtt.aws.username = user
+
+    ## mqtt 客户端的 password 字段
+    bridge.mqtt.aws.password = passwd
+
+    ## mqtt 客户端是否使用 ssl 来连接远程服务器
+    bridge.mqtt.aws.ssl = off
+
+    ## 客户端 SSL 连接的 CA 证书 (PEM格式)
+    bridge.mqtt.aws.cacertfile = etc/certs/cacert.pem
+
+    ## 客户端 SSL 连接的 SSL 证书
+    bridge.mqtt.aws.certfile = etc/certs/client-cert.pem
+
+    ## 客户端 SSL 连接的密钥文件
+    bridge.mqtt.aws.keyfile = etc/certs/client-key.pem
+
+    ## SSL 加密算法
+    bridge.mqtt.aws.ciphers = ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-RSA-AES256-GCM-SHA384
+
+    ## TLS PSK 的加密算法
+    ## 注意 'listener.ssl.external.ciphers' 和 'listener.ssl.external.psk_ciphers' 不能同时配置
+    ##
+    ## See 'https://tools.ietf.org/html/rfc4279#section-2'.
+    bridge.mqtt.aws.psk_ciphers = PSK-AES128-CBC-SHA,PSK-AES256-CBC-SHA,PSK-3DES-EDE-CBC-SHA,PSK-RC4-SHA
+
+    ## 客户端的心跳间隔
+    bridge.mqtt.aws.keepalive = 60s
+
+    ## 支持的 TLS 版本
+    bridge.mqtt.aws.tls_versions = tlsv1.2,tlsv1.1,tlsv1
+
+配置 MQTT 桥接转发和订阅主题
+----------------------------
+
+.. code-block:: properties
+
+    ## 桥接的 mountpoint(挂载点)
+    bridge.mqtt.aws.mountpoint = bridge/aws/${node}/
+
+    ## 转发消息的主题
+    bridge.mqtt.aws.forwards = topic1/#,topic2/#
+
+    ## 用于桥接的订阅主题
+    bridge.mqtt.aws.subscription.1.topic = cmd/topic1
+
+    ## 用于桥接的订阅 qos
+    bridge.mqtt.aws.subscription.1.qos = 1
+
+    ## 用于桥接的订阅主题
+    bridge.mqtt.aws.subscription.2.topic = cmd/topic2
+
+    ## 用于桥接的订阅 qos
+    bridge.mqtt.aws.subscription.2.qos = 1
+
+MQTT 桥接转发和订阅主题说明
+---------------------------
+
+挂载点 Mountpoint:
+mountpoint 用于在转发消息时加上主题前缀，该配置选项须配合 forwards 使用，转发主题为 `sensor1/hello` 的消息, 到达远程节点时主题为 `bridge/aws/emqx1@192.168.1.1/sensor1/hello` 。
+
+转发主题 Forwards:
+转发到本地 EMQX 指定 forwards 主题上的消息都会被转发到远程 MQTT Broker 上。
+
+订阅主题 Subscription:
+本地 EMQX 通过订阅远程 MQTT Broker 的主题来将远程 MQTT Broker 上的消息同步到本地。
+
+启用 bridge_mqtt 桥接插件
+-------------------------
+
+.. code-block:: bash
+
+    ./bin/emqx_ctl plugins load emqx_bridge_mqtt
+
+
+桥接 CLI 命令
+-------------
+
+.. code-block:: bash
+
+    $ cd emqx1/ && ./bin/emqx_ctl bridges
+    bridges list                                    # List bridges
+    bridges start <Name>                            # Start a bridge
+    bridges stop <Name>                             # Stop a bridge
+    bridges forwards <Name>                         # Show a bridge forward topic
+    bridges add-forward <Name> <Topic>              # Add bridge forward topic
+    bridges del-forward <Name> <Topic>              # Delete bridge forward topic
+    bridges subscriptions <Name>                    # Show a bridge subscriptions topic
+    bridges add-subscription <Name> <Topic> <Qos>   # Add bridge subscriptions topic
+
+列出全部 bridge 状态
+--------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges list
+    name: emqx     status: Stopped
+
+
+启动指定 bridge
+---------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges start emqx
+    Start bridge successfully.
+
+停止指定 bridge
+---------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges stop emqx
+    Stop bridge successfully.
+
+列出指定 bridge 的转发主题
+--------------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges forwards emqx
+    topic:   topic1/#
+    topic:   topic2/#
+
+添加指定 bridge 的转发主题
+--------------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges add-forwards emqx topic3/#
+    Add-forward topic successfully.
+
+删除指定 bridge 的转发主题
+--------------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges del-forwards emqx topic3/#
+    Del-forward topic successfully.
+
+列出指定 bridge 的订阅
+----------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges subscriptions emqx
+    topic: cmd/topic1, qos: 1
+    topic: cmd/topic2, qos: 1
+
+添加指定 bridge 的订阅主题
+--------------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges add-subscription emqx cmd/topic3 1
+    Add-subscription topic successfully.
+
+删除指定 bridge 的订阅主题
+--------------------------
+
+.. code-block:: bash
+
+    $ ./bin/emqx_ctl bridges del-subscription emqx cmd/topic3
+    Del-subscription topic successfully.
+
+.. _rpc_bridge:
+
+------------
+RPC 桥接
+------------
+
+EMQ X 桥接转发 MQTT 消息到远程 EMQ X:
+
+.. image:: _static/images/bridge_rpc.png
+
+rpc bridge 桥接插件配置文件: etc/plugins/emqx_bridge_mqtt.conf
+
+配置 RPC 桥接的 Broker 地址
+---------------------------
+
+.. code-block:: properties
+
+    bridge.mqtt.emqx.address = emqx2@192.168.1.2
+
+配置 MQTT 桥接转发和订阅主题
+----------------------------
+
+.. code-block:: properties
+
+    ## 桥接的 mountpoint(挂载点)
+    bridge.mqtt.emqx.mountpoint = bridge/emqx1/${node}/
+
+    ## 转发消息的主题
+    bridge.mqtt.emqx.forwards = topic1/#,topic2/#
+
+MQTT 桥接转发和订阅主题说明
+---------------------------
+
+挂载点 Mountpoint:
+mountpoint 用于在转发消息时加上主题前缀，该配置选项须配合 forwards 使用，转发主题为 `sensor1/hello` 的消息, 到达远程节点时主题为 `bridge/aws/emqx1@192.168.1.1/sensor1/hello` 。
+
+转发主题 Forwards:
+转发到本地 EMQX 指定 forwards 主题上的消息都会被转发到远程 MQTT Broker 上。
+
+桥接 CLI 命令
+-------------
+
+桥接 CLI 的使用方式与 mqtt bridge 相同。
