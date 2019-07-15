@@ -205,11 +205,13 @@ OpenLDAP 认证插件配置
 
     auth.ldap.port = 389
 
+    auth.ldap.pool = 8
+
     auth.ldap.bind_dn = cn=root,dc=emqx,dc=io
 
     auth.ldap.bind_password = public
 
-    auth.ldap.timeout = 30
+    auth.ldap.timeout = 30s
 
     auth.ldap.device_dn = ou=device,dc=emqx,dc=io
 
