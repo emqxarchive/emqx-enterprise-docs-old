@@ -9,7 +9,7 @@
 MQTT 认证设计
 -------------
 
-EMQ X 认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID 认证与匿名认证，支持与 MySQL、PostgreSQL、Redis、MongoDB、HTTP、LDAP、JWT 集成认证。
+EMQ X 认证鉴权由一系列认证插件(Plugin)提供，系统支持按用户名密码、ClientID 认证与匿名认证，支持与 MySQL、PostgreSQL、Redis、MongoDB、HTTP、OpenLDAP、JWT 集成认证。
 
 系统默认开启匿名认证(Anonymous)，通过加载认证插件可开启的多个认证模块组成认证链:
 
@@ -97,7 +97,7 @@ ACL 规则修改后可通过命令行重新加载:
 认证插件列表
 ------------
 
-EMQ X 支持 ClientId、用户名、HTTP、LDAP、MySQL、Redis、Postgre、MongoDB、JWT 多种认集成方式，以认证插件方式提供可同时加载多个形成认证链。
+EMQ X 支持 ClientId、用户名、HTTP、LDAP、MySQL、Redis、PostgreSQL、MongoDB、JWT 多种认证集成方式，以认证插件方式提供可同时加载多个形成认证链。
 
 EMQ X 认证插件配置文件，在 /etc/emqx/plugins/(RPM/DEB 安装) 或 etc/plugins/(独立安装) 目录:
 
@@ -108,7 +108,7 @@ EMQ X 认证插件配置文件，在 /etc/emqx/plugins/(RPM/DEB 安装) 或 etc/
 +-------------------------+---------------------------+---------------------------+
 | emqx_auth_username      | emqx_auth_username.conf   | 用户名密码认证/鉴权插件   |
 +-------------------------+---------------------------+---------------------------+
-| emqx_auth_ldap          | emqx_auth_ldap.conf       | LDAP 认证/鉴权插件        |
+| emqx_auth_ldap          | emqx_auth_ldap.conf       | OpenLDAP 认证/鉴权插件    |
 +-------------------------+---------------------------+---------------------------+
 | emqx_auth_http          | emqx_auth_http.conf       | HTTP 认证/鉴权插件        |
 +-------------------------+---------------------------+---------------------------+
@@ -193,11 +193,11 @@ ClientID 认证插件配置
         "password": "password"
     }
 
------------------
-LDAP 认证插件配置
------------------
+---------------------
+OpenLDAP 认证插件配置
+---------------------
 
-配置文件 emqx_auth_ldap.conf，配置 LDAP 服务器参数:
+配置文件 emqx_auth_ldap.conf，配置 OpenLDAP 服务器参数:
 
 .. code-block:: properties
 
@@ -221,7 +221,7 @@ LDAP 认证插件配置
 
     auth.ldap.ssl = false
 
-加载 LDAP 认证插件:
+加载 OpenLDAP 认证插件:
 
 .. code-block:: console
 
