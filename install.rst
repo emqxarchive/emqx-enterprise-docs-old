@@ -36,7 +36,7 @@ CentOS
 
     .. code-block:: console
 
-        $ sudo yum remove emqx emqx-ee-edge emqx-ee-ee
+        $ sudo yum remove emqx emqx-edge emqx-ee
 
 2.  安装所需要的依赖包
 
@@ -48,13 +48,13 @@ CentOS
 
     .. code-block:: console
 
-        $ sudo yum-config-manager --add-repo https://repos.emqx.io/emqx-ee-ee/redhat/centos/7/emqx-ee-ee.repo
+        $ sudo yum-config-manager --add-repo https://repos.emqx.io/emqx-ee/redhat/centos/7/emqx-ee.repo
 
 4.  安装最新版本的 EMQ X
 
     .. code-block:: console
 
-        $ sudo yum install emqx-ee-ee
+        $ sudo yum install emqx-ee
 
     .. NOTE::  如果提示接受 GPG 密钥，请确认密钥符合 fc84 1ba6 3775 5ca8 487b 1e3c c0b4 0946 3e64 0d53，如果符合，则接受该指纹。
 
@@ -65,9 +65,9 @@ CentOS
 
         .. code-block:: console
 
-            $ yum list emqx-ee-ee --showduplicates | sort -r
+            $ yum list emqx-ee --showduplicates | sort -r
 
-            emqx-ee-ee.x86_64                    3.2.0-1.el7                     emqx-ee-ee-stable
+            emqx-ee.x86_64                    3.2.0-1.el7                     emqx-ee-stable
 
     2.  根据第二列中的版本字符串安装特定版本，例如 3.2.0
 
@@ -229,19 +229,19 @@ Ubuntu
             $(lsb_release -cs) \
             stable"
 
-4.  更新 apt 包索引
+5.  更新 apt 包索引
 
     .. code-block:: console
 
         $ sudo apt update
 
-5.  安装最新版本的 EMQ X
+6.  安装最新版本的 EMQ X
 
     .. code-block:: console
 
         $ sudo apt install emqx-ee
 
-6.  安装特定版本的 EMQ X
+7.  安装特定版本的 EMQ X
 
     1.  查询可用版本
 
@@ -258,13 +258,13 @@ Ubuntu
 
             $ sudo apt install emqx-ee=3.2.0
 
-7.  导入License文件: 
+8.  导入License文件: 
 
     .. code-block:: console
      
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
-8.  启动 EMQ X
+9.  启动 EMQ X
 
     +   直接启动
 
@@ -334,7 +334,7 @@ Ubuntu
 使用 zip 包安装 EMQ X
 >>>>>>>>>>>>>>>>>>>>>>>
 
-1.  通过 `emqx.io`_ 或 `github`_ 选择 Ubuntu 版本，然后下载要安装的 EMQ X 版本的 zip 包。
+1.  通过 `emqx.io`_ 选择 Ubuntu 版本，然后下载要安装的 EMQ X 版本的 zip 包。
 
 2.  解压程序包
 
