@@ -2214,17 +2214,16 @@ API 定义::
 告警信息
 ----------
 
-获取集群告警信息
---------------------------
-
+获取集群当前告警信息
+--------------------
 
 API 定义::
 
-    GET api/v3/alarms/
+    GET api/v3/alarms/present
 
 请求示例::
 
-    GET api/v3/alarms/
+    GET api/v3/alarms/present
 
 返回数据:
 
@@ -2240,17 +2239,16 @@ API 定义::
     ]
   }
 
-
-获取节点告警信息
----------------------------
+获取节点当前告警信息
+--------------------
 
 API 定义::
 
-    GET api/v3/alarms/${node}
+    GET api/v3/alarms/present/${node}
 
 请求示例::
 
-    GET api/v3/alarms/emqx@127.0.0.1
+    GET api/v3/alarms/present/emqx@127.0.0.1
 
 返回数据:
 
@@ -2261,6 +2259,62 @@ API 定义::
     "data": []
   }
 
+获取集群历史告警信息
+--------------------
+
+API 定义::
+
+    GET api/v3/alarms/history
+
+请求示例::
+
+    GET api/v3/alarms/history
+
+返回数据:
+
+.. code-block:: json
+
+  {
+    "code": 0,
+    "data": [
+      {
+        "alarms": [
+          {
+            "clear_at": "2019-07-10 16:54:35",
+            "desc": "82.60344181007542",
+            "id": "cpu_high_watermark"
+          }
+        ],
+        "node": "emqx@127.0.0.1"
+      }
+    ]
+  }
+
+获取节点历史告警信息
+--------------------
+
+API 定义::
+
+    GET api/v3/alarms/present/${node}
+
+请求示例::
+
+    GET api/v3/alarms/present/emqx@127.0.0.1
+
+返回数据:
+
+.. code-block:: json
+
+  {
+    "code": 0,
+    "data": [
+      {
+        "clear_at": "2019-07-10 16:54:35",
+        "desc": "82.60344181007542",
+        "id": "cpu_high_watermark"
+      }
+    ]
+  }
 
 ----------
 黑名单
