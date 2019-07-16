@@ -211,6 +211,25 @@ htmlhelp_basename = 'EMQXdoc'
 # -- Options for LaTeX output ---------------------------------------------
 latex_elements = {
     'preamble': '\\usepackage[UTF8]{ctex}\n',
+    'pointsize': '11pt',
+
+    # Additional stuff for the LaTeX preamble.
+    'preamble': r'''
+    \hypersetup{unicode=true}
+
+    \DeclareUnicodeCharacter{00A0}{\nobreakspace}
+    \DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}
+    \DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
+    \DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}
+    \DeclareUnicodeCharacter{2713}{x}
+    \DeclareUnicodeCharacter{27FA}{\ensuremath{\Longleftrightarrow}}
+    \DeclareUnicodeCharacter{221A}{\ensuremath{\sqrt{}}}
+    \DeclareUnicodeCharacter{221B}{\ensuremath{\sqrt[3]{}}}
+    \DeclareUnicodeCharacter{2295}{\ensuremath{\oplus}}
+    \DeclareUnicodeCharacter{2297}{\ensuremath{\otimes}}
+    \begin{CJK}{UTF8}{gbsn}
+    \AtEndDocument{\end{CJK}}
+    ''',
 }
 
 #latex_elements = {

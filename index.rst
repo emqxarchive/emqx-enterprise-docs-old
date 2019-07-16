@@ -26,8 +26,8 @@ EMQ X 企业版中文文档
    commands
    plugins
    rest
-   tune
    ratelimit
+   tune
    mqtt
 
 支持与联系:

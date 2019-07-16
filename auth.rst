@@ -55,7 +55,7 @@ EMQ X 消息服务器访问控制功能在 emqx.conf 配置文件中设置:
     acl_nomatch = allow
 
     ## ACL 规则文件
-    acl_file = {{ platform_etc_dir }}/acl.conf
+    acl_file = etc/acl.conf
 
     ## 是否开启 ACL 缓存功能
     enable_acl_cache = on
@@ -97,16 +97,16 @@ ACL 规则修改后可通过命令行重新加载:
 认证插件列表
 ------------
 
-EMQ X 支持 ClientId、用户名、HTTP、LDAP、MySQL、Redis、PostgreSQL、MongoDB、JWT 多种认证集成方式，以认证插件方式提供可同时加载多个形成认证链。
+EMQ X 支持 ClientId、Username、HTTP、OpenLDAP、MySQL、Redis、PostgreSQL、MongoDB、JWT 多种认证集成方式，以认证插件方式提供可同时加载多个形成认证链。
 
 EMQ X 认证插件配置文件，在 /etc/emqx/plugins/(RPM/DEB 安装) 或 etc/plugins/(独立安装) 目录:
 
 +-------------------------+---------------------------+---------------------------+
 | 认证插件                | 配置文件                  | 说明                      |
 +=========================+===========================+===========================+
-| emqx_auth_clientid      | emqx_auth_clientid.conf   | ClientId 认证/鉴权插件    |
+| emqx_auth_clientid      | emqx_auth_clientid.conf   | ClientId 密码认证插件     |
 +-------------------------+---------------------------+---------------------------+
-| emqx_auth_username      | emqx_auth_username.conf   | 用户名密码认证/鉴权插件   |
+| emqx_auth_username      | emqx_auth_username.conf   | Username 密码认证插件     |
 +-------------------------+---------------------------+---------------------------+
 | emqx_auth_ldap          | emqx_auth_ldap.conf       | OpenLDAP 认证/鉴权插件    |
 +-------------------------+---------------------------+---------------------------+
@@ -120,7 +120,7 @@ EMQ X 认证插件配置文件，在 /etc/emqx/plugins/(RPM/DEB 安装) 或 etc/
 +-------------------------+---------------------------+---------------------------+
 | emqx_auth_mongo         | emqx_auth_mongo.conf      | MongoDB 认证/鉴权插件     |
 +-------------------------+---------------------------+---------------------------+
-| emqx_auth_jwt           | emqx_auth_jwt.conf        | JWT 认证/鉴权插件         |
+| emqx_auth_jwt           | emqx_auth_jwt.conf        | JWT 认证插件              |
 +-------------------------+---------------------------+---------------------------+
 
 ---------------------
@@ -158,9 +158,9 @@ ClientID 认证插件配置
         "password": "password"
     }
 
-------------------
-用户名认证插件配置
-------------------
+--------------------
+Username认证插件配置
+--------------------
 
 配置文件 emqx_auth_username.conf，配置加密方式:
 
@@ -171,7 +171,7 @@ ClientID 认证插件配置
     ## 值: plain | md5 | sha | sha256
     auth.user.password_hash = sha256
 
-加载用户名认证插件:
+加载 Username 认证插件:
 
 .. code-block:: console
 
