@@ -77,29 +77,29 @@ EMQ X 企业版改进了分布节点间的通信机制，分离 Erlang 自身的
 
 Scalable RPC 配置::
 
-    ## TCP server port.
+    ## TCP server port for RPC.
     rpc.tcp_server_port = 5369
 
-    ## Default TCP port for outgoing connections
+    ## TCP port for outgoing RPC connections.
     rpc.tcp_client_port = 5369
 
-    ## Client connect timeout
-    rpc.connect_timeout = 5000
+    ## RCP Client connect timeout.
+    rpc.connect_timeout = 5s
 
-    ## Client and Server send timeout
-    rpc.send_timeout = 5000
+    ## TCP send timeout of RPC client and server.
+    rpc.send_timeout = 5s
 
     ## Authentication timeout
-    rpc.authentication_timeout = 5000
+    rpc.authentication_timeout = 5s
 
     ## Default receive timeout for call() functions
-    rpc.call_receive_timeout = 15000
+    rpc.call_receive_timeout = 15s
 
-    ## Socket keepalive configuration
-    rpc.socket_keepalive_idle = 7200
+    ## Socket idle keepalive.
+    rpc.socket_keepalive_idle = 900s
 
-    ## Seconds between probes
-    rpc.socket_keepalive_interval = 75
+    ## TCP Keepalive probes interval.
+    rpc.socket_keepalive_interval = 75s
 
     ## Probes lost to close the connection
     rpc.socket_keepalive_count = 9
