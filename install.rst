@@ -1,8 +1,8 @@
 
 .. _install:
 
-程序安装 (Installation)
-^^^^^^^^^^^^^^^^^^^^^^^
+程序安装
+^^^^^^^^^
 
 *EMQ X* 消息服务器可跨平台运行在 Linux、FreeBSD、macOS、Windows 或 openSUSE 服务器上。
 
@@ -75,10 +75,10 @@ CentOS
 
             $ sudo yum install emqx-ee-3.2.0
 
-6.  导入License文件: 
+6.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 7.  启动 EMQ X
@@ -117,10 +117,10 @@ CentOS
 
            $ sudo rpm -ivh emqx-ee-centos7-v3.2.0.x86_64.rpm
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 4.  启动 EMQ X
@@ -159,10 +159,10 @@ CentOS
 
        $ unzip emqx-ee-centos7-v3.2.0.zip
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  启动 EMQ X
@@ -220,7 +220,7 @@ Ubuntu
             FC84 1BA6 3775 5CA8 487B  1E3C C0B4 0946 3E64 0D53
         uid           [ unknown] emqx team <support@emqx.io>
 
-4.  添加 EMQ X 存储库。 
+4.  添加 EMQ X 存储库。
 
     .. code-block:: console
 
@@ -249,19 +249,19 @@ Ubuntu
 
             $ sudo apt-cache madison emqx-ee
 
-            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages 
+            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
 
 
-    2.  使用第二列中的版本字符串安装特定版本，例如 
+    2.  使用第二列中的版本字符串安装特定版本，例如
 
         .. code-block:: console
 
             $ sudo apt install emqx-ee=3.2.0
 
-8.  导入License文件: 
+8.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 9.  启动 EMQ X
@@ -300,10 +300,10 @@ Ubuntu
 
            $ sudo dpkg -i emqx-ee-ubuntu18.04-v3.1.0_amd64.deb
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 4.  启动 EMQ X
@@ -342,10 +342,10 @@ Ubuntu
 
        $ unzip emqx-ee-ubuntu18.04-v3.2.0.zip
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  启动 EMQ X
@@ -430,18 +430,18 @@ Debian
 
             $ sudo apt-cache madison emqx-ee
 
-            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages 
+            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
 
-    2.  使用第二列中的版本字符串安装特定版本，例如 
+    2.  使用第二列中的版本字符串安装特定版本，例如
 
         .. code-block:: console
 
             $ sudo apt install emqx-ee=3.2.0
 
-7.  导入License文件: 
+7.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 8.  启动 EMQ X
@@ -480,10 +480,10 @@ Debian
 
            $ sudo dpkg -i emqx-ee-debian9-v3.1.0_amd64.deb
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 4.  启动 EMQ X
@@ -522,10 +522,10 @@ Debian
 
        $ unzip emqx-ee-debian9-v3.2.0.zip
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  启动 EMQ X
@@ -546,10 +546,10 @@ Windows
 
 2.  解压压缩包
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  打开 Windows 命令行窗口，cd 到程序目录， 启动 EMQ X。
@@ -606,16 +606,16 @@ openSUSE
             --+------------+---------+---------+-------
               | emqx-ee    | emqx-ee | 3.2.0-1 | x86_64
 
-    2.  使用 Version 安装特定版本，例如 
+    2.  使用 Version 安装特定版本，例如
 
         .. code-block:: console
 
             $ sudo zypper in emqx-ee-3.2.0
 
-6.  导入License文件: 
+6.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 7.  启动 EMQ X
@@ -654,10 +654,10 @@ openSUSE
 
            $ sudo rpm -ivh emqx-ee-opensuse-v3.2.0.x86_64.rpm
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /etc/emqx/emqx.lic
 
 4.  启动 EMQ X
@@ -696,10 +696,10 @@ openSUSE
 
        $ unzip emqx-ee-opensuse-v3.2.0.zip
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  启动 EMQ X
@@ -729,10 +729,10 @@ FreeBSD
 
        $ unzip emqx-ee-freebsd12-v3.2.0.zip
 
-3.  导入License文件: 
+3.  导入License文件:
 
     .. code-block:: console
-     
+
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
 
 4.  启动 EMQ X
@@ -781,4 +781,4 @@ Docker
             -v /path/to/emqx.lic:/opt/emqx/etc/emqx.lic
             emqx/emqx-ee:v3.2.0
 
-更多关于 EMQ X Docker 的信息请查看 `Docker Hub`_ 
+更多关于 EMQ X Docker 的信息请查看 `Docker Hub`_

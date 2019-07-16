@@ -1,8 +1,8 @@
 
 .. _plugins:
 
-扩展插件 (Plugins)
-^^^^^^^^^^^^^^^^^^^
+扩展插件
+^^^^^^^^^
 
 *EMQ X* 消息服务器通过模块注册和钩子(Hooks)机制，支持用户开发扩展插件定制服务器认证鉴权与业务功能。
 
@@ -621,7 +621,7 @@ emqx_plugin_template.erl:
           }
         ]
     }
-  
+
 .. _emqx_dashboard:        https://github.com/emqx/emqx-dashboard
 .. _emqx_retainer:         https://github.com/emqx/emqx-retainer
 .. _emqx_delayed_publish:  https://github.com/emqx/emqx-delayed-publish

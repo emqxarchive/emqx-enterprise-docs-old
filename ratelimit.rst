@@ -1,9 +1,9 @@
 
 .. _ratelimit:
 
-=====================
-速率限制 (Rate Limit)
-=====================
+=========
+速率限制
+=========
 
 EMQ X 企业版支持多种限速方式，以保证系统可靠稳定运行。
 
@@ -47,7 +47,7 @@ MQTT TCP 或 SSL 监听器，设置单个连接流量限制：
     ##   - rate: 限制的平均速率值
     ##   - burst: 单次检测最大允许的流量值; 为避免频繁的被流控限制, 该值
     ##            建议为 `(max_packet_size * active_n)/2`
-    ##            (`max_packet_size` 和 `active_n` 为 `etc/emqx.conf` 
+    ##            (`max_packet_size` 和 `active_n` 为 `etc/emqx.conf`
     ##            中的另外俩个配置项
     ## 单位: Byte
     ## listener.tcp.<name>.rate_limit = 1024,52428800
