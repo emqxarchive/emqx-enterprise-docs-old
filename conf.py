@@ -54,7 +54,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'EMQ X 企业版中文文档'
 copyright = u'2019, 杭州映云科技有限公司'
-author = u'EMQ X 产品团队<contact@emqtt.io>'
+author = u'EMQ X 产品团队<contact@emqx.io>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -233,7 +233,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'EMQX.tex', u'EMQ X 企业版中文文档',
-     u'\\textless{}contact@emqtt.io\\textgreater{}', 'manual'),
+     u'\\textless{}contact@emqx.io\\textgreater{}', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -296,8 +296,8 @@ texinfo_documents = [
 
 # Bibliographic Dublin Core info.
 epub_title = u'EMQ X 企业版中文文档'
-epub_author = u'EMQ X 产品团队<contact@emqtt.io>'
-epub_publisher = u'EMQ X 产品团队<contact@emqtt.io>'
+epub_author = u'EMQ X 产品团队<contact@emqx.io>'
+epub_publisher = u'EMQ X 产品团队<contact@emqx.io>'
 epub_copyright = u'2016-2019, 杭州映云科技有限公司'
 
 # The basename for the epub file. It defaults to the project name.
