@@ -18,10 +18,7 @@
 
 *EMQ X* 消息服务器每个版本会发布 CentOS、Ubuntu、Debian、FreeBSD、Windows 、openSUSE 平台程序包与 Docker 镜像。
 
-下载地址: https://www.emqx.io/downloads
-
-.. _emqx.io: https://www.emqx.io/downloads#enterprise
-.. _github: https://github.com/emqx/emqx/releases
+下载地址: https://www.emqx.io/cn/downloads#enterprise
 
 CentOS
 ------

@@ -168,14 +168,9 @@ MQTT 客户端库: https://github.com/mqtt/mqtt.github.io/wiki/libraries
 
 *EMQ X* 消息服务器认证由一系列认证插件(Plugins)提供，系统支持按用户名密码、ClientID 或匿名认证。
 
-系统默认开启匿名认证(Anonymous)，通过加载认证插件可开启的多个认证模块组成认证链::
+系统默认开启匿名认证(Anonymous)，通过加载认证插件可开启的多个认证模块组成认证链:
 
-               ----------------           ----------------           ------------
-    Client --> | Username认证 | -ignore-> | ClientID认证 | -ignore-> | 匿名认证 |
-               ----------------           ----------------           ------------
-                      |                         |                         |
-                     \|/                       \|/                       \|/
-                allow | deny              allow | deny              allow | deny
+.. image:: _static/images/authn_1.png
 
 **开启匿名认证**
 
@@ -198,15 +193,9 @@ ACL 访问控制规则定义::
 
     允许(Allow)|拒绝(Deny) 谁(Who) 订阅(Subscribe)|发布(Publish) 主题列表(Topics)
 
-MQTT 客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制模块会逐条匹配 ACL 规则，直到匹配成功为止::
+MQTT 客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控制模块会逐条匹配 ACL 规则，直到匹配成功为止:
 
-              ---------              ---------              ---------
-    Client -> | Rule1 | --nomatch--> | Rule2 | --nomatch--> | Rule3 | --> Default
-              ---------              ---------              ---------
-                  |                      |                      |
-                match                  match                  match
-                 \|/                    \|/                    \|/
-            allow | deny           allow | deny           allow | deny
+.. image:: _static/images/authn_2.png
 
 **默认访问控制设置**
 
@@ -215,12 +204,19 @@ MQTT 客户端发起订阅/发布请求时，EMQ X 消息服务器的访问控�
 .. code:: properties
 
     ## 设置所有 ACL 规则都不能匹配时是否允许访问
-    ## Value: allow | deny
     acl_nomatch = allow
 
     ## 设置存储 ACL 规则的默认文件
-    ## Value: File Name
     acl_file = etc/acl.conf
+
+    ## 设置是否允许 ACL 缓存
+    enable_acl_cache = on
+
+    ## 设置每个客户端 ACL 最大缓存数量
+    acl_cache_max_size = 32
+
+    ## 设置 ACL 缓存的有效时间
+    acl_cache_ttl = 1m
 
 ACL 规则定义在 etc/acl.conf，EMQ X 启动时加载到内存:
 
@@ -336,11 +332,9 @@ EMQ X 节点间桥接
 
 .. image:: ./_static/images/bridge.png
 
-此外 *EMQ X* 消息服务器支持多节点桥接模式互联::
+此外 *EMQ X* 消息服务器支持多节点桥接模式互联:
 
-                  ---------                     ---------                     ---------
-                  Publisher --> | Node1 | --Bridge Forward--> | Node2 | --Bridge Forward--> | Node3 | --> Subscriber
-                  ---------                     ---------                     ---------
+.. image:: _static/images/bridges_3.png
 
 在 EMQ X 中，通过修改 ``etc/plugins/emqx_bridge_mqtt.conf`` 来配置 bridge。EMQ X 根据不同的 name 来区分不同的 bridge。例如::
 
@@ -368,7 +362,9 @@ EMQ X 节点 RPC 桥接配置
 
 以下是 RPC 桥接的基本配置，最简单的 RPC 桥接只需要配置以下三项就可以了::
 
-    ## 桥接地址： 使用节点名（nodename@host）则用于 RPC 桥接，使用 host:port 用于 MQTT 连接
+    ## 桥接地址:
+    ## 使用节点名（nodename@host）则用于 RPC 桥接
+    ## 使用 host:port 用于 MQTT 连接
     bridge.mqtt.emqx2.address = emqx2@192.168.1.2
 
     ## 转发消息的主题
