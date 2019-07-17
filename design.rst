@@ -11,11 +11,11 @@
 设计概述
 --------
 
-EMQ 2.0开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进:
+EMQ X 开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进:
 
 .. image:: _static/images/design_1.png
 
-EMQ X 在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
+EMQ X 在开源EMQ X 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
 
 EMQ X 企业版在Backend端支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发MQTT消息到Kafka、RabbitMQ企业消息中间件。
 
@@ -196,110 +196,6 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 分布层通过匹配主题树(Topic Trie)和查找路由表(Route Table)，在集群的节点间转发路由MQTT消息:
 
 .. image:: ./_static/images/design_9.png
-
-.. _auth_acl:
-
-------------------
-认证与访问控制设计
-------------------
-
-EMQ X 消息服务器支持可扩展的认证与访问控制，由emqx_access_control、emqx_auth_mod和emqx_acl_mod模块实现。
-
-emqx_access_control模块提供了注册认证扩展接口::
-
-    register_mod(auth | acl, atom(), list()) -> ok | {error, any()}.
-
-    register_mod(auth | acl, atom(), list(), non_neg_integer()) -> ok | {error, any()}.
-
-认证扩展模块
-------------
-
-emqx_auth_mod定义认证扩展模块Behavihour::
-
-    -module(emqx_auth_mod).
-
-    -ifdef(use_specs).
-
-    -callback init(AuthOpts :: list()) -> {ok, State :: any()}.
-
-    -callback check(Client, Password, State) -> ok | ignore | {error, string()} when
-        Client    :: mqtt_client(),
-        Password  :: binary(),
-        State     :: any().
-
-    -callback description() -> string().
-
-    -else.
-
-    -export([behaviour_info/1]).
-
-    behaviour_info(callbacks) ->
-        [{init, 1}, {check, 3}, {description, 0}];
-    behaviour_info(_Other) ->
-        undefined.
-
-    -endif.
-
-访问控制(ACL)
--------------
-
-emqx_acl_mod模块定义访问控制Behavihour::
-
-    -module(emqx_acl_mod).
-
-    -include("emqx.hrl").
-
-    -ifdef(use_specs).
-
-    -callback init(AclOpts :: list()) -> {ok, State :: any()}.
-
-    -callback check_acl({Client, PubSub, Topic}, State :: any()) -> allow | deny | ignore when
-        Client   :: mqtt_client(),
-        PubSub   :: pubsub(),
-        Topic    :: binary().
-
-    -callback reload_acl(State :: any()) -> ok | {error, any()}.
-
-    -callback description() -> string().
-
-    -else.
-
-    -export([behaviour_info/1]).
-
-    behaviour_info(callbacks) ->
-        [{init, 1}, {check_acl, 2}, {reload_acl, 1}, {description, 0}];
-    behaviour_info(_Other) ->
-        undefined.
-
-    -endif.
-
-emqx_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
-
-    %%%-----------------------------------------------------------------------------
-    %%%
-    %%% -type who() :: all | binary() |
-    %%%                {ipaddr, esockd_access:cidr()} |
-    %%%                {client, binary()} |
-    %%%                {user, binary()}.
-    %%%
-    %%% -type access() :: subscribe | publish | pubsub.
-    %%%
-    %%% -type topic() :: binary().
-    %%%
-    %%% -type rule() :: {allow, all} |
-    %%%                 {allow, who(), access(), list(topic())} |
-    %%%                 {deny, all} |
-    %%%                 {deny, who(), access(), list(topic())}.
-    %%%
-    %%%-----------------------------------------------------------------------------
-
-    {allow, {user, "dashboard"}, subscribe, ["$SYS/#"]}.
-
-    {allow, {ipaddr, "127.0.0.1"}, pubsub, ["$SYS/#", "#"]}.
-
-    {deny, all, subscribe, ["$SYS/#", {eq, "#"}]}.
-
-    {allow, all}.
 
 .. _hook:
 
