@@ -13,14 +13,13 @@ EMQ X 企业版中文文档
    overview
    deploy
    install
-   quick
+   guide
    config
    rule_engine
    rule_tutorial
    auth
    backends
    bridges
-   guide
    cluster
    design
    commands
