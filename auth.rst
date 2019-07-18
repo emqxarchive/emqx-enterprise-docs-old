@@ -246,6 +246,8 @@ HTTP 认证插件配置
 
 配置文件 emqx_auth_http.conf，设置 HTTP 请求相关参数
 
+.. code:: properties
+
     ## HTTP 请求超时时间，0 表示永不超时
     ## auth.http.request.timeout = 0
 
