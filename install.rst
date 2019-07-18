@@ -20,6 +20,8 @@
 
 下载地址: https://www.emqx.io/cn/downloads#enterprise
 
+.. _emqx.io: https://www.emqx.io/downloads#enterprise
+
 CentOS
 ------
 
@@ -524,6 +526,37 @@ Debian
     .. code-block:: console
 
         $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.lic
+
+4.  启动 EMQ X
+
+    .. code-block:: console
+
+        $ ./bin/emqx start
+        emqx v3.2.0 is started successfully!
+
+        $ ./bin/emqx_ctl status
+        Node 'emqx@127.0.0.1' is started
+        emqx 3.2.0 is running
+
+macOS
+-----
+
+使用 zip 包安装 EMQ X
+>>>>>>>>>>>>>>>>>>>>>>>
+
+1.  通过 `emqx.io`_ ，选择 EMQ X 版本，然后下载要安装的 zip 包。
+
+2.  解压压缩包
+
+    .. code-block:: console
+
+       $ unzip emqx-ee-macos-v3.2.0.zip
+
+3.  导入License文件:
+
+    .. code-block:: console
+
+        $ cp /path/to/emqx.lic /path/to/emqx/etc/emqx.li
 
 4.  启动 EMQ X
 
