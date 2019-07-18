@@ -20,7 +20,7 @@
 
 下载地址: https://www.emqx.io/cn/downloads#enterprise
 
-.. _emqx.io: https://www.emqx.io/downloads#enterprise
+.. _emqx.io: https://www.emqx.io/cn/downloads#enterprise
 
 CentOS
 ------
