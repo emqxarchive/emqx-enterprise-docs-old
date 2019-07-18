@@ -513,7 +513,7 @@ Debian
 使用 zip 包安装 EMQ X
 >>>>>>>>>>>>>>>>>>>>>>>
 
-1.  通过 `emqx.io`_ 或 `github`_ 选择 Debian 版本，然后下载要安装的 EMQ X 版本的 zip 包。
+1.  通过 `emqx.io`_ 选择 Debian 版本，然后下载要安装的 EMQ X 版本的 zip 包。
 
 2.  解压程序包
 
