@@ -574,7 +574,7 @@ EMQ X R3.2 插件开发
 
 参考 `emqx_plugin_template`_ 插件模版创建新的插件项目。
 
-.. NOTE:: 在 ``<plugin name>_app.erl`` 文件中必须加上标签 ``-emqx_plugin(?MODULE).`` 以表明这是一个 EMQ X 的插件。
+.. NOTE:: 在 ``<plugin name>_app.erl`` 文件中必须加上标签 ``-emqx_plugin(<type>).`` 以表明这是一个<type> 类型的插件。目前支持的枚举值有: auth | backend | bridge | ?MODULE
 
 创建认证/访问控制模块
 ::::::::::::::::::::::

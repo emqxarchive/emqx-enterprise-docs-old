@@ -267,7 +267,7 @@
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
     SELECT
-      *, flags.retain as retain
+      *
     FROM
       "message.publish"
 
@@ -350,7 +350,7 @@
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
     SELECT
-      *, flags.retain as retain
+      *
     FROM
       "message.publish"
 
