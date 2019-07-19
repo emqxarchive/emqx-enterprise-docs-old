@@ -95,13 +95,9 @@ Erlang 的原生配置格式多层级嵌套，对非 Erlang 开发者的用户�
     node.name = emqx@127.0.0.1
 
 
-EMQ X 启动时配置文件处理流程::
+EMQ X 启动时配置文件处理流程:
 
-    ----------------------                                          3.0/schema/*.schema      -------------------
-    | etc/emqx.conf      |                   -----------------              \|/              | data/app.config |
-    |       +            | --> mergeconf --> | data/app.conf | -->  cuttlefish generate  --> |                 |
-    | etc/plugins/*.conf |                   -----------------                               | data/vm.args    |
-    ----------------------                                                                   -------------------
+.. image:: _static/images/config.png
 
 -------------------
 EMQ X 环境变量
@@ -701,15 +697,9 @@ MQTT Zones 参数配置
 
 EMQ X 使用 Zone 来管理配置组。一个 Zone 定义了一组配置项 (比如最大连接数等)，Listener 可以指定使用某个 Zone，以使用该 Zone 下的所有配置。多个 Listener 可以共享同一个 Zone。
 
-Listener 使用配置的匹配规则如下，其优先级 Zone > Global > Default::
+Listener 使用配置的匹配规则如下，其优先级 Zone > Global > Default:
 
-                       ---------              ----------              -----------
-    Listeners -------> | Zone  | --nomatch--> | Global | --nomatch--> | Default |
-                       ---------              ----------              -----------
-                           |                       |                       |
-                         match                   match                   match
-                          \|/                     \|/                     \|/
-                    Zone Configs            Global Configs           Default Configs
+.. image:: _static/images/zone.png
 
 *EMQ X* 支持 ``zone.$name.xxx`` 替换成相应的 ``$name`` 的，这里的 ``zone.external.xxx`` 和 ``zone.internal.xxx`` 中的 ``$name`` 都可以换成相应的名称，也可以新增自定义 ``name`` 的 ``zone.$name.xxx``。
 

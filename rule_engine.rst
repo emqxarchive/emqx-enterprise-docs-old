@@ -33,7 +33,7 @@ EMQ X 规则引擎介绍
                     绑定资源: {
                         资源配置
                     }
-                }, ...
+                }
             ]
         }
 
@@ -732,7 +732,9 @@ API 请求示例::
 
   GET api/v3/actions
 
-API 返回数据示例::
+API 返回数据示例:
+
+.. code-block:: json
 
   {
     "code": 0,
@@ -751,8 +753,7 @@ API 返回数据示例::
             }
         },
         "types": []
-    },
-    ... ]
+    }]
   }
 
 API 请求示例::
@@ -812,7 +813,9 @@ API 定义::
 
   GET api/v3/resource_types
 
-返回数据示例::
+返回数据示例:
+
+.. code-block:: json
 
   {
     "code": 0,
@@ -823,8 +826,7 @@ API 定义::
         "description": "forward msgs to host-name/chats",
         "id": "resource:a7a38187",
         "type": "web_hook"
-    },
-    ... ]
+    }]
   }
 
 查询资源类型
@@ -934,7 +936,9 @@ API 定义::
 
   GET api/v3/resources
 
-API 返回数据示例::
+API 返回数据示例:
+
+.. code-block:: json
 
   {
     "code": 0,
@@ -947,8 +951,7 @@ API 返回数据示例::
         "description": "web hook resource-1",
         "id": "resource:62763e19",
         "type": "web_hook"
-    },
-    ... ]
+    }]
   }
 
 
