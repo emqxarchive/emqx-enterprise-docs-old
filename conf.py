@@ -215,6 +215,9 @@ latex_engine = 'xelatex'
 latex_elements = {
     'preamble': '\\usepackage[UTF8]{ctex}\n',
     'pointsize': '11pt',
+    'fontpkg': r'''
+                \setmainfont{DejaVu Serif}
+               ''',
 }
 
 #latex_elements = {
