@@ -1146,7 +1146,7 @@ MongoDB 用户状态集合(Client Collection)
         "_id" : ObjectId("58646c9bdde89a9fb9f7fb73"),
         "clientid" : "test",
         "state" : 1,
-        "node" : "emq@x127.0.0.1",
+        "node" : "emqx@127.0.0.1",
         "online_at" : 1482976411,
         "offline_at" : null
     }
