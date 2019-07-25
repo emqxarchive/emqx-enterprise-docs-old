@@ -210,13 +210,15 @@ htmlhelp_basename = 'EMQXdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_engine = 'xelatex'
+#latex_engine = 'xelatex'
 
 latex_elements = {
     'preamble': '\\usepackage[UTF8]{ctex}\n',
     'pointsize': '11pt',
     'fontpkg': r'''
                 \setmainfont{DejaVu Serif}
+                \setsansfont{DejaVu Sans}
+                \setmonofont{DejaVu Sans Mono}
                ''',
 }
 
