@@ -88,7 +88,7 @@ EMQ X 节点启动
     service emqx start
 
 如果独立zip包安装，启动节点::
-    
+
     ./bin/emqx start
 
 --------------
@@ -154,12 +154,12 @@ EMQ X 默认启用的外部MQTT服务端口包括:
 
     ## SSL Listener: 8883, 127.0.0.1:8883, ::1:8883
     listener.ssl.external = 8883
-    
-    ## HTTP and WebSocket Listener
-    listener.http.external = 8083
 
-    ## External HTTPS and WSS Listener
-    listener.https.external = 8084
+    ## WebSocket Listener
+    listener.ws.external = 8083
+
+    ## External WSS Listener
+    listener.wss.external = 8084
 
 通过注释或删除相关段落，可禁用相关TCP服务启动。
 
