@@ -1415,7 +1415,7 @@
 .. _rule_engine_examples.dashboard.bridge_rpc:
 
 创建 BridgeRPC 规则
----------------------
+-------------------
 
 0. 搭建 EMQX Broker 环境，以 MaxOS X 为例::
 
