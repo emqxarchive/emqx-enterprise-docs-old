@@ -11,11 +11,11 @@
 设计概述
 --------
 
-EMQ 2.0开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进:
+EMQ X 开源MQTT消息服务器在1.x版本的基础上，首先分离前端协议(FrontEnd)与后端集成(Backend)，其次分离了消息路由平面(Flow Plane)与监控管理平面(Monitor/Control Plane)。EMQ 2.0消息服务器将在稳定支持100万MQTT连接的基础上，向可管理可监控坚如磐石的稳定性方向迭代演进:
 
 .. image:: _static/images/design_1.png
 
-EMQ X 在开源EMQ 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
+EMQ X 在开源EMQ X 2.0版本基础上，大幅改进系统集群设计，采用Scalable RPC机制，分离节点间的集群与数据转发通道，以支持更稳定的节点集群与更高性能的消息路由。
 
 EMQ X 企业版在Backend端支持MQTT消息数据存储Redis、MySQL、PostgreSQL、MongoDB、Cassandra多种数据库，支持桥接转发MQTT消息到Kafka、RabbitMQ企业消息中间件。
 
@@ -191,11 +191,138 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 
 分布层维护全局主题树(Topic Trie)与路由表(Route Table)。主题树由通配主题构成，路由表映射主题到节点:
 
-.. image:: ./_static/images/design_8.png 
+.. image:: ./_static/images/design_8.png
 
 分布层通过匹配主题树(Topic Trie)和查找路由表(Route Table)，在集群的节点间转发路由MQTT消息:
 
 .. image:: ./_static/images/design_9.png
+
+.. _hook:
+
+--------------
+钩子(Hook)设计
+--------------
+
+钩子(Hook)定义
+--------------
+
+*EMQ X* 消息服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
+
++----------------------+----------------------+
+|         钩子         |         说明         |
++======================+======================+
+| client.authenticate  | 客户端认证           |
++----------------------+----------------------+
+| client.check_acl     | 客户端 ACL 检查      |
++----------------------+----------------------+
+| client.connected     | 客户端上线           |
++----------------------+----------------------+
+| client.subscribe     | 客户端订阅主题前     |
++----------------------+----------------------+
+| client.unsubscribe   | 客户端取消订阅主题   |
++----------------------+----------------------+
+| session.subscribed   | 客户端订阅主题后     |
++----------------------+----------------------+
+| session.unsubscribed | 客户端取消订阅主题后 |
++----------------------+----------------------+
+| message.publish      | MQTT 消息发布        |
++----------------------+----------------------+
+| message.deliver      | MQTT 消息投递前      |
++----------------------+----------------------+
+| message.acked        | MQTT 消息回执        |
++----------------------+----------------------+
+| client.disconnected  | 客户端连接断开       |
++----------------------+----------------------+
+
+钩子(Hook) 采用职责链设计模式(`Chain-of-responsibility_pattern`_)，扩展模块或插件向钩子注册回调函数，系统在客户端上下线、主题订阅或消息发布确认时，触发钩子顺序执行回调函数:
+
+.. image:: ./_static/images/design_10.png
+
+不同钩子的回调函数输入参数不同，用户可参考插件模版的 `emqx_plugin_template`_ 模块，每个回调函数应该返回:
+
++----------------+----------------------+
+|      返回      |         说明         |
++================+======================+
+| ok             | 继续执行             |
++----------------+----------------------+
+| {ok, NewAcc}   | 返回累积参数继续执行 |
++----------------+----------------------+
+| stop           | 停止执行             |
++----------------+----------------------+
+| {stop, NewAcc} | 返回累积参数停止执行 |
++----------------+----------------------+
+
+钩子(Hook)实现
+--------------
+
+emqx 模块封装了 Hook 接口:
+
+.. code-block:: erlang
+
+    -spec(hook(emqx_hooks:hookpoint(), emqx_hooks:action()) -> ok | {error, already_exists}).
+    hook(HookPoint, Action) ->
+        emqx_hooks:add(HookPoint, Action).
+
+    -spec(hook(emqx_hooks:hookpoint(), emqx_hooks:action(), emqx_hooks:filter() | integer())
+        -> ok | {error, already_exists}).
+    hook(HookPoint, Action, Priority) when is_integer(Priority) ->
+        emqx_hooks:add(HookPoint, Action, Priority);
+    hook(HookPoint, Action, Filter) when is_function(Filter); is_tuple(Filter) ->
+        emqx_hooks:add(HookPoint, Action, Filter);
+    hook(HookPoint, Action, InitArgs) when is_list(InitArgs) ->
+        emqx_hooks:add(HookPoint, Action, InitArgs).
+
+    -spec(hook(emqx_hooks:hookpoint(), emqx_hooks:action(), emqx_hooks:filter(), integer())
+        -> ok | {error, already_exists}).
+    hook(HookPoint, Action, Filter, Priority) ->
+        emqx_hooks:add(HookPoint, Action, Filter, Priority).
+
+    -spec(unhook(emqx_hooks:hookpoint(), emqx_hooks:action()) -> ok).
+    unhook(HookPoint, Action) ->
+        emqx_hooks:del(HookPoint, Action).
+
+    -spec(run_hook(emqx_hooks:hookpoint(), list(any())) -> ok | stop).
+    run_hook(HookPoint, Args) ->
+        emqx_hooks:run(HookPoint, Args).
+
+    -spec(run_fold_hook(emqx_hooks:hookpoint(), list(any()), any()) -> any()).
+    run_fold_hook(HookPoint, Args, Acc) ->
+        emqx_hooks:run_fold(HookPoint, Args, Acc).
+
+钩子(Hook)使用
+--------------
+
+`emqx_plugin_template`_ 提供了全部钩子的使用示例，例如端到端的消息处理回调:
+
+.. code-block:: erlang
+
+    -module(emqx_plugin_template).
+
+    -export([load/1, unload/0]).
+
+    -export([on_message_publish/2, on_message_deliver/3, on_message_acked/3]).
+
+    load(Env) ->
+        emqx:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
+        emqx:hook('message.deliver', fun ?MODULE:on_message_deliver/3, [Env]),
+        emqx:hook('message.acked', fun ?MODULE:on_message_acked/3, [Env]).
+
+    on_message_publish(Message, _Env) ->
+        io:format("publish ~s~n", [emqx_message:format(Message)]),
+        {ok, Message}.
+
+    on_message_deliver(Credentials, Message, _Env) ->
+        io:format("deliver to client ~s: ~s~n", [Credentials, emqx_message:format(Message)]),
+        {ok, Message}.
+
+    on_message_acked(Credentials, Message, _Env) ->
+        io:format("client ~s acked: ~s~n", [Credentials, emqx_message:format(Message)]),
+        {ok, Message}.
+
+    unload() ->
+        emqx:unhook('message.publish', fun ?MODULE:on_message_publish/2),
+        emqx:unhook('message.acked', fun ?MODULE:on_message_acked/3),
+        emqx:unhook('message.deliver', fun ?MODULE:on_message_deliver/3).
 
 .. _auth_acl:
 
@@ -203,77 +330,60 @@ MQTT协议定义了一个16bits的报文ID(PacketId)，用于客户端到服务�
 认证与访问控制设计
 ------------------
 
-EMQ X 消息服务器支持可扩展的认证与访问控制，由emqx_access_control、emqx_auth_mod和emqx_acl_mod模块实现。
+*EMQ X* 消息服务器支持可扩展的认证与访问控制，通过挂载 ``client.authenticate`` and ``client.check_acl`` 两个钩子实现。
 
-emqx_access_control模块提供了注册认证扩展接口::
+编写鉴权钩子回调函数
+--------------------
 
-    register_mod(auth | acl, atom(), list()) -> ok | {error, any()}.
+挂载回调函数到 ``client.authenticate`` 钩子:
 
-    register_mod(auth | acl, atom(), list(), non_neg_integer()) -> ok | {error, any()}.
+.. code-block:: erlang
 
-认证扩展模块
-------------
+    emqx:hook('client.authenticate', fun ?MODULE:on_client_authenticate/1, []).
 
-emqx_auth_mod定义认证扩展模块Behavihour::
+钩子回调函数必须接受一个 ``Credentials`` 参数，并且返回一个新的 Credentials:
 
-    -module(emqx_auth_mod).
+.. code-block:: erlang
 
-    -ifdef(use_specs).
+    on_client_authenticate(Credentials = #{password := Password}) ->
+        {ok, Credentials#{result => success}}.
 
-    -callback init(AuthOpts :: list()) -> {ok, State :: any()}.
+``Credentials`` 结构体是一个包含鉴权信息的 map:
 
-    -callback check(Client, Password, State) -> ok | ignore | {error, string()} when
-        Client    :: mqtt_client(),
-        Password  :: binary(),
-        State     :: any().
+.. code-block:: erlang
 
-    -callback description() -> string().
+    #{
+      client_id => ClientId,     %% 客户端 ID
+      username  => Username,     %% 用户名
+      peername  => Peername,     %% 客户端的 IP 地址和端口
+      password  => Password,     %% 密码 (可选)
+      result    => Result        %% 鉴权结果，success 表示认证成功,
+                                 %% bad_username_or_password 或者 not_authorized 表示失败.
+    }
 
-    -else.
+编写 ACL 钩子回调函数
+----------------------
 
-    -export([behaviour_info/1]).
+挂载回调函数到 ``client.authenticate`` 钩子:
 
-    behaviour_info(callbacks) ->
-        [{init, 1}, {check, 3}, {description, 0}];
-    behaviour_info(_Other) ->
-        undefined.
+.. code-block:: erlang
 
-    -endif.
+    emqx:hook('client.check_acl', fun ?MODULE:on_client_check_acl/4, []).
 
-访问控制(ACL)
--------------
+回调函数必须可接受 ``Credentials``, ``AccessType``, ``Topic``, ``ACLResult`` 这几个参数， 然后返回一个新的 ACLResult:
 
-emqx_acl_mod模块定义访问控制Behavihour::
+.. code-block:: erlang
 
-    -module(emqx_acl_mod).
+    on_client_check_acl(#{client_id := ClientId}, AccessType, Topic, ACLResult) ->
+        {ok, allow}.
 
-    -include("emqx.hrl").
+AccessType 可以是 ``publish`` 和 ``subscribe`` 之一。
+Topic 是 MQTT topic。
+ACLResult 要么是 ``allow``，要么是 ``deny``。
 
-    -ifdef(use_specs).
+``emqx_mod_acl_internal`` 模块实现了基于 etc/acl.conf 文件的 ACL 机制，etc/acl.conf 文件的默认内容：
 
-    -callback init(AclOpts :: list()) -> {ok, State :: any()}.
-
-    -callback check_acl({Client, PubSub, Topic}, State :: any()) -> allow | deny | ignore when
-        Client   :: mqtt_client(),
-        PubSub   :: pubsub(),
-        Topic    :: binary().
-
-    -callback reload_acl(State :: any()) -> ok | {error, any()}.
-
-    -callback description() -> string().
-
-    -else.
-
-    -export([behaviour_info/1]).
-
-    behaviour_info(callbacks) ->
-        [{init, 1}, {check_acl, 2}, {reload_acl, 1}, {description, 0}];
-    behaviour_info(_Other) ->
-        undefined.
-
-    -endif.
-
-emqx_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
+.. code-block:: erlang
 
     %%%-----------------------------------------------------------------------------
     %%%
@@ -301,129 +411,29 @@ emqx_acl_internal模块实现缺省的基于etc/acl.conf文件的访问控制::
 
     {allow, all}.
 
-.. _hook:
+由 emqx 提供的 Auth/ACL 插件:
 
---------------
-钩子(Hook)设计
---------------
-
-钩子(Hook)定义
---------------
-
-EMQ X 服务器在客户端上下线、主题订阅、消息收发位置设计了扩展钩子(Hook):
-
-+------------------------+----------------------------------+
-| 钩子                   | 说明                             |
-+========================+==================================+
-| client.connected       | 客户端上线                       |
-+------------------------+----------------------------------+
-| client.subscribe       | 客户端订阅主题前                 |
-+------------------------+----------------------------------+
-| client.unsubscribe     | 客户端取消订阅主题               |
-+------------------------+----------------------------------+
-| session.subscribed     | 客户端订阅主题后                 |
-+------------------------+----------------------------------+
-| session.unsubscribed   | 客户端取消订阅主题后             |
-+------------------------+----------------------------------+
-| message.publish        | MQTT消息发布                     |
-+------------------------+----------------------------------+
-| message.delivered      | MQTT消息送达                     |
-+------------------------+----------------------------------+
-| message.acked          | MQTT消息回执                     |
-+------------------------+----------------------------------+
-| client.disconnected    | 客户端连接断开                   |
-+------------------------+----------------------------------+
-
-钩子(Hook)采用职责链设计模式(`Chain-of-responsibility_pattern`_)，扩展模块或插件向钩子注册回调函数，系统在客户端上下线、主题订阅或消息发布确认时，触发钩子顺序执行回调函数:
-
-.. image:: ./_static/images/design_10.png
-
-不同钩子的回调函数输入参数不同，用户可参考插件模版的emqx_plugin_template模块，每个回调函数应该返回:
-
-+-----------------+------------------------+
-| 返回            | 说明                   |
-+=================+========================+
-| ok              | 继续执行               |
-+-----------------+------------------------+
-| {ok, NewAcc}    | 返回累积参数继续执行   |
-+-----------------+------------------------+
-| stop            | 停止执行               |
-+-----------------+------------------------+
-| {stop, NewAcc}  | 返回累积参数停止执行   |
-+-----------------+------------------------+
-
-钩子(Hook)实现
---------------
-
-emqx模块封装了Hook接口:
-
-.. code-block:: erlang
-
-    -module(emqx).
-
-    %% Hooks API
-    -export([hook/4, hook/3, unhook/2, run_hooks/3]).
-    hook(Hook :: atom(), Callback :: function(), InitArgs :: list(any())) -> ok | {error, any()}.
-
-    hook(Hook :: atom(), Callback :: function(), InitArgs :: list(any()), Priority :: integer()) -> ok | {error, any()}.
-
-    unhook(Hook :: atom(), Callback :: function()) -> ok | {error, any()}.
-
-    run_hooks(Hook :: atom(), Args :: list(any()), Acc :: any()) -> {ok | stop, any()}.
-
-emqx_hook模块实现Hook机制:
-
-.. code-block:: erlang
-
-    -module(emqx_hook).
-
-    %% Hooks API
-    -export([add/3, add/4, delete/2, run/3, lookup/1]).
-
-    add(HookPoint :: atom(), Callback :: function(), InitArgs :: list(any())) -> ok.
-
-    add(HookPoint :: atom(), Callback :: function(), InitArgs :: list(any()), Priority :: integer()) -> ok.
-
-    delete(HookPoint :: atom(), Callback :: function()) -> ok.
-
-    run(HookPoint :: atom(), Args :: list(any()), Acc :: any()) -> any().
-
-    lookup(HookPoint :: atom()) -> [#callback{}].
-
-钩子(Hook)使用
---------------
-
-emq_plugin_template 提供了全部钩子的使用示例，例如端到端的消息处理回调:
-
-.. code-block:: erlang
-
-    -module(emq_plugin_template).
-
-    -export([load/1, unload/0]).
-
-    -export([on_message_publish/2, on_message_delivered/4, on_message_acked/4]).
-
-    load(Env) ->
-        emqx:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
-        emqx:hook('message.delivered', fun ?MODULE:on_message_delivered/4, [Env]),
-        emqx:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
-
-    on_message_publish(Message, _Env) ->
-        io:format("publish ~s~n", [emqx_message:format(Message)]),
-        {ok, Message}.
-
-    on_message_delivered(ClientId, _Username, Message, _Env) ->
-        io:format("delivered to client ~s: ~s~n", [ClientId, emqx_message:format(Message)]),
-        {ok, Message}.
-
-    on_message_acked(ClientId, _Username, Message, _Env) ->
-        io:format("client ~s acked: ~s~n", [ClientId, emqx_message:format(Message)]),
-        {ok, Message}.
-
-    unload() ->
-        emqx:unhook('message.publish', fun ?MODULE:on_message_publish/2),
-        emqx:unhook('message.acked', fun ?MODULE:on_message_acked/4),
-        emqx:unhook('message.delivered', fun ?MODULE:on_message_delivered/4).
++-----------------------+--------------------------------+
+| Plugin                | Authentication                 |
++-----------------------+--------------------------------+
+| emqx_auth_username    | Username and Password          |
++-----------------------+--------------------------------+
+| emqx_auth_clientid    | ClientID and Password          |
++-----------------------+--------------------------------+
+| emqx_auth_ldap        | LDAP                           |
++-----------------------+--------------------------------+
+| emqx_auth_http        | HTTP API                       |
++-----------------------+--------------------------------+
+| emqx_auth_mysql       | MySQL                          |
++-----------------------+--------------------------------+
+| emqx_auth_pgsql       | PostgreSQL                     |
++-----------------------+--------------------------------+
+| emqx_auth_redis       | Redis                          |
++-----------------------+--------------------------------+
+| emqx_auth_mongo       | MongoDB                        |
++-----------------------+--------------------------------+
+| emqx_auth_jwt         | JWT                            |
++-----------------------+--------------------------------+
 
 .. _plugin:
 
@@ -431,9 +441,9 @@ emq_plugin_template 提供了全部钩子的使用示例，例如端到端的消
 插件(Plugin)设计
 ----------------
 
-插件是一个可以被动态加载的普通Erlang应用(Application)。插件主要通过钩子(Hook)机制扩展服务器功能，或通过注册扩展模块方式集成认证访问控制。
+插件是一个可以被动态加载的普通 Erlang 应用(Application)。插件主要通过钩子(Hook)机制扩展服务器功能，或通过注册扩展模块方式集成认证访问控制。
 
-emqx_plugins模块实现插件机制，提供加载卸载插件API::
+emqx_plugins 模块实现插件机制，提供加载卸载插件 API ::
 
     -module(emqx_plugins).
 
@@ -445,72 +455,85 @@ emqx_plugins模块实现插件机制，提供加载卸载插件API::
     %% @doc UnLoad a Plugin
     unload(PluginName :: atom()) -> ok | {error, any()}.
 
-用户可通过'./bin/emqx_ctl'命令行加载卸载插件::
+用户可通过 `./bin/emqx_ctl` 命令行加载卸载插件::
 
-    ./bin/emqx_ctl plugins load emqx_auth_redis
+    ./bin/emqx_ctl plugins load <plugin name>
 
-    ./bin/emqx_ctl plugins unload emqx_auth_redis
+    ./bin/emqx_ctl plugins unload <plugin name>
 
-开发者请参考模版插件: http://github.com/emqtt/emqx_plugin_template
+开发者请参考模版插件: http://github.com/emqx/emqx_plugin_template
 
 -----------------
 Mnesia/ETS 表设计
 -----------------
 
-+--------------------+--------+----------------------------------------+
-| 表                 | 类型   | 描述                                   |
-+====================+========+========================================+
-| mqtt_trie          | mnesia | Trie Table                             |
-+--------------------+--------+----------------------------------------+
-| mqtt_trie_node     | mnesia | Trie Node Table                        |
-+--------------------+--------+----------------------------------------+
-| mqtt_route         | mnesia | Global Route Table                     |
-+--------------------+--------+----------------------------------------+
-| mqtt_local_route   | mnesia | Local Route Table                      |
-+--------------------+--------+----------------------------------------+
-| mqtt_pubsub        | ets    | PubSub Tab                             |
-+--------------------+--------+----------------------------------------+
-| mqtt_subscriber    | ets    | Subscriber Tab                         |
-+--------------------+--------+----------------------------------------+
-| mqtt_subscription  | ets    | Subscription Tab                       |
-+--------------------+--------+----------------------------------------+
-| mqtt_session       | mnesia | Global Session Table                   |
-+--------------------+--------+----------------------------------------+
-| mqtt_local_session | ets    | Local Session Table                    |
-+--------------------+--------+----------------------------------------+
-| mqtt_client        | ets    | Client Table                           |
-+--------------------+--------+----------------------------------------+
-| mqtt_retained      | mnesia | Retained Message Table                 |
-+--------------------+--------+----------------------------------------+
++--------------------------+--------+------------------+
+|          Table           |  Type  |   Description    |
++==========================+========+==================+
+| emqx_conn                | ets    | 连接表           |
++--------------------------+--------+------------------+
+| emqx_metrics             | ets    | 统计表           |
++--------------------------+--------+------------------+
+| emqx_session             | ets    | 会话表           |
++--------------------------+--------+------------------+
+| emqx_hooks               | ets    | 钩子表           |
++--------------------------+--------+------------------+
+| emqx_subscriber          | ets    | 订阅者表         |
++--------------------------+--------+------------------+
+| emqx_subscription        | ets    | 订阅表           |
++--------------------------+--------+------------------+
+| emqx_admin               | mnesia | Dashboard 用户表 |
++--------------------------+--------+------------------+
+| emqx_retainer            | mnesia | Retained 消息表  |
++--------------------------+--------+------------------+
+| emqx_shared_subscription | mnesia | 共享订阅表       |
++--------------------------+--------+------------------+
+| emqx_session_registry    | mnesia | 全局会话注册表   |
++--------------------------+--------+------------------+
+| emqx_alarm_history       | mnesia | 告警历史表       |
++--------------------------+--------+------------------+
+| emqx_alarm               | mnesia | 告警表           |
++--------------------------+--------+------------------+
+| emqx_banned              | mnesia | 禁止登陆表       |
++--------------------------+--------+------------------+
+| emqx_route               | mnesia | 路由表           |
++--------------------------+--------+------------------+
+| emqx_trie                | mnesia | Trie 表          |
++--------------------------+--------+------------------+
+| emqx_trie_node           | mnesia | Trie Node 表     |
++--------------------------+--------+------------------+
+| mqtt_app                 | mnesia | App 表           |
++--------------------------+--------+------------------+
 
 .. _erlang:
 
---------------
-Erlang设计相关
---------------
+---------------
+Erlang 设计相关
+---------------
 
-1. 使用Pool, Pool, Pool... 推荐GProc库: https://github.com/uwiger/gproc
+1. 使用 Pool, Pool, Pool... 推荐 GProc 库: https://github.com/uwiger/gproc
 
 2. 异步，异步，异步消息...连接层到路由层异步消息，同步请求用于负载保护
 
-3. 避免进程Mailbox累积消息，负载高的进程可以使用gen_server2
+3. 避免进程 Mailbox 累积消息
 
-4. 消息流经的Socket连接、会话进程必须Hibernate，主动回收binary句柄
+4. 消息流经的 Socket 连接、会话进程必须 Hibernate，主动回收 binary 句柄
 
-5. 多使用Binary数据，避免进程间内存复制
+5. 多使用 Binary 数据，避免进程间内存复制
 
-6. 使用ETS, ETS, ETS...Message Passing Vs ETS
+6. 使用 ETS, ETS, ETS... Message Passing vs. ETS
 
-7. 避免ETS表非键值字段select, match
+7. 避免 ETS 表非键值字段 select, match
 
-8. 避免大量数据ETS读写, 每次ETS读写会复制内存，可使用lookup_element, update_counter
+8. 避免大量数据 ETS 读写, 每次 ETS 读写会复制内存，可使用 lookup_element, update_counter
 
-9. 适当开启ETS表{write_concurrency, true}
+9. 适当开启 ETS 表 {write_concurrency, true}
 
-10. 保护Mnesia数据库事务，尽量减少事务数量，避免事务过载(overload)
+10. 保护 Mnesia 数据库事务，尽量减少事务数量，避免事务过载(overload)
 
-11. 避免Mnesia数据表索引，和非键值字段match, select
+11. 避免对 Mnesia 数据表非索引、或非键值字段 match, select
 
-.. _eSockd: https://github.com/emqtt/esockd
+.. _eSockd: https://github.com/emqx/esockd
 .. _Chain-of-responsibility_pattern: https://en.wikipedia.org/wiki/Chain-of-responsibility_pattern
+.. _emqx_plugin_template: https://github.com/emqx/emqx_plugin_template/blob/master/src/emqx_plugin_template.erl
 

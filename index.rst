@@ -13,29 +13,30 @@ EMQ X 企业版中文文档
    overview
    deploy
    install
-   quick
+   guide
    config
+   rule_engine
+   rule_tutorial
    auth
    backends
    bridges
-   guide
    cluster
    design
-   cli
+   commands
    plugins
    rest
-   tune
    ratelimit
+   tune
    mqtt
 
 支持与联系:
 
 +------------+--------------------------------+
-| 官网:      | http://emqtt.com               |
+| 官网:      | https://www.emqx.io/cn/        |
 +------------+--------------------------------+
 | 电话:      | 400-696-5502                   |
 +------------+--------------------------------+
-| 邮箱:      | contact@emqtt.io               |
+| 邮箱:      | contact@emqx.io                |
 +------------+--------------------------------+
 | 微信:      | emqttd                         |
 +------------+--------------------------------+
