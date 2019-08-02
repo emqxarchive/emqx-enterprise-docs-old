@@ -27,7 +27,7 @@ EMQ X 企业版中文文档
    rest
    ratelimit
    tune
-   mqtt
+   protocol
 
 支持与联系:
 
