@@ -479,6 +479,166 @@ LwM2M 的客户端库
 - https://github.com/AVSystem/Anjay
 - http://www.eclipse.org/leshan/
 
+TCP 私有协议
+------------
+
+TCP 私有协议是 EMQ X 在 TCP 上定义的一套简单的透明传输协议，它适用于各类 TCP 承载的私有协议设备接入平台，并透传其私有协议的数据。
+
+.. note:: 仅在 3.2.2 后支持
+
+报文结构
+::::::::
+
+报文主要有俩部分构成: **固定头部(FixedHeader)** + **有效载荷(Payload)**
+
+其中固定头部固定 1 字节；有效载荷为变长
+
++--------------+--------------+
+| Fixed Header |    1 Byte    |
++--------------+--------------+
+| Payload      |    N Bytes   |
++--------------+--------------+
+
+
+固定头部中前 4 Bits 表示 **帧类型(Frame Type)**, 目前共支持:
+
++------------+-------+--------------------+--------------+
+| Name       | Value | Direction of Flow  | Description  |
++============+=======+====================+==============+
+| CONNECT    | 1     | Client --> Server  | 连接报文     |
++------------+-------+--------------------+--------------+
+| CONNACK    | 2     | Server --> Client  | 连接应答     |
++------------+-------+--------------------+--------------+
+| DATATRANS  | 3     | Client <==> Server | 透明传输     |
++------------+-------+--------------------+--------------+
+| PING       | 4     | Client --> Server  | 心跳报文     |
++------------+-------+--------------------+--------------+
+| PONG       | 5     | Server --> Client  | 心跳应答     |
++------------+-------+--------------------+--------------+
+| DISCONNECT | 6     | Client --> Server  | 主动断开连接 |
++------------+-------+--------------------+--------------+
+| Reserved   | 7-15  | 保留               | 保留类型     |
++------------+-------+--------------------+--------------+
+
+报文详解
+::::::::
+
+CONNECT 帧
+""""""""""
+
+连接报文。**帧类型为 2#0001**。标志位 4 Bits 代表协议 **版本号(Version)** 目前为 1 即 2#0001。因此 CONNECT 帧固定头部为 **0x11**
+
+
+而，Payload 中包含连接用的所有字段。则必须按照以下顺序给出，否则为非法报文，立即断开 TCP 链接：
+
+.. code::
+
+    Keepalive[x] ClientId[x]  Username  Password
+       UINT(1)     STR(n)      STR(n)    STR(n)
+
+
+其中 Keepalive 和 ClientId 为必填字段；Username 与 Password 可为空串
+
+
+CONNACK 帧
+""""""""""
+
+连接应答报文。**帧类型为 2#0010**。标志位 4 Bits 为应答连接结果(ACK Code)。可以为以下枚举值：
+
++------------+-------+------------------+
+| Name       | Value | Description      |
++============+=======+==================+
+| SUCCESSFUL | 0     | 连接成功         |
++------------+-------+------------------+
+| AUTHFAILED | 1     | 认证失败         |
++------------+-------+------------------+
+| ILLEGALVER | 2     | 不支持的协议版本 |
++------------+-------+------------------+
+| Reserved   | 3-15  | 保留字段         |
++------------+-------+------------------+
+
+而，Payload 字段，为连接应答后传递的 **Message** 该串可为空串。
+
+.. code::
+
+    Message
+     STR(n)
+
+
+DATATRANS 帧
+""""""""""""
+
+数据传输帧。**帧类型为 2#0011**。 标志位 前 2 Bits 表达 **消息质量等级(Qos)** 目前恒为0；后两位为保留位。所以DATATRANS **帧固定头部恒为 0x30**
+
+Payload 内容为 **长度标示+数据字段**
+
+.. code::
+
+    DATA
+    BIN(n)
+
+
+注：由于 Length 固定为 2 字节，所以最大仅支持 65535 字节的负载。
+
+
+PING 帧
+"""""""
+
+心跳帧。**帧类型为 2#0100**。标志位 Flags 固定为 0。即固定头部**固定为：0x40**
+
+Payload 为空
+
+
+PONG 帧
+"""""""
+
+心跳应答帧。**帧类型为 2#0101**。标志位 Flags 固定为 0。即固定头部**固定为：0x50**
+
+Payload 为空
+
+
+emqx-tcp 插件
+::::::::::::::
+
+TCP 私有协议通过 **emqx-tcp** 插件进行提供
+
+
+TCP 协议与MQTT 的转换
+"""""""""""""""""""""
+
+在 ``etc/plugins/emqx_tcp.conf`` 中可以配置 ``up_topic`` 将 TCP 私有协议的设备上报的消息转化为 MQTT 消息发布出来:
+
+.. code::
+
+    tcp.proto.up_topic = tcp/%c/up
+
+同样，可配置 ``dn_topic`` 用来接收下行消息:
+
+.. code::
+
+    tcp.proto.dn_topic = tcp/%c/dn
+
+监听配置
+""""""""
+
+通过 ``etc/plugins/emqx_tcp.conf``  listener 可以配置 TCP 私有协议监听的参数:
+
+.. code::
+
+    tcp.listener.external = 0.0.0.0:8090
+
+    tcp.listener.external.acceptors = 8
+
+    tcp.listener.external.max_connections = 1024000
+
+    ## SSL
+    tcp.listener.ssl.external = 0.0.0.0:8091
+
+    tcp.listener.ssl.external.acceptors = 8
+
+    tcp.listener.ssl.external.max_connections = 1024000
+
+
 .. _emqttc: https://github.com/emqtt/emqttc
 .. _CocoaMQTT: https://github.com/emqtt/CocoaMQTT
 .. _QMQTT: https://github.com/emqtt/qmqtt
