@@ -17,6 +17,7 @@ EMQ X 企业版中文文档
    config
    rule_engine
    rule_tutorial
+   schema_registry
    auth
    backends
    bridges
