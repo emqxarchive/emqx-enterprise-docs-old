@@ -11,7 +11,7 @@ EMQ X 编解码介绍
 
 Schema Registry 提供了数据编解码能力。
 
-Schema Registry 目前可支持三种格式的编解码：`Avro <https://avro.apache.org>`_，`Protobuf <https://developers.google.com/protocol-buffers/>`_，以及自定义编码。其中 Avro 和 Protobuf 是依赖 Schema 的数据格式，编码后的数据为二进制，解码后为 JSON。解码后的数据可直接被规则引擎和其他插件使用。用户自定义的 (3rd-party) 编解码服务通过 HTTP 或 TCP 回调的方式，进行更加贴近业务需求的编解码。
+Schema Registry 目前可支持三种格式的编解码：`Avro <https://avro.apache.org>`_，`Protobuf <https://developers.google.com/protocol-buffers/>`_，以及自定义编码。其中 Avro 和 Protobuf 是依赖 Schema 的数据格式，编码后的数据为二进制，解码后为 Map [#f1]_ 格式 。解码后的数据可直接被规则引擎和其他插件使用。用户自定义的 (3rd-party) 编解码服务通过 HTTP 或 TCP 回调的方式，进行更加贴近业务需求的编解码。
 
 .. important:: Schema Registry 为 Avro 和 Protobuf 等内置编码格式维护 Schema 文本，但对于自定义编解码 (3rd-party) 格式，如需要，Schema 文本需由编解码服务自己维护
 
@@ -328,3 +328,7 @@ cURL 示例
     $ curl -XDELETE -v --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas/sensor_notify_avro:*'
 
     {"code":0}
+
+.. rubric:: Footnotes
+
+.. [#f1] Erlang Map，是规则引擎内部使用的 Key-Value 数据结构. 举例: #{id => 1, name => "Steve"}，定义了一个 id 为 1，name 为 "Steve" 的 Map。

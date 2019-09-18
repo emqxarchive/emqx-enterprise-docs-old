@@ -617,10 +617,20 @@
 
   打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
 
-  选择触发事件 “消息发布”，然后填写规则 SQL::
+  选择触发事件 “消息发布”，然后填写规则 SQL:
+
+  3.4.0 以及更老版本::
 
     SELECT
       payload.metric as metric, payload.tags as tags, payload.value as value
+    FROM
+      "message.publish"
+
+  3.4.1 以及以后版本::
+
+    SELECT
+      json_decode(payload) as p,
+      p.metric as metric, p.tags as tags, p.value as value
     FROM
       "message.publish"
 
@@ -791,12 +801,24 @@
 
   打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
 
-  选择触发事件 “消息发布”，然后填写规则 SQL::
+  选择触发事件 “消息发布”，然后填写规则 SQL:
+
+  3.4.0 以及更老版本::
 
     SELECT
       payload.temp as temp,
       payload.humidity as humidity,
       payload.location as location
+    FROM
+      "message.publish"
+
+  3.4.1 以及以后版本::
+
+    SELECT
+      json_decode(payload) as p,
+      p.temp as temp,
+      p.humidity as humidity,
+      p.location as location
     FROM
       "message.publish"
 
@@ -882,13 +904,26 @@
 
   打开 `emqx dashboard <http://127.0.0.1:18083/#/rules>`_，选择左侧的 “规则” 选项卡。
 
-  选择触发事件 “消息发布”，然后填写规则 SQL::
+  选择触发事件 “消息发布”，然后填写规则 SQL:
+
+  3.4.0 以及更老版本::
 
     SELECT
       payload.host as host,
       payload.location as location,
       payload.internal as internal,
       payload.external as external
+    FROM
+      "message.publish"
+
+  3.4.1 以及以后版本::
+
+    SELECT
+      json_decode(payload) as p,
+      p.host as host,
+      p.location as location,
+      p.internal as internal,
+      p.external as external
     FROM
       "message.publish"
 
