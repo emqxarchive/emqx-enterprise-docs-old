@@ -9,7 +9,9 @@ EMQ X 是目前全球市场广泛应用的百万级开源MQTT消息服务器，�
 
 EMQ X 企业版大幅改进系统设计架构，采用 Scalable RPC 机制，支持更稳定的节点集群与更高性能的消息路由。
 
-EMQ X 企业版支持MQTT消息数据存储 Redis、MySQL、PostgreSQL、MongoDB、Cassandra、TimescaleDB、InfluxDB、DynamoDB、OpenTDSB 多种数据库，支持桥接转发MQTT消息到 Kafka、RabbitMQ、Pulsar 企业消息中间件。
+EMQ X 企业版支持MQTT消息数据存储 Redis、MySQL、PostgreSQL、MongoDB、Cassandra、TimescaleDB、InfluxDB、DynamoDB、OpenTDSB 多种数据库。
+
+EMQ X 企业版支持桥接转发MQTT消息到 Kafka、RabbitMQ、Pulsar、RocketMQ、MQTT Broker 企业消息中间件。
 
 EMQ X 可以作为智能硬件、智能家居、物联网、车联网应用的百万级设备接入平台。
 
@@ -61,7 +63,11 @@ EMQ X 设计目标是实现企业级高可靠，并支持承载海量物联网�
 
 13. Pulsar 桥接：EMQ X 内置 Bridge 直接转发 MQTT 消息、设备上下线事件到 Pulsar。
 
-14. Rule Engine：将 EMQ X 的事件、消息 转换成指定格式，然后存入数据库表，或者发送到消息队列等。
+14. RocketMQ 桥接：EMQ X 内置 Bridge 直接转发 MQTT 消息、设备上下线事件到 RocketMQ。
+
+15. Rule Engine：将 EMQ X 的事件、消息 转换成指定格式，然后存入数据库表，或者发送到消息队列等。
+
+16. Schema Registry：将 EMQ X 的事件、消息 提供了数据编解码能力。
 
 .. _scalable_rpc:
 
@@ -128,7 +134,7 @@ EMQ X 企业版支持存储订阅关系、MQTT 消息、设备状态到 Redis、
 消息桥接转发
 ------------
 
-EMQ X 企业版支持直接转发 MQTT 消息到 RabbitMQ、Kafka、Pulsar，可作为百万级的物联网接入服务器(IoT Hub):
+EMQ X 企业版支持直接转发 MQTT 消息到 RabbitMQ、Kafka、Pulsar、RocketMQ、MQTT Broker，可作为百万级的物联网接入服务器(IoT Hub):
 
 .. image:: _static/images/overview_5.png
 
@@ -136,7 +142,7 @@ EMQ X 企业版支持直接转发 MQTT 消息到 RabbitMQ、Kafka、Pulsar，可
 规则引擎
 ---------
 
-EMQ X 规则引擎可以灵活地处理消息和事件。EMQ X 企业版规则引擎支持消息重新发布；桥接数据到 Kafka、Pulsar、RabbitMQ、MQTT Broker；保存数据到 MySQL、PostgreSQL、Redis、MongoDB、DynamoDB、Cassandra、InfluxDB、OpenTSDB、TimescaleDB；发送数据到 WebServer:
+EMQ X 规则引擎可以灵活地处理消息和事件。EMQ X 企业版规则引擎支持消息重新发布；桥接数据到 Kafka、Pulsar、RocketMQ、RabbitMQ、MQTT Broker；保存数据到 MySQL、PostgreSQL、Redis、MongoDB、DynamoDB、Cassandra、InfluxDB、OpenTSDB、TimescaleDB；发送数据到 WebServer:
 
 .. image:: _static/images/overview_6.png
 
