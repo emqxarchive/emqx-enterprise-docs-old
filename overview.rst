@@ -147,3 +147,13 @@ EMQ X 规则引擎可以灵活地处理消息和事件。EMQ X 企业版规则�
 .. image:: _static/images/overview_6.png
 
 规则引擎相关配置，详见"规则引擎"章节。
+
+-------
+编解码
+-------
+
+Schema Registry 目前可支持三种格式的编解码：`Avro <https://avro.apache.org>`_，`Protobuf <https://developers.google.com/protocol-buffers/>`_，以及自定义编码。其中 Avro 和 Protobuf 是依赖 Schema 的数据格式，编码后的数据为二进制，解码后为 Map 格式 。解码后的数据可直接被规则引擎和其他插件使用。用户自定义的 (3rd-party) 编解码服务通过 HTTP 或 TCP 回调的方式，进行更加贴近业务需求的编解码。
+
+.. image:: _static/images/overview_7.png
+
+编解码相关配置，详见"编解码"章节。
