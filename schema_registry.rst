@@ -30,25 +30,12 @@ Schema 管理
 Schema 名字
 ------------
 
-创建 Schema 的时候，需要给定 Schema 的名字。名字的格式为字母数字或者下划线的组合，且第一个字符不为数字。名字中不能包含冒号(":")。
+创建 Schema 的时候，需要给定 Schema 的名字。名字是 Schema 的唯一标识，不可重复。
 
-Schema 版本
-------------
+Schema 名字的为如下格式的字符串:
 
-对于某个名字的 Schema 创建的时候，Schema Registry 会分配相应的版本。版本是为了注明 Schema 之间的兼容性。Schema 的版本管理如下：
-
-- 版本号是针对名字相同的 Schema 的。版本号总是从 "1.0" 开始。
-
-- 每次用同样的名字创建 Schema 的时候，Schema Registry 会检查 Schema 与上一个版本之间的兼容性。如果兼容则次版本号会递增，比如 "1.1"，"1.2"。如果不兼容创建将会失败。
-
-- 如果使用了强制创建参数，主版本号将会递增，比如 "2.0", "3.0"。
-
-- 版本管理只针对有 Avro 或 Protobuf，自定义的编解码没有 Schema，也就没有版本管理。
-
-Schema ID
----------
-
-创建 Schema 成功之后，系统会分配一个 Schema ID。Schema ID 可用在规则引擎的 SQL 语句里。
+- 首字符为字母 ``[A-Za-z_]``
+- 其余字符为字母数字或者下划线 ``[A-Za-z0-9_]``
 
 .. _schema_registry.api:
 
@@ -89,8 +76,6 @@ API 定义
 +-------------------------------+-------------------------------------------------------------------------------------------------+
 | - parser_opts.parse_timeout   | 可选。自定义编解码的编解码超时设置，整数类型，单位秒。                                          |
 +-------------------------------+-------------------------------------------------------------------------------------------------+
-| force                         | 可选。Boolean，可选，是否强制创建。强制创建将不检查与上个版本的兼容性，并跃升主版本号           |
-+-------------------------------+-------------------------------------------------------------------------------------------------+
 | description                   | 可选。String，可选，规则描述                                                                    |
 +-------------------------------+-------------------------------------------------------------------------------------------------+
 
@@ -119,9 +104,7 @@ API 返回数据示例
   {
     "code":0,
     "data":{
-      "id":"sensor_notify_avro:1.0",
       "name":"sensor_notify_avro",
-      "version":"1.0",
       "schema":"{\"type\":\"record\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"favorite_number\",\"type\":[\"int\",\"null\"]},{\"name\":\"favorite_color\",\"type\":[\"string\",\"null\"]}]}",
       "parser_type":"avro",
       "parser_addr":null,
@@ -143,7 +126,7 @@ cURL 示例
     $ curl --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas' -d \
     '{"name":"sensor_notify_avro", "parser_type": "avro", "description":"Test Avro Schema", "schema": '$SCHEMA'}'
 
-    {"code":0,"data":{"id":"sensor_notify_avro:1.0","name":"sensor_notify_avro","version":"1.0","schema":"...","parser_type":"avro","parser_addr":null,"parser_opts":{},"description":"Test Avro Schema"}}
+    {"code":0,"data":{"name":"sensor_notify_avro","schema":"...","parser_type":"avro","parser_addr":null,"parser_opts":{},"description":"Test Avro Schema"}}
 
 创建 Protobuf Schema::
 
@@ -175,7 +158,7 @@ cURL 示例
     $ curl --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas' -d \
     '{"name":"sensor_notify_protobuf", "parser_type": "protobuf", "schema": "'$SCHEMA'"}'
 
-    {"code":0,"data":{"id":"sensor_notify_protobuf:1.0","name":"sensor_notify_protobuf","version":"1.0","schema":"...","parser_type":"protobuf","parser_addr":null,"parser_opts":{},"description":""}}
+    {"code":0,"data":{"name":"sensor_notify_protobuf","schema":"...","parser_type":"protobuf","parser_addr":null,"parser_opts":{},"description":""}}
 
 创建第三方编解码::
 
@@ -184,7 +167,7 @@ cURL 示例
     $ curl --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas' -d \
     '{"name":"my_http_parser", "parser_type": "3rd-party", "parser_addr": {"url": "http://127.0.0.1:8000/parser"}, "parser_opts": {"3rd_party_opts": "xxxx,xxx", "connect_timeout": 3, "parse_timeout": 5}}'
 
-    {"code":0,"data":{"id":"my_http_parser","name":"my_http_parser","version":"1.0","schema":"...","parser_type":"protobuf","parser_addr":null,"parser_opts":{},"description":""}}
+    {"code":0,"data":{"name":"my_http_parser","schema":"...","parser_type":"protobuf","parser_addr":null,"parser_opts":{},"description":""}}
 
     ## TCP
     $ APPSECRET='a78ed1495de28:Mjg5MzU2MDY1NTU5MTM4Mjk4Nzg3MjgwOTEwNDExMzY2NDA'
@@ -209,25 +192,15 @@ cURL 示例
 
   GET api/v3/schemas/${schema_id}
 
-查询某个 Schema 的所有版本::
-
-  GET api/v3/schemas/${name}:*
-
 API 请求示例
 """""""""""""
 
-1. 查询 sensor_notify_avro 的 1.0 版本:
+查询 sensor_notify_avro:
 
-GET http://localhost:8080/api/v3/schemas/sensor_notify_avro:1.0
-
-2. 查询 sensor_notify_avro 的所有版本:
-
-GET http://localhost:8080/api/v3/schemas/sensor_notify_avro:*
+GET http://localhost:8080/api/v3/schemas/sensor_notify_avro
 
 API 返回数据示例
 """""""""""""""""
-
-1.
 
 .. code-block:: json
 
@@ -235,9 +208,7 @@ API 返回数据示例
     "code":0,
     "data":[
       {
-        "id":"sensor_notify_avro:1.0",
         "name":"sensor_notify_avro",
-        "version":"1.0",
         "schema":" ... ",
         "parser_type":"avro",
         "parser_addr":null,
@@ -247,46 +218,16 @@ API 返回数据示例
     ]
   }
 
-2.
-
-.. code-block:: json
-
-  {
-    "code":0,
-    "data":[
-      {
-        "id":"sensor_notify_avro:1.0",
-        "name":"sensor_notify_avro",
-        "version":"1.0",
-        "schema":" ... ",
-        "parser_type":"avro",
-        "parser_addr":null,
-        "parser_opts":{},
-        "description":"Test Avro Schema"
-      },
-      {
-        "id":"sensor_notify_avro:1.1",
-        "name":"sensor_notify_avro",
-        "version":"1.1",
-        "schema":" ... ",
-        "parser_type":"avro",
-        "parser_addr":null,
-        "parser_opts":{},
-        "description":"Test Avro Schema"
-      }
-    ]
-  }
-
 cURL 示例
 """""""""
 
-查询 sensor_notify_avro 的所有版本::
+查询 sensor_notify_avro ::
 
     $ APPSECRET='a78ed1495de28:Mjg5MzU2MDY1NTU5MTM4Mjk4Nzg3MjgwOTEwNDExMzY2NDA'
 
-    $ curl --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas/sensor_notify_avro:*'
+    $ curl --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas/sensor_notify_avro'
 
-    {"code":0,"data":[{"id":"sensor_notify_avro:1.0","name":"sensor_notify_avro","version":"1.0","schema":"...","parser_type":"avro","parser_addr":null,"parser_opts":{},"descr":"Schema for notification report from sensors, in avro format"}]}
+    {"code":0,"data":{"name":"sensor_notify_avro","schema":"...","parser_type":"avro","parser_addr":null,"parser_opts":{},"descr":"Schema for notification report from sensors, in avro format"}}
 
 
 删除
@@ -296,20 +237,12 @@ cURL 示例
 
   DELETE api/v3/schemas/${schema_id}
 
-删除某个 Schema 的所有版本::
-
-  DELETE api/v3/schemas/${name}:*
-
 API 请求示例
 """""""""""""
 
-1. 删除 sensor_notify_avro 的 1.0 版本:
+删除 sensor_notify_avro:
 
-DELETE http://localhost:8080/api/v3/schemas/sensor_notify_avro:1.0
-
-2. 删除 sensor_notify_avro 的所有版本:
-
-DELETE http://localhost:8080/api/v3/schemas/sensor_notify_avro:*
+DELETE http://localhost:8080/api/v3/schemas/sensor_notify_avro
 
 API 返回数据示例
 """""""""""""""""
@@ -323,11 +256,11 @@ API 返回数据示例
 cURL 示例
 """""""""
 
-删除 sensor_notify_avro 的所有版本::
+删除 sensor_notify_avro ::
 
     $ APPSECRET='a78ed1495de28:Mjg5MzU2MDY1NTU5MTM4Mjk4Nzg3MjgwOTEwNDExMzY2NDA'
 
-    $ curl -XDELETE -v --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas/sensor_notify_avro:*'
+    $ curl -XDELETE -v --basic -u $APPSECRET -k 'http://localhost:8080/api/v3/schemas/sensor_notify_avro'
 
     {"code":0}
 
