@@ -347,6 +347,12 @@ Erlang 分布式节点间通信 Cookie:
 
     node.cookie = emqxsecretcookie
 
+Erlang 节点允许最大客户端数量:
+
+.. code-block:: properties
+
+    node.max_clients = 1024000
+
 .. NOTE::
 
     Erlang/OTP 平台应用多由分布的 Erlang 节点(进程)组成，每个 Erlang 节点(进程)需指配一个节点名，用于节点间通信互访。

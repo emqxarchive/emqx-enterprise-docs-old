@@ -1413,6 +1413,145 @@ API 定义::
     "code": 0
   }
 
+批量发布消息
+-----------
+
+API 定义::
+
+    POST api/v3/mqtt/publish_batch
+
+请求参数:
+
+.. code-block:: json
+
+  [{
+    "topic": "test_topic1",
+    "payload": "hello1",
+    "qos": 1,
+    "retain": false,
+    "client_id": "mqttjs_1"
+  },{
+    "topic": "test_topic2",
+    "payload": "hello2",
+    "qos": 1,
+    "retain": false,
+    "client_id": "mqttjs_2"
+  }]
+
+请求示例::
+
+    POST api/v3/mqtt/publish_batch
+
+返回数据:
+
+.. code-block:: json
+
+  {
+    "code": 0,
+    "data": [
+        {
+          "topic": "test_topic1",
+          "code": 0
+        },
+        {
+          "topic": "test_topic2",
+          "code": 0
+        }
+    ]
+  }
+
+
+
+批量创建订阅
+-------------
+
+API 定义::
+
+    POST api/v3/mqtt/subscribe_batch
+
+请求参数:
+
+.. code-block:: json
+
+  [{
+    "topic": "test_topic1",
+    "qos": 1,
+    "client_id": "mqttjs_1"
+  },{
+    "topic": "test_topic2",
+    "qos": 1,
+    "client_id": "mqttjs_2"
+  }]
+
+
+请求示例::
+
+    POST api/v3/mqtt/subscribe_batch
+
+返回数据:
+
+.. code-block:: json
+
+  {
+    "code": 0,
+    "data": [
+        {
+          "client_id": "mqttjs_1",
+          "topic": "test_topic1",
+          "code": 0
+        },
+        {
+          "client_id": "mqttjs_2",
+          "topic": "test_topic2",
+          "code": 0
+        }
+    ]
+  }
+
+批量取消订阅
+-------------
+
+API 定义::
+
+    POST api/v3/mqtt/unsubscribe_batch
+
+请求参数:
+
+.. code-block:: json
+
+  [{
+    "topic": "test_topic1",
+    "client_id": "mqttjs_1"
+  },{
+    "topic": "test_topic2",
+    "client_id": "mqttjs_2"
+  }]
+
+
+请求示例::
+
+    POST api/v3/mqtt/unsubscribe_batch
+
+
+返回数据:
+
+.. code-block:: json
+
+    {
+      "code": 0,
+      "data": [
+          {
+            "client_id": "mqttjs_1",
+            "topic": "test_topic1",
+            "code": 0
+          },
+          {
+            "client_id": "mqttjs_2",
+            "topic": "test_topic2",
+            "code": 0
+          }
+      ]
+    }
 
 -------------
 插件(Plugins)
