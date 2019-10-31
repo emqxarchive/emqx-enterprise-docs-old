@@ -1257,6 +1257,8 @@ API 返回数据示例::
 
 :ref:`rule_engine_examples.dashboard.pulsar`
 
+:ref:`rule_engine_examples.dashboard.rocket`
+
 :ref:`rule_engine_examples.dashboard.rabbit`
 
 :ref:`rule_engine_examples.dashboard.bridge_mqtt`
