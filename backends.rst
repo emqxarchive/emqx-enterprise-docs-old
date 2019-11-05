@@ -2026,7 +2026,7 @@ Example:
 
 模板文件采用 Json 格式, 组成部分:
 
-- ``key`` - MQTT Topic, 字符串, 支持通配符主题
+- ``key`` - MQTT Topic, 字符串, 支持通配符
 
 - ``value`` - Template, Json 对象, 用于将 MQTT Message 转换成 ``measurement,tag_key=tag_value,... field_key=field_value,... timestamp`` 的形式以写入 InfluxDB。
 
@@ -2079,7 +2079,7 @@ Template 格式如下:
 +-----------------+------------------------------------------------------+
 | $<Number>       | 必须配合 $paylaod 使用, 用于从 Json Array 中获取数据 |
 +-----------------+------------------------------------------------------+
-| $timestamp      | EMQ X 准备转发消息时设置的时间戳, 精度: 毫秒         |
+| $timestamp      | EMQ X 准备转发消息时设置的时间戳, 精度: 纳秒         |
 +-----------------+------------------------------------------------------+
 
 **$payload 与 $<Number>:**
