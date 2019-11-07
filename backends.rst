@@ -2024,7 +2024,13 @@ Example:
 
 由于 MQTT Message 无法直接写入 InfluxDB, InfluxDB Backend 提供了 emqx_backend_influxdb.tmpl 模板文件将 MQTT Message 转换为可写入 InfluxDB 的 DataPoint。
 
-tmpl 文件使用 Json 格式, 用户可以为不同 Topic 定义不同的 Template, 类似:
+模板文件采用 Json 格式, 组成部分:
+
+- ``key`` - MQTT Topic, 字符串, 支持通配符
+
+- ``value`` - Template, Json 对象, 用于将 MQTT Message 转换成 ``measurement,tag_key=tag_value,... field_key=field_value,... timestamp`` 的形式以写入 InfluxDB。
+
+你可以为不同 Topic 定义不同的 Template, 也可以为同一个 Topic 定义多个 Template, 类似:
 
 .. code-block:: bash
 
@@ -2038,19 +2044,59 @@ Template 格式如下:
 .. code-block:: bash
 
     {
-        "measurement": <Where is value of measurement>,
+        "measurement": <Measurement>,
         "tags": {
-            <Tag Key>: <Where is value of tag>
+            <Tag Key>: <Tag Value>
         },
         "fields": {
-            <Field Key>: <Where is value of field>
+            <Field Key>: <Field Value>
         },
-        "timestamp": <Where is value of timestamp>
+        "timestamp": <Timestamp>
     }
 
-其中, ``measurement`` 与 ``fields`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。``<Where is value of *>`` 支持首字母为 '$' 的占位符 ("$qos", "$from", "$topic", "$timestamp") 以及 "$payload" 为首的 Json Key List, 例如 ``["$payload", "data", "temp"]`` 将从 payload 为 ``{"data": {"temp": 21.3}}`` 的 MQTT Message 中提取出 21.3.
+``measurement`` 与 ``fields`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。
 
-data/templates/emqx_backend_influxdb.tmpl 提供了一个 sample 供用户参考:
+所有的值 (例如 ``<Measurement>``) 你都可以直接在 Template 中配置为一个固定值, 它支持的数据类型依赖于你定义的数据表。当然更符合实际情况的是，你可以通过我们提供的占位符来获取 MQTT 消息中的数据。
+
+目前我们支持的占位符如下:
+
++-----------------+------------------------------------------------------+
+| Placeholder     | Description                                          |
++=================+======================================================+
+| $id             | MQTT 消息 UUID, 由 EMQ X 分配                        |
++-----------------+------------------------------------------------------+
+| $clientid       | 客户端使用的 Client ID                               |
++-----------------+------------------------------------------------------+
+| $username       | 客户端使用的 Username                                |
++-----------------+------------------------------------------------------+
+| $peerhost       | 客户端 IP                                            |
++-----------------+------------------------------------------------------+
+| $qos            | MQTT 消息的 QoS                                      |
++-----------------+------------------------------------------------------+
+| $topic          | MQTT 消息主题                                        |
++-----------------+------------------------------------------------------+
+| $payload        | MQTT 消息载荷, 必须为合法的 Json                     |
++-----------------+------------------------------------------------------+
+| $<Number>       | 必须配合 $paylaod 使用, 用于从 Json Array 中获取数据 |
++-----------------+------------------------------------------------------+
+| $timestamp      | EMQ X 准备转发消息时设置的时间戳, 精度: 纳秒         |
++-----------------+------------------------------------------------------+
+
+**$payload 与 $<Number>:**
+
+你可以直接使用 ``$payload`` 取得完整的消息载荷, 也可以通过 ``["$payload", <Key>, ...]`` 取得消息载荷内部的数据。
+
+例如 ``payload`` 为 ``{"data": {"temperature": 23.9}}``, 你可以通过占位符 ``["$payload", "data", "temperature"]`` 来获取其中的 ``23.9``。
+
+考虑到 Json 还有数组这一数据类型的情况, 我们引入了 ``$0`` 与 ``$<pos_integer>``, ``$0`` 表示获取数组内所有元素, ``$<pos_integer>`` 表示获取数组内第 ``<pos_integer>`` 个元素。
+
+一个简单例子, ``["$payload", "$0", "temp"]`` 将从 ``[{"temp": 20}, {"temp": 21}]`` 中取得 ``[20, 21]``, 而 ``["$payload", "$1", "temp"]`` 将只取得 ``20``。
+
+值得注意的是, 当你使用 ``$0`` 时，我们希望你取得的数据个数都是相等的。因为我们需要将这些数组转换为多条记录写入 InfluxDB, 而当你一个字段取得了 3 份数据, 另一个字段却取得了 2 份数据, 我们将无从判断应当怎样为你组合这些数据。
+
+**Example**
+
+data/templates 目录下提供了一个示例模板 (emqx_backend_influxdb_example.tmpl, 正式使用时请去掉文件名中的 "_example" 后缀) 供用户参考:
 
 .. code-block:: bash
 
@@ -2061,7 +2107,7 @@ data/templates/emqx_backend_influxdb.tmpl 提供了一个 sample 供用户参考
                 "host": ["$payload", "data", "$0", "host"],
                 "region": ["$payload", "data", "$0", "region"],
                 "qos": "$qos",
-                "from": "$from"
+                "clientid": "$clientid"
             },
             "fields": {
                 "temperature": ["$payload", "data", "$0", "temp"]
@@ -2097,7 +2143,7 @@ Backend 会将 MQTT Message 转换为:
         {
             "measurement": "sample",
             "tags": {
-                "from": "mqttjs_ebcc36079a",
+                "clientid": "mqttjs_ebcc36079a",
                 "host": "serverA",
                 "qos": "0",
                 "region": "hangzhou",
@@ -2110,7 +2156,7 @@ Backend 会将 MQTT Message 转换为:
         {
             "measurement": "sample",
             "tags": {
-                "from": "mqttjs_ebcc36079a",
+                "clientid": "mqttjs_ebcc36079a",
                 "host": "serverB",
                 "qos": "0",
                 "region": "ningbo",
@@ -2126,7 +2172,7 @@ Backend 会将 MQTT Message 转换为:
 
 .. code-block:: bash
 
-    "sample,from=mqttjs_6990f0e886,host=serverA,qos=0,region=hangzhou temperature=\"1\" 1560745505429670000\nsample,from=mqttjs_6990f0e886,host=serverB,qos=0,region=ningbo temperature=\"2\" 1560745505429670000\n"
+    "sample,clientid=mqttjs_6990f0e886,host=serverA,qos=0,region=hangzhou temperature=\"1\" 1560745505429670000\nsample,clientid=mqttjs_6990f0e886,host=serverB,qos=0,region=ningbo temperature=\"2\" 1560745505429670000\n"
 
 启用 InfluxDB 消息存储:
 
@@ -2214,7 +2260,13 @@ OpenTSDB 消息存储
 
 由于 MQTT Message 无法直接写入 OpenTSDB, OpenTSDB Backend 提供了 emqx_backend_opentsdb.tmpl 模板文件将 MQTT Message 转换为可写入 OpenTSDB 的 DataPoint。
 
-tmpl 文件使用 Json 格式, 用户可以为不同 Topic 定义不同的 Template, 类似:
+模板文件采用 Json 格式, 组成部分:
+
+- ``key`` - MQTT Topic, 字符串, 支持通配符主题
+
+- ``value`` - Template, Json 对象, 用于将 MQTT Message 转换成 OpenTSDB 的 DataPoint。
+
+你可以为不同 Topic 定义不同的 Template, 也可以为同一个 Topic 定义多个 Template, 类似:
 
 .. code-block:: bash
 
@@ -2228,17 +2280,57 @@ Template 格式如下:
 .. code-block:: bash
 
     {
-        "measurement": <Where is value of measurement>,
+        "measurement": <Measurement>,
         "tags": {
-            <Tag Key>: <Where is value of tag>
+            <Tag Key>: <Tag Value>
         },
-        "value": <Where is value of value>,
-        "timestamp": <Where is value of timestamp>
+        "value": <Value>,
+        "timestamp": <Timestamp>
     }
 
-其中, ``measurement`` 与 ``value`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。``<Where is value of *>`` 支持首字母为 '$' 的占位符 ("$qos", "$from", "$topic", "$timestamp") 以及 "$payload" 为首的 Json Key List, 例如 ``["$payload", "data", "temp"]`` 将从 payload 为 ``{"data": {"temp": 21.3}}`` 的 MQTT Message 中提取出 21.3.
+``measurement`` 与 ``value`` 为必选项, ``tags`` 与 ``timestamp`` 为可选项。
 
-/etc/plugins/emqx_backend_opentsdb.tmpl 提供了一个 sample 供用户参考:
+所有的值 (例如 ``<Measurement>``) 你都可以直接在 Template 中配置为一个固定值, 它支持的数据类型依赖于你定义的数据表。当然更符合实际情况的是，你可以通过我们提供的占位符来获取 MQTT 消息中的数据。
+
+目前我们支持的占位符如下:
+
++-----------------+------------------------------------------------------+
+| Placeholder     | Description                                          |
++=================+======================================================+
+| $id             | MQTT 消息 UUID, 由 EMQ X 分配                        |
++-----------------+------------------------------------------------------+
+| $clientid       | 客户端使用的 Client ID                               |
++-----------------+------------------------------------------------------+
+| $username       | 客户端使用的 Username                                |
++-----------------+------------------------------------------------------+
+| $peerhost       | 客户端 IP                                            |
++-----------------+------------------------------------------------------+
+| $qos            | MQTT 消息的 QoS                                      |
++-----------------+------------------------------------------------------+
+| $topic          | MQTT 消息主题                                        |
++-----------------+------------------------------------------------------+
+| $payload        | MQTT 消息载荷, 必须为合法的 Json                     |
++-----------------+------------------------------------------------------+
+| $<Number>       | 必须配合 $paylaod 使用, 用于从 Json Array 中获取数据 |
++-----------------+------------------------------------------------------+
+| $timestamp      | EMQ X 准备转发消息时设置的时间戳, 精度: 毫秒         |
++-----------------+------------------------------------------------------+
+
+**$payload 与 $<Number>:**
+
+你可以直接使用 ``$payload`` 取得完整的消息载荷, 也可以通过 ``["$payload", <Key>, ...]`` 取得消息载荷内部的数据。
+
+例如 ``payload`` 为 ``{"data": {"temperature": 23.9}}``, 你可以通过占位符 ``["$payload", "data", "temperature"]`` 来获取其中的 ``23.9``。
+
+考虑到 Json 还有数组这一数据类型的情况, 我们引入了 ``$0`` 与 ``$<pos_integer>``, ``$0`` 表示获取数组内所有元素, ``$<pos_integer>`` 表示获取数组内第 ``<pos_integer>`` 个元素。
+
+一个简单例子, ``["$payload", "$0", "temp"]`` 将从 ``[{"temp": 20}, {"temp": 21}]`` 中取得 ``[20, 21]``, 而 ``["$payload", "$1", "temp"]`` 将只取得 ``20``。
+
+值得注意的是, 当你使用 ``$0`` 时，我们希望你取得的数据个数都是相等的。因为我们需要将这些数组转换为多条记录写入 OpenTSDB, 而当你一个字段取得了 3 份数据, 另一个字段却取得了 2 份数据, 我们将无从判断应当怎样为你组合这些数据。
+
+**Example**
+
+data/templates 目录下提供了一个示例模板 (emqx_backend_opentsdb_example.tmpl, 正式使用时请去掉文件名中的 "_example" 后缀) 供用户参考:
 
 .. code-block:: bash
 
@@ -2249,7 +2341,7 @@ Template 格式如下:
                 "host": ["$payload", "data", "$0", "host"],
                 "region": ["$payload", "data", "$0", "region"],
                 "qos": "$qos",
-                "from": "$from"
+                "clientid": "$clientid"
             },
             "value": ["$payload", "data", "$0", "temp"],
             "timestamp": "$timestamp"
@@ -2283,7 +2375,7 @@ Backend 将 MQTT Message 转换为以下数据写入 OpenTSDB:
         {
             "measurement": "sample",
             "tags": {
-                "from": "mqttjs_ebcc36079a",
+                "clientid": "mqttjs_ebcc36079a",
                 "host": "serverA",
                 "qos": "0",
                 "region": "hangzhou",
@@ -2294,7 +2386,7 @@ Backend 将 MQTT Message 转换为以下数据写入 OpenTSDB:
         {
             "measurement": "sample",
             "tags": {
-                "from": "mqttjs_ebcc36079a",
+                "clientid": "mqttjs_ebcc36079a",
                 "host": "serverB",
                 "qos": "0",
                 "region": "ningbo",
@@ -2384,7 +2476,15 @@ Example:
 
 Timescale Backend 提供 emqx_backend_timescale.tmpl 模板文件，用于从不同主题的 MQTT Message 中提取数据以写入 Timescale。
 
-.. code-block:: json
+模板文件采用 Json 格式, 组成部分:
+
+- ``key`` - MQTT Topic, 字符串, 支持通配符主题
+
+- ``value`` - Template, Json 对象, 用于将 MQTT Message 转换成 ``measurement,tag_key=tag_value,... field_key=field_value,... timestamp`` 的形式以写入 InfluxDB。
+
+你可以为不同 Topic 定义不同的 Template, 也可以为同一个 Topic 定义多个 Template, 类似:
+
+.. code-block:: bash
 
     {
         <Topic 1>: <Template 1>,
@@ -2401,9 +2501,55 @@ Template 格式如下:
         "param_keys": <Param Keys>
     }
 
-其中，``name``, ``sql`` 和 ``param_keys`` 都是必选项。``name`` 可以是任意的字符串，确保没有重复即可。``sql`` 即 Timescale 可用的 SQL INSERT INTO 语句，例如：``insert into sensor_data(time, location, temperature, humidity) values (NOW(), $1, $2, $3)``。``param_keys`` 是一个数组，它的第一个元素对应 ``sql`` 中出现的 ``$1``，并以此类推，主要用于从 MQTT Mesage 提取数据替换 ``sql`` 中的占位符。
+``name``, ``sql`` 和 ``param_keys`` 都是必选项。
 
-emqx/data/templates/emqx_backend_timescale_example.tmpl 提供了一个示例供用户参考:
+``name`` 可以是任意的字符串，确保没有重复即可。
+
+``sql`` 为 Timescale 可用的 SQL INSERT INTO 语句，例如：``insert into sensor_data(time, location, temperature, humidity) values (NOW(), $1, $2, $3)``。
+
+``param_keys`` 是一个数组，它的第一个元素对应 ``sql`` 中出现的 ``$1``，并以此类推。
+
+数组中任意元素都可以是一个固定值, 它支持的数据类型依赖于你定义的数据表。当然更符合实际情况的是，你可以通过我们提供的占位符来获取 MQTT 消息中的数据。
+
+目前我们支持的占位符如下:
+
++-----------------+------------------------------------------------------+
+| Placeholder     | Description                                          |
++=================+======================================================+
+| $id             | MQTT 消息 UUID, 由 EMQ X 分配                        |
++-----------------+------------------------------------------------------+
+| $clientid       | 客户端使用的 Client ID                               |
++-----------------+------------------------------------------------------+
+| $username       | 客户端使用的 Username                                |
++-----------------+------------------------------------------------------+
+| $peerhost       | 客户端 IP                                            |
++-----------------+------------------------------------------------------+
+| $qos            | MQTT 消息的 QoS                                      |
++-----------------+------------------------------------------------------+
+| $topic          | MQTT 消息主题                                        |
++-----------------+------------------------------------------------------+
+| $payload        | MQTT 消息载荷, 必须为合法的 Json                     |
++-----------------+------------------------------------------------------+
+| $<Number>       | 必须配合 $paylaod 使用, 用于从 Json Array 中获取数据 |
++-----------------+------------------------------------------------------+
+| $timestamp      | EMQ X 准备转发消息时设置的时间戳, 精度: 毫秒         |
++-----------------+------------------------------------------------------+
+
+**$payload 与 $<Number>:**
+
+你可以直接使用 ``$payload`` 取得完整的消息载荷, 也可以通过 ``["$payload", <Key>, ...]`` 取得消息载荷内部的数据。
+
+例如 ``payload`` 为 ``{"data": {"temperature": 23.9}}``, 你可以通过占位符 ``["$payload", "data", "temperature"]`` 来获取其中的 ``23.9``。
+
+考虑到 Json 还有数组这一数据类型的情况, 我们引入了 ``$0`` 与 ``$<pos_integer>``, ``$0`` 表示获取数组内所有元素, ``$<pos_integer>`` 表示获取数组内第 ``<pos_integer>`` 个元素。
+
+一个简单例子, ``["$payload", "$0", "temp"]`` 将从 ``[{"temp": 20}, {"temp": 21}]`` 中取得 ``[20, 21]``, 而 ``["$payload", "$1", "temp"]`` 将只取得 ``20``。
+
+值得注意的是, 当你使用 ``$0`` 时，我们希望你取得的数据个数都是相等的。因为我们需要将这些数组转换为多条记录写入 Timescale, 而当你一个字段取得了 3 份数据, 另一个字段却取得了 2 份数据, 我们将无从判断应当怎样为你组合这些数据。
+
+**Example**
+
+data/templates 目录下提供了一个示例模板 (emqx_backend_timescale_example.tmpl, 正式使用时请去掉文件名中的 "_example" 后缀) 供用户参考:
 
 .. code-block:: json
 
