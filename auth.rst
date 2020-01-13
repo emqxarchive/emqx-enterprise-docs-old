@@ -131,6 +131,16 @@ ClientID 认证插件配置
 
 .. code-block:: properties
 
+    ## 默认 用户列表 试例:
+    ##auth.client.1.clientid = id
+    ##auth.client.1.password = passwd
+    ##auth.client.2.clientid = dev:devid
+    ##auth.client.2.password = passwd2
+    ##auth.client.3.clientid = app:appid
+    ##auth.client.3.password = passwd3
+    ##auth.client.4.clientid = client~!@#$%^&*()_+
+    ##auth.client.4.password = passwd~!@#$%^&*()_+
+
     ## 密码 hash 方式.
     ##
     ## 值: plain | md5 | sha | sha256
@@ -165,6 +175,14 @@ Username认证插件配置
 配置文件 emqx_auth_username.conf，配置加密方式:
 
 .. code-block:: properties
+
+    ## 默认 用户列表 试例:
+    ##auth.user.1.username = admin
+    ##auth.user.1.password = public
+    ##auth.user.2.username = feng@emqtt.io
+    ##auth.user.2.password = public
+    ##auth.user.3.username = name~!@#$%^&*()_+
+    ##auth.user.3.password = pwsswd~!@#$%^&*()_+
 
     ## 密码 hash 方式.
     ##
