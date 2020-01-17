@@ -47,7 +47,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT * FROM "message.pubish"
+    SELECT * FROM "#"
 
   .. image:: ./_static/images/rule_sql_1@2x.png
 
@@ -151,10 +151,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
+    SELECT * FROM "#"
 
   .. image:: ./_static/images/pgsql-rulesql-1@2x.png
 
@@ -266,10 +263,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
+    SELECT * FROM "#"
 
   .. image:: ./_static/images/pgsql-rulesql-1@2x.png
 
@@ -349,10 +343,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
+    SELECT * FROM "#"
 
   .. image:: ./_static/images/pgsql-rulesql-1@2x.png
 
@@ -439,10 +430,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-     msgid as id, topic, payload
-    FROM
-      "message.pubish"
+    SELECT msgid as id, topic, payload FROM "#"
 
   .. image:: ./_static/images/dynamo-rulesql-0.png
 
@@ -530,12 +518,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/redis-rulesql-0@2x.png
 
@@ -622,7 +605,9 @@
   3.4.0 以及更老版本::
 
     SELECT
-      payload.metric as metric, payload.tags as tags, payload.value as value
+      payload.metric as metric,
+      payload.tags as tags,
+      payload.value as value
     FROM
       "message.publish"
 
@@ -633,6 +618,14 @@
       p.metric as metric, p.tags as tags, p.value as value
     FROM
       "message.publish"
+
+  4.0.0 以及以后版本::
+
+    SELECT
+      json_decode(payload) as p,
+      p.metric as metric, p.tags as tags, p.value as value
+    FROM
+      "#"
 
   .. image:: ./_static/images/opentsdb-rulesql-0@2x.png
 
@@ -810,7 +803,7 @@
       payload.humidity as humidity,
       payload.location as location
     FROM
-      "message.publish"
+      "#"
 
   3.4.1 以及以后版本::
 
@@ -820,7 +813,7 @@
       p.humidity as humidity,
       p.location as location
     FROM
-      "message.publish"
+      "#"
 
   .. image:: ./_static/images/timescaledb-rulesql-0@2x.png
 
@@ -914,7 +907,7 @@
       payload.internal as internal,
       payload.external as external
     FROM
-      "message.publish"
+      "#"
 
   3.4.1 以及以后版本::
 
@@ -925,7 +918,7 @@
       p.internal as internal,
       p.external as external
     FROM
-      "message.publish"
+      "#"
 
   .. image:: ./_static/images/influxdb-rulesql-0@2x.png
 
@@ -1012,10 +1005,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
+    SELECT * FROM "#"
 
   .. image:: ./_static/images/webhook-rulesql-1.png
 
@@ -1100,12 +1090,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/kafka-rulesql-0@2x.png
 
@@ -1191,12 +1176,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/pulsar-rulesql-0@2x.png
 
@@ -1285,12 +1265,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/rocket-rulesql-0@2x.png
 
@@ -1365,12 +1340,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/rabbit-rulesql-0.png
 
@@ -1477,12 +1447,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/mqtt-rulesql-0.png
 
@@ -1558,12 +1523,7 @@
 
   选择触发事件 “消息发布”，然后填写规则 SQL::
 
-    SELECT
-      *
-    FROM
-      "message.publish"
-    WHERE
-      topic =~ 't/#'
+    SELECT * FROM "t/#"
 
   .. image:: ./_static/images/rpc-rulesql-0.png
 
@@ -1631,13 +1591,13 @@
 
 创建一个测试规则，当有消息发送到 't/a' 主题时，打印消息内容以及动作参数细节。
 
-- 规则的筛选 SQL 语句为: SELECT * FROM "message.publish" WHERE topic = 't/a';
+- 规则的筛选 SQL 语句为: SELECT * FROM "t/a";
 - 动作是: "打印动作参数细节"，需要使用内置动作 'inspect'。
 
 .. code-block:: shell
 
     $ ./bin/emqx_ctl rules create \
-      "SELECT * FROM \"message.publish\" WHERE topic = 't/a'" \
+      "SELECT * FROM \"t/a\" WHERE " \
       '[{"name":"inspect", "params": {"a": 1}}]' \
       -d 'Rule for debug'
 
@@ -1647,7 +1607,7 @@
 
 参数中前两个为必参数:
 
-- SQL 语句: SELECT * FROM "message.publish" WHERE topic = 't/a'
+- SQL 语句: SELECT * FROM "t/a"
 - 动作列表: [{"name":"inspect", "params": {"a": 1}}]。动作列表是用 JSON Array 格式表示的。name 字段是动作的名字，params 字段是动作的参数。注意 ``inspect`` 动作是不需要绑定资源的。
 
 最后一个可选参数，是规则的描述: 'Rule for debug'。
@@ -1688,7 +1648,7 @@
 
 创建一个规则，将所有发送自 client_id='Steven' 的消息，转发到地址为 'http://127.0.0.1:9910' 的 Web 服务器:
 
-- 规则的筛选条件为: SELECT username as u, payload FROM "message.publish" where u='Steven';
+- 规则的筛选条件为: SELECT username as u, payload FROM "#" where u='Steven';
 - 动作是: "转发到地址为 'http://127.0.0.1:9910' 的 Web 服务";
 - 资源类型是: web_hook;
 - 资源是: "到 url='http://127.0.0.1:9910' 的 WebHook 资源"。
@@ -1728,7 +1688,7 @@
    2). 创建规则，选择 data_to_webserver 动作，并通过 "$resource" 参数将 resource:691c29ba 资源绑定到动作上::
 
     $ ./bin/emqx_ctl rules create \
-     "SELECT username as u, payload FROM \"message.publish\" where u='Steven'" \
+     "SELECT username as u, payload FROM \"#\" where u='Steven'" \
      '[{"name":"data_to_webserver", "params": {"$resource":  "resource:691c29ba"}}]' \
      -d "Forward publish msgs from steven to webserver"
 
