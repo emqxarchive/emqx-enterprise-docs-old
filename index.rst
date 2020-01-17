@@ -15,6 +15,7 @@ EMQ X 企业版中文文档
    install
    guide
    config
+   dashboard
    rule_engine
    rule_tutorial
    schema_registry
