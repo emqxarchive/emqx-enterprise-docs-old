@@ -66,13 +66,13 @@ CentOS
 
             $ yum list emqx-ee --showduplicates | sort -r
 
-            emqx-ee.x86_64                    3.2.0-1.el7                     emqx-ee-stable
+            emqx-ee.x86_64                    4.0.0-1.el7                     emqx-ee-stable
 
-    2.  根据第二列中的版本字符串安装特定版本，例如 3.2.0
+    2.  根据第二列中的版本字符串安装特定版本，例如 4.0.0
 
         .. code-block:: console
 
-            $ sudo yum install emqx-ee-3.2.0
+            $ sudo yum install emqx-ee-4.0.0
 
 6.  导入License文件:
 
@@ -87,11 +87,11 @@ CentOS
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -114,7 +114,7 @@ CentOS
 
     .. code-block:: console
 
-           $ sudo rpm -ivh emqx-ee-centos7-v3.2.0.x86_64.rpm
+           $ sudo rpm -ivh emqx-ee-centos7-v4.0.0.x86_64.rpm
 
 3.  导入License文件:
 
@@ -133,7 +133,7 @@ CentOS
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -156,7 +156,7 @@ CentOS
 
     .. code-block:: console
 
-       $ unzip emqx-ee-centos7-v3.2.0.zip
+       $ unzip emqx-ee-centos7-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -169,11 +169,11 @@ CentOS
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 Ubuntu
 ------
@@ -248,14 +248,14 @@ Ubuntu
 
             $ sudo apt-cache madison emqx-ee
 
-            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
+            emqx-ee |      4.0.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
 
 
     2.  使用第二列中的版本字符串安装特定版本，例如
 
         .. code-block:: console
 
-            $ sudo apt install emqx-ee=3.2.0
+            $ sudo apt install emqx-ee=4.0.0
 
 8.  导入License文件:
 
@@ -270,11 +270,11 @@ Ubuntu
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -316,7 +316,7 @@ Ubuntu
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -339,7 +339,7 @@ Ubuntu
 
     .. code-block:: console
 
-       $ unzip emqx-ee-ubuntu18.04-v3.2.0.zip
+       $ unzip emqx-ee-ubuntu18.04-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -352,11 +352,11 @@ Ubuntu
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 Debian
 ------
@@ -429,13 +429,13 @@ Debian
 
             $ sudo apt-cache madison emqx-ee
 
-            emqx-ee |      3.2.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
+            emqx-ee |      4.0.0 | https://repos.emqx.io/emqx-ee/deb/ubuntu bionic/stable amd64 Packages
 
     2.  使用第二列中的版本字符串安装特定版本，例如
 
         .. code-block:: console
 
-            $ sudo apt install emqx-ee=3.2.0
+            $ sudo apt install emqx-ee=4.0.0
 
 7.  导入License文件:
 
@@ -450,11 +450,11 @@ Debian
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -492,11 +492,11 @@ Debian
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -519,7 +519,7 @@ Debian
 
     .. code-block:: console
 
-       $ unzip emqx-ee-debian9-v3.2.0.zip
+       $ unzip emqx-ee-debian9-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -532,11 +532,11 @@ Debian
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 macOS
 -----
@@ -550,7 +550,7 @@ macOS
 
     .. code-block:: console
 
-       $ unzip emqx-ee-macos-v3.2.0.zip
+       $ unzip emqx-ee-macos-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -563,11 +563,11 @@ macOS
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 Windows
 -------
@@ -634,13 +634,13 @@ openSUSE
             Reading installed packages...
             S | Repository | Name    | Version | Arch
             --+------------+---------+---------+-------
-              | emqx-ee    | emqx-ee | 3.2.0-1 | x86_64
+              | emqx-ee    | emqx-ee | 4.0.0-1 | x86_64
 
     2.  使用 Version 安装特定版本，例如
 
         .. code-block:: console
 
-            $ sudo zypper in emqx-ee-3.2.0
+            $ sudo zypper in emqx-ee-4.0.0
 
 6.  导入License文件:
 
@@ -655,11 +655,11 @@ openSUSE
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -682,7 +682,7 @@ openSUSE
 
     .. code-block:: console
 
-           $ sudo rpm -ivh emqx-ee-opensuse-v3.2.0.x86_64.rpm
+           $ sudo rpm -ivh emqx-ee-opensuse-v4.0.0.x86_64.rpm
 
 3.  导入License文件:
 
@@ -697,11 +697,11 @@ openSUSE
         .. code-block:: console
 
                 $ emqx start
-                emqx v3.2.0 is started successfully!
+                emqx v4.0.0 is started successfully!
 
                 $ emqx_ctl status
                 Node 'emqx@127.0.0.1' is started
-                emqx 3.2.0 is running
+                emqx 4.0.0 is running
 
     +   systemctl 启动
 
@@ -724,7 +724,7 @@ openSUSE
 
     .. code-block:: console
 
-       $ unzip emqx-ee-opensuse-v3.2.0.zip
+       $ unzip emqx-ee-opensuse-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -737,11 +737,11 @@ openSUSE
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 FreeBSD
 -------
@@ -757,7 +757,7 @@ FreeBSD
 
     .. code-block:: console
 
-       $ unzip emqx-ee-freebsd12-v3.2.0.zip
+       $ unzip emqx-ee-freebsd12-v4.0.0.zip
 
 3.  导入License文件:
 
@@ -770,11 +770,11 @@ FreeBSD
     .. code-block:: console
 
         $ ./bin/emqx start
-        emqx v3.2.0 is started successfully!
+        emqx v4.0.0 is started successfully!
 
         $ ./bin/emqx_ctl status
         Node 'emqx@127.0.0.1' is started
-        emqx 3.2.0 is running
+        emqx 4.0.0 is running
 
 Docker
 ------
@@ -787,15 +787,15 @@ Docker
 
         .. code-block:: console
 
-            $ docker pull emqx/emqx-ee:v3.2.0
+            $ docker pull emqx/emqx-ee:v4.0.0
 
     +   通过 `emqx.io`_ 手动下载 docker 镜像，并手动加载
 
         .. code-block:: console
 
-            $ wget -O emqx-ee-docker-v3.2.0.zip https://www.emqx.io/downloads/enterprise/v3.2.0/emqx-ee-docker-v3.2.0-amd64.zip
+            $ wget -O emqx-ee-docker-v4.0.0.zip https://www.emqx.io/downloads/enterprise/v4.0.0/emqx-ee-docker-v4.0.0-amd64.zip
             $ unzip emqx-ee-docker.zip
-            $ docker load < emqx-ee-docker-v3.2.0
+            $ docker load < emqx-ee-docker-v4.0.0
 
 2.  启动 docker 容器
 
@@ -809,6 +809,6 @@ Docker
             -p 8084:8084 \
             -p 18083:18083 \
             -v /path/to/emqx.lic:/opt/emqx/etc/emqx.lic
-            emqx/emqx-ee:v3.2.0
+            emqx/emqx-ee:v4.0.0
 
 更多关于 EMQ X Docker 的信息请查看 `Docker Hub`_
