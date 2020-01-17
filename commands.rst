@@ -752,11 +752,11 @@ trace start client <ClientId> <File> [<Level>]
 
     $ ./bin/emqx_ctl trace start client clientid log/clientid_trace.log
 
-    trace clientid clientid successfully
+    trace client clientid successfully
 
     $ ./bin/emqx_ctl trace start client clientid2 log/clientid2_trace.log error
 
-    trace clientid clientid2 successfully
+    trace client clientid2 successfully
 
 trace stop client <ClientId>
 ----------------------------
