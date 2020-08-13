@@ -1976,18 +1976,57 @@ InfluxDB 消息存储
 配置 InfluxDB 消息存储
 ----------------------
 
-配置文件: etc/plugins/emqx_backend_influxdb.conf:
+配置文件 etc/plugins/emqx_backend_influxdb.conf:
 
 .. code-block:: properties
 
-    ## InfluxDB UDP 服务地址
-    backend.influxdb.pool1.server = 127.0.0.1:8089
+    ## 写数据到 InfluxDB 时使用的协议
+    backend.influxdb.pool1.common.write_protocol = udp
 
-    ## InfluxDB 连接池大小
-    backend.influxdb.pool1.pool_size = 5
+    ## 批量写入大小
+    backend.influxdb.pool1.common.batch_size = 1000
 
-    ## 是否自动添加 timestamp
-    backend.influxdb.pool1.set_timestamp = true
+    ## InfluxDB 写进程池大小
+    backend.influxdb.pool1.pool_size = 8
+
+    ## InfluxDB UDP 主机地址
+    backend.influxdb.pool1.udp.host = 127.0.0.1
+
+    ## InfluxDB UDP 主机端口
+    backend.influxdb.pool1.udp.port = 8089
+
+    ## InfluxDB HTTP/HTTPS 主机地址
+    backend.influxdb.pool1.http.host = 127.0.0.1
+
+    ## InfluxDB HTTP/HTTPS 主机端口
+    backend.influxdb.pool1.http.port = 8086
+
+    ## InflxuDB 数据库名
+    backend.influxdb.pool1.http.database = mydb
+
+    ## 连接到 InfluxDB 的用户名
+    ## backend.influxdb.pool1.http.username = admin
+
+    ## 连接到 InfluxDB 的密码
+    ## backend.influxdb.pool1.http.password = public
+
+    ## 时间戳精度
+    backend.influxdb.pool1.http.precision = ms
+
+    ## 是否启用 HTTPS
+    backend.influxdb.pool1.http.https_enabled = false
+
+    ## 连接 InfluxDB 时使用的 TLS 协议版本
+    ## backend.influxdb.pool1.http.ssl.version = tlsv1.2
+
+    ## 密钥文件
+    ## backend.influxdb.pool1.http.ssl.keyfile = 
+
+    ## 证书文件
+    ## backend.influxdb.pool1.http.ssl.certfile = 
+
+    ## CA 证书文件
+    ## backend.influxdb.pool1.http.ssl.cacertfile = 
 
     ## 存储 PUBLISH 消息
     backend.influxdb.hook.message.publish.1 = {"topic": "#", "action": {"function": "on_message_publish"}, "pool": "pool1"}
@@ -2088,11 +2127,19 @@ Template 格式如下:
 
 例如 ``payload`` 为 ``{"data": {"temperature": 23.9}}``, 你可以通过占位符 ``["$payload", "data", "temperature"]`` 来获取其中的 ``23.9``。
 
+.. image:: ./_static/images/backends_3.png
+
 考虑到 Json 还有数组这一数据类型的情况, 我们引入了 ``$0`` 与 ``$<pos_integer>``, ``$0`` 表示获取数组内所有元素, ``$<pos_integer>`` 表示获取数组内第 ``<pos_integer>`` 个元素。
 
 一个简单例子, ``["$payload", "$0", "temp"]`` 将从 ``[{"temp": 20}, {"temp": 21}]`` 中取得 ``[20, 21]``, 而 ``["$payload", "$1", "temp"]`` 将只取得 ``20``。
 
+.. image:: ./_static/images/backends_4.png
+
+.. image:: ./_static/images/backends_5.png
+
 值得注意的是, 当你使用 ``$0`` 时，我们希望你取得的数据个数都是相等的。因为我们需要将这些数组转换为多条记录写入 InfluxDB, 而当你一个字段取得了 3 份数据, 另一个字段却取得了 2 份数据, 我们将无从判断应当怎样为你组合这些数据。
+
+.. image:: ./_static/images/backends_6.png
 
 **Example**
 
