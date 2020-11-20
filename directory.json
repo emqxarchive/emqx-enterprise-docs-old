@@ -1,0 +1,156 @@
+{
+	"cn": [{
+			"title": "产品概述",
+			"path": "overview"
+		},
+		{
+			"title": "部署架构",
+			"path": "deploy"
+		},
+		{
+			"title": "程序安装",
+			"path": "install"
+		},
+		{
+			"title": "用户指南",
+			"path": "guide"
+		},
+		{
+			"title": "配置说明",
+			"path": "config"
+		},
+		{
+			"title": "规则引擎",
+			"path": "rule_engine"
+		},
+		{
+			"title": "规则引擎使用教程",
+			"path": "rule_tutorial"
+		},
+		{
+			"title": "编解码",
+			"path": "schema_registry"
+		},
+		{
+			"title": "认证鉴权",
+			"path": "auth"
+		},
+		{
+			"title": "数据存储",
+			"path": "backends"
+		},
+		{
+			"title": "桥接转发",
+			"path": "bridges"
+		},
+		{
+			"title": "分布集群",
+			"path": "cluster"
+		},
+		{
+			"title": "架构设计",
+			"path": "design"
+		},
+		{
+			"title": "管理命令",
+			"path": "commands"
+		},
+		{
+			"title": "扩展插件",
+			"path": "plugins"
+		},
+		{
+			"title": "管理监控API",
+			"path": "rest"
+		},
+		{
+			"title": "速率限制",
+			"path": "ratelimit"
+		},
+		{
+			"title": "测试调优",
+			"path": "tune"
+		},
+		{
+			"title": "协议介绍",
+			"path": "protocol"
+		}
+	],
+	"en": [{
+			"title": "Overview",
+			"path": "overview"
+		},
+		{
+			"title": "Deployment",
+			"path": "deploy"
+		},
+		{
+			"title": "Installation",
+			"path": "install"
+		},
+		{
+			"title": "User Guide",
+			"path": "guide"
+		},
+		{
+			"title": "Configuration",
+			"path": "config"
+		},
+		{
+			"title": "EMQ X Dashboard",
+			"path": "dashboard"
+		},
+		{
+			"title": "Rule Engine",
+			"path": "rule_engine"
+		},
+		{
+			"title": "Rule Engine Tutorial",
+			"path": "rule_tutorial"
+		},
+		{
+			"title": "AuthN/AuthZ",
+			"path": "auth"
+		},
+		{
+			"title": "Backends",
+			"path": "backends"
+		},
+		{
+			"title": "Bridges",
+			"path": "bridges"
+		},
+		{
+			"title": "Clustering",
+			"path": "cluster"
+		},
+		{
+			"title": "Design",
+			"path": "design"
+		},
+		{
+			"title": "Commands",
+			"path": "commands"
+		},
+		{
+			"title": "Plugins",
+			"path": "plugins"
+		},
+		{
+			"title": "REST API",
+			"path": "rest"
+		},
+		{
+			"title": "Rate Limit",
+			"path": "ratelimit"
+		},
+		{
+			"title": "Tuning Guide",
+			"path": "tune"
+		},
+		{
+			"title": "MQTT Protocol",
+			"path": "protocol"
+		}
+	]
+}
