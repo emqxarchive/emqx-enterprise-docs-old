@@ -1,5 +1,9 @@
 {
 	"cn": [{
+			"title": "摘要",
+			"path": "./"
+		},
+		{
 			"title": "产品概述",
 			"path": "overview"
 		},
@@ -77,6 +81,10 @@
 		}
 	],
 	"en": [{
+			"title": "Introduction",
+			"path": "./"
+		},
+	       {
 			"title": "Overview",
 			"path": "overview"
 		},
